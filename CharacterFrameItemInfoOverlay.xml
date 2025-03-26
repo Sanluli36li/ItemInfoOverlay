@@ -1,0 +1,69 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="CharacterFrameItemInfoOverlay.lua"/>
+
+    <Frame name="SanluliCharacterFrameItemInfoOverlayTemplate" mixin="SanluliCharacterFrameItemInfoOverlayMixin" virtual="true">
+        <Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="ItemLevel" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+                <FontString parentKey="Enchant" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                    <Color r="0" g="1.0" b="0"/>
+				</FontString>
+                <FontString parentKey="EnchantQuality" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+				</FontString>
+                
+			</Layer>
+		</Layers>
+        <Frames>
+            <Button parentKey="GemSocket1">
+                <Size x="16" y="16"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="0"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="Quality" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                            <Anchors>
+                                <Anchor point="CENTER" relativePoint="TOP" x="1" y="0"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="GemSocket2">
+                <Size x="16" y="16"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeKey="$parent.GemSocket1" relativePoint="TOPLEFT" x="0" y="0"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="Quality" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                            <Anchors>
+                                <Anchor point="CENTER" relativePoint="TOP" x="1" y="0"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="GemSocket3">
+                <Size x="16" y="16"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeKey="$parent.GemSocket2" relativePoint="TOPLEFT" x="0" y="0"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="Quality" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                            <Anchors>
+                                <Anchor point="CENTER" relativePoint="TOP" x="1" y="0"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Button>
+        </Frames>
+    </Frame>
+</Ui>

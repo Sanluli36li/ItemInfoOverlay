@@ -1,0 +1,19 @@
+## Interface: 110002
+## Title: ItemInfoOverlay
+## Notes: Sanluli36li's Item Info Overlay
+## Notes-zhCN: 三鹿李的物品信息显示插件
+## Notes-zhTW: 
+## Author: Sanluli36li (Olddruid@CN-Galakrond)
+## Version: 1.0.0
+## SavedVariables: ItemInfoOverlayDB
+## IconTexture: 625999
+
+Libs\libs.xml
+
+Core.lua
+
+Locales\locales.xml
+Settings.lua
+
+ItemInfoOverlay.xml
+CharacterFrameItemInfoOverlay.xml
