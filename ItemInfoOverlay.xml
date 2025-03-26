@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
     <Script file="ItemInfoOverlay.lua"/>
 
-    <Font name="SanluliItemInfoFont" virtual="true" font="Interface\AddOns\SanluliMediaLib\Media\Fonts\SemplicitaPro-Bold.ttf" height="12" outline="NORMAL">
+    <Font name="SanluliItemInfoFont" virtual="true" height="12" outline="NORMAL">
         <Shadow>
             <Offset>
                 <AbsDimension x="1" y="-1"/>
