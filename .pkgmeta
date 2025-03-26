@@ -1,0 +1,6 @@
+package-as: ItemInfoOverlay
+ignore:
+  - .gitignore
+  - .github/*
+  - README.md
+  - README-zhCN.md
