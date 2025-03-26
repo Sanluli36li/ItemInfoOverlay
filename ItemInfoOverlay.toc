@@ -1,12 +1,13 @@
-## Interface: 110002
+## Interface: 110100
 ## Title: ItemInfoOverlay
 ## Notes: Sanluli36li's Item Info Overlay
 ## Notes-zhCN: 三鹿李的物品信息显示插件
 ## Notes-zhTW: 
 ## Author: Sanluli36li (Olddruid@CN-Galakrond)
-## Version: 1.0.0
+## Version: @project-version@
 ## SavedVariables: ItemInfoOverlayDB
 ## IconTexture: 625999
+## X-Curse-Project-ID: 1229101
 
 Libs\libs.xml
 
