@@ -4,7 +4,7 @@ local L = ItemInfoOverlay.Locale
 
 L["addon.name"] = ADDON_NAME
 L["characterFrame.enchant.displayMissing"] = "Display Missing Enchant"
-L["characterFrame.enchant.displayMissing.noenchant"] = "No Enchant"
+L["characterFrame.enchant.displayMissing.noenchant"] = "NoEnchant"
 L["characterFrame.enchant.font"] = "Enchant Font"
 L["characterFrame.enchant.fontSize"] = "Enchant Font Size"
 L["characterFrame.enchant.title"] = "Display Item Enchant"

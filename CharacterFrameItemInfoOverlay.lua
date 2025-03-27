@@ -48,6 +48,7 @@ local itemInfoOverlayPoor = {}
 
 local EQUIP_LOC_CAN_ENCHANT_TWW = {
     INVTYPE_CHEST = true,       -- 胸部
+    INVTYPE_ROBE = true,        -- 胸部 (搞不懂为啥胸甲会有两种装备位置)
     INVTYPE_LEGS = true,        -- 腿部
     INVTYPE_FEET = true,        -- 脚部
     INVTYPE_WRIST = true,       -- 腕部
