@@ -116,7 +116,7 @@ end
 
 function SanluliCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
     -- 物品等级位置
-    if Module:GetConfig(CONFIG_ITEM_LEVEL) and Module:GetConfig(CONFIG_ITEM_LEVEL_POINT) == CONFIG_ITEM_LEVEL_POINT_ON_SIDE then
+    if Module:GetConfig(CONFIG_ITEM_LEVEL_POINT) == CONFIG_ITEM_LEVEL_POINT_ON_SIDE then
         self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint(
             (self.side == "LEFT" and "LEFT") or "RIGHT",
