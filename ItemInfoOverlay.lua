@@ -130,8 +130,10 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
 
             itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
         elseif classID == Enum.ItemClass.Recipe then
-            -- 配方: 显示专业名称
-            itemTypeText = itemSubType
+            if itemStackCount == 1 then
+                -- 配方: 显示专业名称
+                itemTypeText = itemSubType
+            end
         elseif itemID and C_Item.IsItemKeystoneByID(itemID) then
             -- 史诗钥石
             local _, itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", itemLink)
@@ -147,7 +149,7 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
         end
 
         if Module:GetConfig(CONFIG_ITEM_TYPE) and itemTypeText then
-            self.ItemType:SetText(itemTypeText)
+            self.ItemType:SetText(L["itemInfoOverlay.itemType.replacer"](itemTypeText))
             self.ItemType:Show()
         else
             self.ItemType:Hide()

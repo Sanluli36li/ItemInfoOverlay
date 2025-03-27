@@ -31,6 +31,23 @@ L["itemInfoOverlay.itemLevel.title"] = "ItemLevel Font Size"
 L["itemInfoOverlay.itemLevel.tooltip"] = "Display ItemLevel on icon of equipment's item icon\n\nIt's also display level of M+ Keystone"
 L["itemInfoOverlay.itemType.font"] = "Item Type Font"
 L["itemInfoOverlay.itemType.fontSize"] = "Item Type Font Size"
+L["itemInfoOverlay.itemType.replacer"] = function (text)
+    local table = {
+        ["One-Handed Axes"] = "1H-Axe",
+        ["Two-Handed Axes"] = "2H-Axe",
+        ["One-Handed Maces"] = "1H-Mace",
+        ["Two-Handed Maces"] = "2H-Mace",
+        ["One-Handed Swords"] = "1H-Sword",
+        ["Two-Handed Swords"] = "2H-Sword",
+        ["Fist Weapons"] = "Fist",
+        ["Held In Off-hand"] = "Off-hand",
+    }
+    if table[text] then
+        return table[text]
+    else
+        return text
+    end
+end
 L["itemInfoOverlay.itemType.title"] = "Display Font Size"
 L["itemInfoOverlay.itemType.tooltip"] = "Display the location of the equipment item and the profession of the recipe on the item icon"
 L["itemInfoOverlay.title"] = "Item Button Overlay"

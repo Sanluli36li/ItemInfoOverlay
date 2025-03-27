@@ -35,6 +35,17 @@ L["itemInfoOverlay.itemLevel.title"] = "显示物品等级"
 L["itemInfoOverlay.itemLevel.tooltip"] = "在物品图标上显示装备类物品、套装兑换物的物品等级\n\n史诗钥石的层数也会显示在图标上"
 L["itemInfoOverlay.itemType.font"] = "物品分类字体"
 L["itemInfoOverlay.itemType.fontSize"] = "物品分类文字大小"
+L["itemInfoOverlay.itemType.replacer"] = function (text)
+    local table = {
+        ["长柄武器"] = "长柄",
+        ["副手物品"] = "副手",
+    }
+    if table[text] then
+        return table[text]
+    else
+        return text
+    end
+end
 L["itemInfoOverlay.itemType.title"] = "显示物品分类"
 L["itemInfoOverlay.itemType.tooltip"] = "在物品图标上显示装备物品的部位、配方的专业类型"
 L["itemInfoOverlay.title"] = "物品图标覆盖"
