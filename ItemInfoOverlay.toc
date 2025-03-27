@@ -18,3 +18,5 @@ Settings.lua
 
 ItemInfoOverlay.xml
 CharacterFrameItemInfoOverlay.xml
+
+ChatLink.lua
