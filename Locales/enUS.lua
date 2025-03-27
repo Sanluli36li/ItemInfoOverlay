@@ -19,6 +19,7 @@ L["characterFrame.itemLevel.tooltip"] = "Display ItemLevel on Item Icon of Chara
 L["characterFrame.socket.iconSize"] = "GemSocket Icon Size"
 L["characterFrame.socket.title"] = "Display GemSocket"
 L["characterFrame.socket.tooltip"] = "Display Gem and Socket on Item Icon of Character Frame and Inspect Frame"
+L["characterFrame.title"] = "Character and Inspect Frame"
 L["itemInfoOverlay.bonding.boe"] = "BoE"
 L["itemInfoOverlay.bondingType.font"] = "Bonding Type Font"
 L["itemInfoOverlay.bondingType.fontSize"] = "Bonding Type Font Size"

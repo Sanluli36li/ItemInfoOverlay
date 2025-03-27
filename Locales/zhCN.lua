@@ -23,6 +23,7 @@ L["characterFrame.itemLevel.tooltip"] = "在角色面板显示装备的物品等
 L["characterFrame.socket.iconSize"] = "插槽图标尺寸"
 L["characterFrame.socket.title"] = "显示插槽"
 L["characterFrame.socket.tooltip"] = "在角色面板显示装备的物品插槽和宝石"
+L["characterFrame.title"] = "角色面板与观察面板"
 L["itemInfoOverlay.bonding.boe"] = "装绑"
 L["itemInfoOverlay.bondingType.font"] = "绑定类型字体"
 L["itemInfoOverlay.bondingType.fontSize"] = "绑定类型文字大小"
