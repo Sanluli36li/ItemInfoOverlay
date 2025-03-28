@@ -107,22 +107,12 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
             else
                 itemTypeText = itemSubType
             end
-
-            if bonding == 7 then
-                itemBondingText = "|cffffffff"..L["itemInfoOverlay.bonding.boe"] .."|r"
-            elseif bonding == 9 then
-                itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.wue"] .."|r"
-            end
         elseif classID == Enum.ItemClass.Miscellaneous and subclassID == Enum.ItemMiscellaneousSubclass.Junk and itemQuality >= Enum.ItemQuality.Epic then
             if itemLevel > 1 then
                 -- 史诗品质垃圾 且只能堆叠一个 且物品等级大于1: 大概率是套装兑换物 显示装等
                 local r, g, b = C_Item.GetItemQualityColor(itemQuality)
 
                 itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
-
-                if bonding == 9 then
-                    itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.wue"] .."|r"
-                end
             end
         elseif classID == Enum.ItemClass.Reagent and subclassID == Enum.ItemReagentSubclass.ContextToken then
             -- 珍玩 套装兑换物(以及暗影国度的武器兑换物)
@@ -155,6 +145,10 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
         end
 
         if itemStackCount == 1 and Module:GetConfig(CONFIG_ITEM_TYPE) and itemTypeText then
+            if IsCosmeticItem(itemLink) then
+                itemTypeText = "|cffff80ff"..itemTypeText.."|r"
+            end
+
             self.ItemType:SetText(L["itemInfoOverlay.itemType.replacer"](itemTypeText))
             self.ItemType:Show()
         else
@@ -211,39 +205,12 @@ end
 --------------------
 -- 暴雪函数安全钩子
 --------------------
---[[
+
 hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, suppressOverlays, isBound)
-    local name = button:GetName()
-
-    if button.location then
-        -- 装备栏快捷更换按钮
-        local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(button.location)
-        if bags then
-            -- 背包中的物品
-            GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
-            return
-        elseif player then
-            -- 玩家物品栏
-            GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromEquipmentSlot(slot))
-            return
-        end
-    elseif button.GetItemLocation then
-        -- 背包、材料背包、银行背包、战团银行
-        GetItemInfoOverlay(button):SetItem(button:GetItemLocation())
+    if button and button.SetItemButtonQuality then
+        -- 跳过带有ItemButtonMixin等带有此函数的类型 防止重复操作
         return
-    elseif name then
-        -- 基于按钮名字判断框体
-        if strsub(name, 1, 24) == "VoidStorageStorageButton" then
-            -- 虚空仓库物品按钮: 
-            -- 已知问题: 通过物品链接获取物品信息时, 传家宝、军团再临传说物品的物品等级可能会有问题
-            local tab = VoidStorageFrame.page
-            local slot = button.slot
-            GetItemInfoOverlay(button):SetItem(nil, GetVoidItemHyperlinkString((tab - 1)*80 + slot))
-            return
-        end
-    end
-
-    if itemIDOrLink then
+    elseif itemIDOrLink then
         if tonumber(itemIDOrLink) then
         else
             -- 能直接获取到物品链接
@@ -252,13 +219,9 @@ hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, s
         end
     end
     GetItemInfoOverlay(button):Hide()
-
 end)
-]]
 
 hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, quality, itemIDOrLink, suppressOverlays, isBound)
-    local name = button:GetName()
-
     if button.GetItemLocation and button:GetItemLocation() and button:GetItemLocation():IsValid() then
         -- 背包、材料背包、银行背包、战团银行
         GetItemInfoOverlay(button):SetItem(button:GetItemLocation())
@@ -286,6 +249,11 @@ hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, qualit
         end
     end
     GetItemInfoOverlay(button):Hide()
+end)
+
+hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound)
+    -- 商人界面
+    GetItemInfoOverlay(button.ItemButton):SetItem(nil, link)
 end)
 
 hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
