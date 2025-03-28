@@ -205,7 +205,7 @@ end
 --------------------
 -- 暴雪函数安全钩子
 --------------------
-
+--[[
 hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, suppressOverlays, isBound)
     local name = button:GetName()
 
@@ -248,16 +248,49 @@ hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, s
     GetItemInfoOverlay(button):Hide()
 
 end)
+]]
+
+hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, quality, itemIDOrLink, suppressOverlays, isBound)
+    local name = button:GetName()
+
+    if button.GetItemLocation and button:GetItemLocation() and button:GetItemLocation():IsValid() then
+        -- 背包、材料背包、银行背包、战团银行
+        GetItemInfoOverlay(button):SetItem(button:GetItemLocation())
+        return
+    elseif button.location then
+        -- 装备栏快捷更换按钮
+        local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(button.location)
+        if bags then
+            -- 背包中的物品
+            GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
+            return
+        elseif player then
+            -- 玩家物品栏
+            GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromEquipmentSlot(slot))
+            return
+        end
+    end
+
+    if itemIDOrLink then
+        if tonumber(itemIDOrLink) then
+        else
+            -- 能直接获取到物品链接
+            GetItemInfoOverlay(button):SetItem(nil, itemIDOrLink)
+            return
+        end
+    end
+    GetItemInfoOverlay(button):Hide()
+end)
+
+hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
+    -- 装备栏/专业装备栏
+    local slot = button:GetID()
+    GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromEquipmentSlot(slot))
+end)
 
 hooksecurefunc("BankFrameItemButton_Update", function(button)
     -- 银行/材料银行
     local bag = button:GetParent():GetID()
     local slot = button:GetID()
     GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
-end)
-
-hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
-    -- 专业技能装备
-    local slot = button:GetID()
-    GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromEquipmentSlot(slot))
 end)
