@@ -300,3 +300,14 @@ hooksecurefunc("BankFrameItemButton_Update", function(button)
     local slot = button:GetID()
     GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
 end)
+
+function Module:AfterStartup()
+    if NDui then
+        -- NDui 整合背包
+        hooksecurefunc(NDui.cargBags:GetImplementation("NDui_Backpack"):GetItemButtonClass(), "OnUpdateButton", function(button, item)
+            local bag = item.bagId
+            local slot = item.slotId
+            GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
+        end)
+    end
+end

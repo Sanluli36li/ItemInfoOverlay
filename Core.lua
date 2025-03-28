@@ -121,7 +121,12 @@ function ItemInfoOverlay:ADDON_LOADED(addOnName, containsBindings)
 
 		self:ForAllModules('BeforeStartup')
 		self:ForAllModules('Startup')
-		self:ForAllModules('AfterStartup')
 	end
 end
 
+ItemInfoOverlay:RegisterEvent("PLAYER_ENTERING_WORLD", ItemInfoOverlay)
+function ItemInfoOverlay:PLAYER_ENTERING_WORLD()
+	self:ForAllModules('AfterStartup')
+
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", ItemInfoOverlay)
+end
