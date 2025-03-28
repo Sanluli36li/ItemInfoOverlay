@@ -70,6 +70,10 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
             end
         end
 
+        local itemLevelText
+        local itemTypeText
+        local itemBondingText
+
         local bonding
         if tooltipInfo and tooltipInfo.type == Enum.TooltipDataType.Item and tooltipInfo.lines then
             for i, line in ipairs(tooltipInfo.lines) do
@@ -82,10 +86,6 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
         itemName, _, itemQuality, _, _, itemType, itemSubType,
         itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
         expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
-
-        local itemLevelText
-        local itemTypeText
-        local itemBondingText
 
         if classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor or classID == Enum.ItemClass.Profession then
             if itemLevel > 1 then
@@ -114,7 +114,7 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
                 itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.wue"] .."|r"
             end
         elseif classID == Enum.ItemClass.Miscellaneous and subclassID == Enum.ItemMiscellaneousSubclass.Junk and itemQuality >= Enum.ItemQuality.Epic then
-            if itemLevel > 1 and itemStackCount == 1 then
+            if itemLevel > 1 then
                 -- 史诗品质垃圾 且只能堆叠一个 且物品等级大于1: 大概率是套装兑换物 显示装等
                 local r, g, b = C_Item.GetItemQualityColor(itemQuality)
 
@@ -130,10 +130,7 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
 
             itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
         elseif classID == Enum.ItemClass.Recipe then
-            if itemStackCount == 1 then
-                -- 配方: 显示专业名称
-                itemTypeText = itemSubType
-            end
+            itemTypeText = itemSubType
         elseif itemID and C_Item.IsItemKeystoneByID(itemID) then
             -- 史诗钥石
             local _, itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", itemLink)
@@ -141,21 +138,30 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
             itemLevelText = format("|cff%02x%02x%02x+%d|r", r * 255, g * 255, b * 255, level)
         end
 
+        if bonding == Enum.TooltipDataItemBinding.Account or bonding == Enum.TooltipDataItemBinding.BindToBnetAccount then
+            itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.btw"].."|r"
+        elseif bonding == Enum.TooltipDataItemBinding.BindOnEquip then
+            itemBondingText = "|cffffffff"..L["itemInfoOverlay.bonding.boe"] .."|r"
+        elseif bonding == Enum.TooltipDataItemBinding.AccountUntilEquipped or bonding == Enum.TooltipDataItemBinding.BindToAccountUntilEquipped then
+            itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.wue"] .."|r"
+        end
+
         if Module:GetConfig(CONFIG_ITEM_LEVEL) and itemLevelText then
             self.ItemLevel:SetText(itemLevelText)
             self.ItemLevel:Show()
         else
+            self.ItemLevel:SetText()
             self.ItemLevel:Hide()
         end
 
-        if Module:GetConfig(CONFIG_ITEM_TYPE) and itemTypeText then
+        if itemStackCount == 1 and Module:GetConfig(CONFIG_ITEM_TYPE) and itemTypeText then
             self.ItemType:SetText(L["itemInfoOverlay.itemType.replacer"](itemTypeText))
             self.ItemType:Show()
         else
             self.ItemType:Hide()
         end
 
-        if Module:GetConfig(CONFIG_BONDING_TYPE) and itemBondingText then
+        if classID ~= Enum.ItemClass.Recipe and Module:GetConfig(CONFIG_BONDING_TYPE) and itemBondingText then
             self.BondingType:SetText(itemBondingText)
             self.BondingType:Show()
         else

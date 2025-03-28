@@ -32,6 +32,7 @@ L["chatLink.hyperlinkEnhance.displaySockets.tooltip"] = "Display gem sockets aft
 L["chatLink.hyperlinkEnhance.title"] = "Chat Hyperlink Enhance"
 L["chatLink.hyperlinkEnhance.tooltip"] = "Add more infomation in chat hyperlink"
 L["itemInfoOverlay.bonding.boe"] = "BoE"
+L["itemInfoOverlay.bonding.btw"] = "BtW"
 L["itemInfoOverlay.bondingType.font"] = "Bonding Type Font"
 L["itemInfoOverlay.bondingType.fontSize"] = "Bonding Type Font Size"
 L["itemInfoOverlay.bondingType.title"] = "Display Bonding Type of Equipment"

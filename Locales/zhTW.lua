@@ -35,6 +35,7 @@ L["chatLink.hyperlinkEnhance.tooltip"] = "在聊天信息的超鏈接添加更�
 L["chatLink.hyperlinkEnhance.displaySockets.title"] = "顯示插槽"
 L["chatLink.hyperlinkEnhance.displaySockets.tooltip"] = "在物品超鏈接后顯示插槽信息"
 L["itemInfoOverlay.bonding.boe"] = "裝綁"
+L["itemInfoOverlay.bonding.btw"] = "戰團"
 L["itemInfoOverlay.bondingType.font"] = "綁定分類字體"
 L["itemInfoOverlay.bondingType.fontSize"] = "綁定分類文字大小"
 L["itemInfoOverlay.bondingType.title"] = "顯示裝備綁定類型"

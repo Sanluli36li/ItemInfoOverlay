@@ -36,6 +36,7 @@ L["chatLink.hyperlinkEnhance.displaySockets.tooltip"] = "在物品链接后显�
 L["chatLink.hyperlinkEnhance.title"] = "聊天链接增强"
 L["chatLink.hyperlinkEnhance.tooltip"] = "在聊天信息中的链接里添加更多信息"
 L["itemInfoOverlay.bonding.boe"] = "装绑"
+L["itemInfoOverlay.bonding.btw"] = "战团"
 L["itemInfoOverlay.bondingType.font"] = "绑定类型字体"
 L["itemInfoOverlay.bondingType.fontSize"] = "绑定类型文字大小"
 L["itemInfoOverlay.bondingType.title"] = "显示装备绑定类型"
