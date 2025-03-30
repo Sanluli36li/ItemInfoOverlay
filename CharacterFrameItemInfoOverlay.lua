@@ -58,7 +58,7 @@ local EQUIP_LOC_CAN_ENCHANT_TWW = {
     INVTYPE_2HWEAPON = true,    -- 双手武器
 }
 
-local function canEnchant(itemLevel, itemEquipLoc)
+local function CanEnchant(itemLevel, itemEquipLoc)
     if itemLevel > 535 then
         -- TWW
         return EQUIP_LOC_CAN_ENCHANT_TWW[itemEquipLoc]
@@ -162,6 +162,10 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
     self.GemSocket3.Quality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) - 2, "OUTLINE")
 
     self:UpdateLines()
+
+    if self:IsVisible() then
+        self:Refresh()
+    end
 end
 
 function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
@@ -208,7 +212,11 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
     end
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
+function SanluliCharacterFrameItemInfoOverlayMixin:SetItem(itemLocation, itemLink, tooltipInfo)
+    self.itemLocation = itemLocation
+    self.itemLink = itemLink
+    self.tooltipInfo = tooltipInfo
+
     if itemLink or (itemLocation and itemLocation:IsValid()) then
         self:Show()
         local itemName, itemQuality, itemLevel, itemID, itemMinLevel, itemType, itemSubType,
@@ -222,15 +230,21 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItem(itemLocation, itemLin
 
             itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
             itemID = C_Item.GetItemID(itemLocation)
+
+            if itemLocation:IsBagAndSlot() then
+                tooltipInfo = C_TooltipInfo.GetBagItem(itemLocation:GetBagAndSlot())
+            elseif itemLocation:IsEquipmentSlot() then
+                tooltipInfo = C_TooltipInfo.GetInventoryItem("player", itemLocation:GetEquipmentSlot())
+            end
         end
 
         if itemLink then
-            if not itemLevel then
-                itemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
-            end
-
             if not itemID then
                 C_Item.GetItemIDForItemInfo(itemLink)
+            end
+
+            if not tooltipInfo then
+                tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
             end
         end
 
@@ -240,23 +254,15 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItem(itemLocation, itemLin
 
         local itemLevelText
 
-        if itemLevel > 1 then
-            -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
-            local r, g, b = C_Item.GetItemQualityColor(itemQuality)
-
-            itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
-        end
-
         local itemEnchant, itemEnchantQuality
         local itemGemSocketCount = 0
         local itemGemSockets = {}
-        local tooltipData = C_TooltipInfo.GetHyperlink(itemLink)
-        if tooltipData then
-            for i, line in pairs(tooltipData.lines) do
+        if tooltipInfo then
+            for i, line in pairs(tooltipInfo.lines) do
                 local text = line.leftText
 
-                -- 附魔
                 if line.type == Enum.TooltipDataLineType.ItemEnchantmentPermanent then
+                    -- 附魔
                     local enchant = string.match(text, ENCHANT_PATTERN)
                     if enchant then
                         if string.find(enchant, "|A:") then
@@ -265,16 +271,31 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItem(itemLocation, itemLin
                             itemEnchant = enchant
                         end
                     end
-                end
-
-                -- 宝石
-                if line.type == Enum.TooltipDataLineType.GemSocket then
+                elseif line.type == Enum.TooltipDataLineType.GemSocket then
+                    -- 宝石
                     if line.socketType then
                         itemGemSocketCount = itemGemSocketCount + 1
                         itemGemSockets[itemGemSocketCount] = string.format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", line.socketType)
                     end
+                elseif not itemLevel and strfind(line.leftText, ITEM_LEVEL:gsub("%%d", "%%d+")) then
+                    local i, j = strfind(line.leftText, "%d+")
+                    local ilvl = tonumber(strsub(line.leftText, i, j))
+                    if ilvl then
+                        itemLevel = ilvl
+                    end
                 end
             end
+        end
+
+        if not itemLevel then
+            itemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
+        end
+
+        if itemLevel > 1 then
+            -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
+            local r, g, b = C_Item.GetItemQualityColor(itemQuality)
+
+            itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
         end
 
         if Module:GetConfig(CONFIG_ITEM_LEVEL) and itemLevelText then
@@ -300,7 +321,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItem(itemLocation, itemLin
             else
                 self.EnchantQuality:Hide()
             end
-        elseif Module:GetConfig(CONFIG_ENCHANT) and Module:GetConfig(CONFIG_ENCHANT_DISPLAY_MISSING) and canEnchant(itemLevel, itemEquipLoc) then
+        elseif Module:GetConfig(CONFIG_ENCHANT) and Module:GetConfig(CONFIG_ENCHANT_DISPLAY_MISSING) and CanEnchant(itemLevel, itemEquipLoc) then
             self.Enchant:SetText("|cffff0000"..L["characterFrame.enchant.displayMissing.noenchant"].."|r")
             self.Enchant:Show()
 
@@ -387,6 +408,10 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItem(itemLocation, itemLin
     end
 end
 
+function SanluliItemInfoOverlayMixin:Refresh()
+    self:SetItem(self.itemLocation, self.itemLink, self.tooltipInfo)
+end
+
 --------------------
 -- 
 --------------------
@@ -437,7 +462,8 @@ function Module:UpdateAllInspectSlot ()
     if InspectFrame.unit then
         for slotID, _ in pairs(EQUIPMENT_SLOTS) do
             local itemLink = GetInventoryItemLink(InspectFrame.unit, slotID)
-            GetItemInfoOverlayFromSlotID(slotID, true):SetItem(nil, itemLink)
+            local tooltipInfo = C_TooltipInfo.GetInventoryItem(InspectFrame.unit, slotID)
+            GetItemInfoOverlayFromSlotID(slotID, true):SetItem(nil, itemLink, tooltipInfo)
         end
     end
 end
@@ -464,7 +490,10 @@ end
 
 local function hookInspectUI()
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
-        CreateItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
+        local overlay = CreateItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
+        function overlay:GetUnit()
+            return InspectFrame.unit
+        end
     end
 
     InspectModelFrame.ItemLevelOverlay = InspectModelFrame:CreateFontString(nil, "OVERLAY", "GameTooltipText")
@@ -504,13 +533,10 @@ function Module:SOCKET_INFO_UPDATE()
 end
 Module:RegisterEvent("SOCKET_INFO_UPDATE")
 
--- 附魔完成: 0.5s后更新栏位
--- 未知原因, 附魔后马上获取物品信息无法取到新的附魔, 故延迟0.5s (正好角色界面的附魔更新动画也差不多播完了)
-function Module:ENCHANT_SPELL_COMPLETED(successful, enchantedItem)
-    if successful and enchantedItem and enchantedItem:IsValid() and enchantedItem:IsEquipmentSlot() then
-        C_Timer.After(0.5, function()
-            self:UpdateItemLocation(enchantedItem)
-        end)
+-- 玩家物品栏更新: 更新所有栏位
+function Module:UNIT_INVENTORY_CHANGED(unit)
+    if unit == "player" then
+        self:UpdateAllCharacterSlot()
     end
 end
-Module:RegisterEvent("ENCHANT_SPELL_COMPLETED")
+Module:RegisterEvent("UNIT_INVENTORY_CHANGED")

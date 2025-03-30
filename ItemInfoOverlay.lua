@@ -31,7 +31,9 @@ function SanluliItemInfoOverlayMixin:UpdateAppearance()
     self.BondingType:SetFont(Module:GetConfig(CONFIG_BONDING_TYPE_FONT), Module:GetConfig(CONFIG_BONDING_TYPE_FONT_SIZE), "OUTLINE")
     self.ItemType:SetFont(Module:GetConfig(CONFIG_ITEM_TYPE_FONT), Module:GetConfig(CONFIG_ITEM_TYPE_FONT_SIZE), "OUTLINE")
 
-    self:Refresh()
+    if self:IsVisible() then
+        self:Refresh()
+    end
 end
 
 function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
@@ -173,6 +175,8 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
             self.BondingType:Hide()
         end
     else
+        self.itemLocation = nil
+        self.itemLink = nil
         self:Hide()
     end
 end
