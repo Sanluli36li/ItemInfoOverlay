@@ -30,9 +30,14 @@ function SanluliItemInfoOverlayMixin:UpdateAppearance()
     self.ItemLevel:SetFont(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
     self.BondingType:SetFont(Module:GetConfig(CONFIG_BONDING_TYPE_FONT), Module:GetConfig(CONFIG_BONDING_TYPE_FONT_SIZE), "OUTLINE")
     self.ItemType:SetFont(Module:GetConfig(CONFIG_ITEM_TYPE_FONT), Module:GetConfig(CONFIG_ITEM_TYPE_FONT_SIZE), "OUTLINE")
+
+    self:Refresh()
 end
 
 function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
+    self.itemLocation = itemLocation
+    self.itemLink = itemLink
+
     if itemLink or (itemLocation and itemLocation:IsValid()) then
         self:Show()
         local itemName, itemQuality, itemLevel, itemType, itemSubType,
@@ -48,7 +53,7 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
 
             itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
             itemID = C_Item.GetItemID(itemLocation)
-            
+
             if itemLocation:IsBagAndSlot() then
                 tooltipInfo = C_TooltipInfo.GetBagItem(itemLocation:GetBagAndSlot())
             elseif itemLocation:IsEquipmentSlot() then
@@ -57,10 +62,6 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
         end
 
         if itemLink then
-            if not itemLevel then
-                itemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
-            end
-
             if not itemID then
                 C_Item.GetItemIDForItemInfo(itemLink)
             end
@@ -76,11 +77,21 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
 
         local bonding
         if tooltipInfo and tooltipInfo.type == Enum.TooltipDataType.Item and tooltipInfo.lines then
-            for i, line in ipairs(tooltipInfo.lines) do
+            for _, line in ipairs(tooltipInfo.lines) do
                 if line.type == Enum.TooltipDataLineType.ItemBinding then
                     bonding = line.bonding
+                elseif not itemLevel and strfind(line.leftText, ITEM_LEVEL:gsub("%%d", "%%d+")) then
+                    local i, j = strfind(line.leftText, "%d+")
+                    local ilvl = tonumber(strsub(line.leftText, i, j))
+                    if ilvl then
+                        itemLevel = ilvl
+                    end
                 end
             end
+        end
+
+        if not itemLevel then
+            itemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
         end
 
         itemName, _, itemQuality, _, _, itemType, itemSubType,
@@ -166,11 +177,35 @@ function SanluliItemInfoOverlayMixin:SetItem(itemLocation, itemLink)
     end
 end
 
+function SanluliItemInfoOverlayMixin:Refresh()
+    self:SetItem(self.itemLocation, self.itemLink)
+end
+
+SanluliItemInfoOverlaySettingPriviewMixin = {}
+
+function SanluliItemInfoOverlaySettingPriviewMixin:OnLoad()
+    self.itemButton1:SetItemButtonTexture(6035288)
+    self.itemButton1:SetItemButtonQuality(Enum.ItemQuality.Epic)
+    local overlay1 = Module:CreateItemInfoOverlay(self.itemButton1)
+    local testItem1 = Item:CreateFromItemID(220202)
+    testItem1:ContinueOnItemLoad(function()
+        overlay1:SetItem(nil, "|cffa335ee|Hitem:220202::::::::80:102::6:6:6652:10356:10299:1540:10255:11215:1:28:2462::::|h[间谍大师裹网]|h|r")
+    end)
+
+    self.itemButton2:SetItemButtonTexture(4672195)
+    self.itemButton2:SetItemButtonQuality(Enum.ItemQuality.Rare)
+    local overlay2 = Module:CreateItemInfoOverlay(self.itemButton2)
+    local testItem2 = Item:CreateFromItemID(222776)
+    testItem2:ContinueOnItemLoad(function()
+        overlay2:SetItem(nil, "|cff0070dd|Hitem:222776::::::::80:102:::::::::|h[丰盛的贝雷达尔之慷]|h|r")
+    end)
+end
+
 --------------------
 -- 
 --------------------
 
-local function CreateItemInfoOverlay(frame)
+function Module:CreateItemInfoOverlay(frame)
     frame.ItemInfoOverlay = CreateFrame("Frame", nil, frame, "SanluliItemInfoOverlayTemplate")
 
     local overlay = frame.ItemInfoOverlay
@@ -188,9 +223,9 @@ local function CreateItemInfoOverlay(frame)
     return overlay
 end
 
-local function GetItemInfoOverlay(frame)
+function Module:GetItemInfoOverlay(frame)
     if not frame.ItemInfoOverlay then
-        return CreateItemInfoOverlay(frame)
+        return Module:CreateItemInfoOverlay(frame)
     else
         return frame.ItemInfoOverlay
     end
@@ -214,28 +249,28 @@ hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, s
         if tonumber(itemIDOrLink) then
         else
             -- 能直接获取到物品链接
-            GetItemInfoOverlay(button):SetItem(nil, itemIDOrLink)
+            Module:GetItemInfoOverlay(button):SetItem(nil, itemIDOrLink)
             return
         end
     end
-    GetItemInfoOverlay(button):Hide()
+    Module:GetItemInfoOverlay(button):Hide()
 end)
 
 hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, quality, itemIDOrLink, suppressOverlays, isBound)
     if button.GetItemLocation and button:GetItemLocation() and button:GetItemLocation():IsValid() then
         -- 背包、材料背包、银行背包、战团银行
-        GetItemInfoOverlay(button):SetItem(button:GetItemLocation())
+        Module:GetItemInfoOverlay(button):SetItem(button:GetItemLocation())
         return
     elseif button.location then
         -- 装备栏快捷更换按钮
         local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(button.location)
         if bags then
             -- 背包中的物品
-            GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
+            Module:GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
             return
         elseif player then
             -- 玩家物品栏
-            GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromEquipmentSlot(slot))
+            Module:GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromEquipmentSlot(slot))
             return
         end
     end
@@ -244,29 +279,29 @@ hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, qualit
         if tonumber(itemIDOrLink) then
         else
             -- 能直接获取到物品链接
-            GetItemInfoOverlay(button):SetItem(nil, itemIDOrLink)
+            Module:GetItemInfoOverlay(button):SetItem(nil, itemIDOrLink)
             return
         end
     end
-    GetItemInfoOverlay(button):Hide()
+    Module:GetItemInfoOverlay(button):Hide()
 end)
 
 hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound)
     -- 商人界面
-    GetItemInfoOverlay(button.ItemButton):SetItem(nil, link)
+    Module:GetItemInfoOverlay(button.ItemButton):SetItem(nil, link)
 end)
 
 hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
     -- 装备栏/专业装备栏
     local slot = button:GetID()
-    GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromEquipmentSlot(slot))
+    Module:GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromEquipmentSlot(slot))
 end)
 
 hooksecurefunc("BankFrameItemButton_Update", function(button)
     -- 银行/材料银行
     local bag = button:GetParent():GetID()
     local slot = button:GetID()
-    GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
+    Module:GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
 end)
 
 function Module:AfterStartup()
@@ -275,7 +310,7 @@ function Module:AfterStartup()
         hooksecurefunc(NDui.cargBags:GetImplementation("NDui_Backpack"):GetItemButtonClass(), "OnUpdateButton", function(button, item)
             local bag = item.bagId
             local slot = item.slotId
-            GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
+            Module:GetItemInfoOverlay(button):SetItem(ItemLocation:CreateFromBagAndSlot(bag, slot))
         end)
     end
 end

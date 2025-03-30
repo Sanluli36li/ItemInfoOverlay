@@ -33,4 +33,34 @@
 			</Layer>
 		</Layers>
     </Frame>
+
+	<Frame name="SanluliItemInfoOverlaySettingPriviewTemplate" mixin="SanluliItemInfoOverlaySettingPriviewMixin" virtual="true">
+		<Size y="0"/>
+		<Frames>
+			<ItemButton parentKey="itemButton2">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-30" y="10"/>
+				</Anchors>
+			</ItemButton>
+		</Frames>
+		<Frames>
+			<ItemButton parentKey="itemButton1">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.itemButton2" relativePoint="LEFT" x="-5" y="0"/>
+				</Anchors>
+			</ItemButton>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString text="PREVIEW" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.itemButton1" relativePoint="TOPLEFT" x="0" y="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 </Ui>

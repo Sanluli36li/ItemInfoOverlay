@@ -17,12 +17,20 @@ local settings = {
             name = L["itemInfoOverlay.title"]
         },
         {
+            controlType = CONTROL_TYPE.CUSTOM_FRAME,
+            name = "",
+            template = "SanluliItemInfoOverlaySettingPriviewTemplate"
+        },
+        {
             controlType = CONTROL_TYPE.CHECKBOX,
             settingType = SETTING_TYPE.ADDON_VARIABLE,
             name = L["itemInfoOverlay.itemLevel.title"],
             tooltip = L["itemInfoOverlay.itemLevel.tooltip"],
             key = "itemInfoOverlay.itemLevel.enable",
             default = true,
+            onValueChanged = function(value)
+                SanluliCharacterSheet.itemInfoOverlay:UpdateAllAppearance()
+            end,
             subSettings = {
                 {
                     controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
@@ -57,6 +65,9 @@ local settings = {
             tooltip = L["itemInfoOverlay.itemType.tooltip"],
             key = "itemInfoOverlay.itemType.enable",
             default = true,
+            onValueChanged = function(value)
+                SanluliCharacterSheet.itemInfoOverlay:UpdateAllAppearance()
+            end,
             subSettings = {
                 {
                     controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
@@ -91,6 +102,9 @@ local settings = {
             tooltip = L["itemInfoOverlay.bondingType.tooltip"],
             key = "itemInfoOverlay.bondingType.enable",
             default = true,
+            onValueChanged = function(value)
+                SanluliCharacterSheet.itemInfoOverlay:UpdateAllAppearance()
+            end,
             subSettings = {
                 {
                     controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
