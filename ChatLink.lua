@@ -40,6 +40,12 @@ local function chatFilter(chatFrame, event, message, ...)
                 elseif line.type == Enum.TooltipDataLineType.RestrictedRaceClass and line.leftColor and line.leftColor:GenerateHexColor() ~= "ffffffff" then
                     -- 职业限制不可用
                     canUse = false
+                elseif strfind(line.leftText, ITEM_LEVEL:gsub("%%d", "%%d+")) then
+                    local i, j = strfind(line.leftText, "%d+")
+                    local ilvl = tonumber(strsub(line.leftText, i, j))
+                    if ilvl then
+                        itemLevel = ilvl
+                    end
                 end
             end
         end
