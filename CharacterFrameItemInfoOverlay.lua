@@ -233,7 +233,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
     end
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
+function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
     local itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType, 
     itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
     expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
@@ -395,9 +395,8 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLocation(itemLocat
         end
 
         local itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
-        local itemID = C_Item.GetItemID(itemLocation)
 
-        self:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
+        self:SetItemData(itemLevel, itemLink, tooltipInfo)
     else
         self:Hide()
     end
@@ -412,9 +411,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLink(itemLink)
 
         local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
-        local itemID = strsplit(":", itemLink)[2]
-
-        self:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
+        self:SetItemData(itemLevel, itemLink, tooltipInfo)
     else
         self:Hide()
     end
@@ -428,9 +425,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromUnitInventory(unit
 
         local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
-        local itemID = strsplit(":", itemLink)[2]
-
-        self:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
+        self:SetItemData(itemLevel, itemLink, tooltipInfo)
     else
         self:Hide()
     end

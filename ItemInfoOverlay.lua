@@ -16,6 +16,7 @@ local CONFIG_ITEM_TYPE_POINT = "itemType.point"
 local CONFIG_ITEM_TYPE_FONT = "itemType.font"
 local CONFIG_ITEM_TYPE_FONT_SIZE = "itemType.fontSize"
 local CONFIG_BONDING_TYPE = "bondingType.enable"
+local CONFIG_BONDING_TYPE_ANCHOR_TO_ICON = "bondingType.anchorToIcon"
 local CONFIG_BONDING_TYPE_POINT = "bondingType.point"
 local CONFIG_BONDING_TYPE_FONT = "bondingType.font"
 local CONFIG_BONDING_TYPE_FONT_SIZE = "bondingType.fontSize"
@@ -38,7 +39,7 @@ local POINTS = {
     "BOTTOMRIGHT"
 }
 
-local POINT_JUSTIFY_H = {
+local POINTS_JUSTIFY_H = {
     "LEFT",
     "CENTER",
     "RIGHT",
@@ -48,6 +49,18 @@ local POINT_JUSTIFY_H = {
     "LEFT",
     "CENTER",
     "RIGHT"
+}
+
+local POINTS_BONDING_TYPE_ANCHOR_TO_ITEMLEVEL = {
+    {"TOPLEFT", "BOTTOMLEFT", -1},
+    {"TOP", "BOTTOM", -1},
+    {"TOPRIGHT", "BOTTOMRIGHT", -1},
+    {"TOPLEFT", "BOTTOMLEFT", -1},
+    {"TOP", "BOTTOM", -1},
+    {"TOPRIGHT", "BOTTOMRIGHT", -1},
+    {"BOTTOMLEFT", "TOPLEFT", 1},
+    {"BOTTOM", "TOP", -1},
+    {"BOTTOMRIGHT", "TOPRIGHT", -1},
 }
 
 --------------------
@@ -61,11 +74,22 @@ function SanluliItemInfoOverlayMixin:UpdateAppearance()
     self.ItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)])
 
     self.BondingType:SetFont(Module:GetConfig(CONFIG_BONDING_TYPE_FONT), Module:GetConfig(CONFIG_BONDING_TYPE_FONT_SIZE), "OUTLINE")
-    self.BondingType:ClearAllPoints()
-    self.BondingType:SetPoint(POINTS[Module:GetConfig(CONFIG_BONDING_TYPE_POINT)])
+    if Module:GetConfig(CONFIG_BONDING_TYPE_ANCHOR_TO_ICON) then
+        self.BondingType:ClearAllPoints()
+        self.BondingType:SetPoint(POINTS[Module:GetConfig(CONFIG_BONDING_TYPE_POINT)])
+    else
+        self.BondingType:ClearAllPoints()
+        self.BondingType:SetPoint(
+            POINTS_BONDING_TYPE_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][1],
+            self.ItemLevel,
+            POINTS_BONDING_TYPE_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][2],
+            0,
+            POINTS_BONDING_TYPE_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][3]
+        )
+    end
 
     self.ItemType:SetFont(Module:GetConfig(CONFIG_ITEM_TYPE_FONT), Module:GetConfig(CONFIG_ITEM_TYPE_FONT_SIZE), "OUTLINE")
-    self.ItemType:SetJustifyH(POINT_JUSTIFY_H[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)])
+    self.ItemType:SetJustifyH(POINTS_JUSTIFY_H[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)])
     self.ItemType:ClearAllPoints()
     self.ItemType:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)])
 
@@ -74,72 +98,110 @@ function SanluliItemInfoOverlayMixin:UpdateAppearance()
     end
 end
 
-function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
+function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
     local itemLevelText
     local itemTypeText
     local itemBondingText
 
-    local itemName, _, itemQuality, _, _, itemType, itemSubType,
-    itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
-    expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
+    local type, id = Utils:GetLinkTypeAndID(itemLink)
 
-    local bonding
-    if tooltipInfo and tooltipInfo.type == Enum.TooltipDataType.Item and tooltipInfo.lines then
-        for _, line in ipairs(tooltipInfo.lines) do
-            if line.type == Enum.TooltipDataLineType.ItemBinding then
-                bonding = line.bonding
+    if type == "item" then
+        local itemName, _, itemQuality, _, _, itemType, itemSubType,
+        itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
+        expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
+
+        local bonding, spellKnown
+        if tooltipInfo and tooltipInfo.type == Enum.TooltipDataType.Item and tooltipInfo.lines then
+            for _, line in ipairs(tooltipInfo.lines) do
+                if line.type == Enum.TooltipDataLineType.ItemBinding then
+                    -- 物品绑定类型
+                    bonding = line.bonding
+                elseif line.type == Enum.TooltipDataLineType.RestrictedSpellKnown then
+                    -- 已经学会
+                    spellKnown = true
+                end
             end
         end
-    end
 
-    if classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor or classID == Enum.ItemClass.Profession then
-        if itemLevel and itemLevel > 1 then
-            -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
-            local r, g, b = C_Item.GetItemQualityColor(itemQuality)
+        if classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor or classID == Enum.ItemClass.Profession then
+            if itemLevel and itemLevel > 1 then
+                -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
+                local r, g, b = C_Item.GetItemQualityColor(itemQuality)
 
-            itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
-        end
-        -- 装备部位
-        if classID == Enum.ItemClass.Armor then
-            -- 护甲
-            if subclassID == Enum.ItemArmorSubclass.Shield then
-                -- 护甲->盾牌: 盾牌
-                itemTypeText = itemSubType
+                itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
+            end
+            -- 装备部位
+            if classID == Enum.ItemClass.Armor then
+                -- 护甲
+                if subclassID == Enum.ItemArmorSubclass.Shield then
+                    -- 护甲->盾牌: 盾牌
+                    itemTypeText = itemSubType
+                else
+                    -- 其他: 护甲类型和装备栏位
+                    itemTypeText = _G[itemEquipLoc]
+                end
             else
-                -- 其他: 护甲类型和装备栏位
-                itemTypeText = _G[itemEquipLoc]
+                itemTypeText = itemSubType
             end
-        else
-            itemTypeText = itemSubType
-        end
-    elseif classID == Enum.ItemClass.Miscellaneous and subclassID == Enum.ItemMiscellaneousSubclass.Junk and itemQuality >= Enum.ItemQuality.Epic then
-        if itemLevel and itemLevel > 1 then
-            -- 史诗品质垃圾 且只能堆叠一个 且物品等级大于1: 大概率是套装兑换物 显示装等
+        elseif classID == Enum.ItemClass.Reagent and subclassID == Enum.ItemReagentSubclass.ContextToken then
+            -- 珍玩 套装兑换物(以及暗影国度的武器兑换物)
             local r, g, b = C_Item.GetItemQualityColor(itemQuality)
 
             itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
-        end
-    elseif classID == Enum.ItemClass.Reagent and subclassID == Enum.ItemReagentSubclass.ContextToken then
-        -- 珍玩 套装兑换物(以及暗影国度的武器兑换物)
-        local r, g, b = C_Item.GetItemQualityColor(itemQuality)
+        elseif classID == Enum.ItemClass.Recipe then
+            -- 配方
+            if itemStackCount == 1 then
+                itemTypeText = itemSubType
+            end
+        elseif C_ToyBox.GetToyInfo(id) then
+            -- 玩具
+            if PlayerHasToy(id) then
+                itemTypeText = "|cff00ff00"..TOY.."|r"
+            else
+                itemTypeText = TOY
+            end
+        elseif classID == Enum.ItemClass.Miscellaneous then
+            if subclassID == Enum.ItemMiscellaneousSubclass.Junk and itemQuality >= Enum.ItemQuality.Epic and itemLevel and itemLevel > 1 and itemStackCount then
+                -- 史诗品质垃圾 且只能堆叠一个 且物品等级大于1: 大概率是套装兑换物 显示装等
+                local r, g, b = C_Item.GetItemQualityColor(itemQuality)
 
-        itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
-    elseif classID == Enum.ItemClass.Recipe then
-        itemTypeText = itemSubType
-    elseif itemID and C_Item.IsItemKeystoneByID(itemID) then
+                itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
+            elseif subclassID == Enum.ItemMiscellaneousSubclass.CompanionPet then
+                -- 战斗宠物
+                itemTypeText = PET
+            elseif subclassID == Enum.ItemMiscellaneousSubclass.Mount then
+                -- 坐骑
+                itemTypeText = itemSubType
+            end
+        elseif C_Item.IsItemKeystoneByID(id) then
+            -- 史诗钥石 (偶尔有物品形式的：比如队友拾取的)
+            local _, itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", itemLink)
+            local r, g, b = C_ChallengeMode.GetKeystoneLevelRarityColor(level):GetRGB()
+            itemLevelText = format("|cff%02x%02x%02x+%d|r", r * 255, g * 255, b * 255, level)
+        end
+
+        if bonding == Enum.TooltipDataItemBinding.Account or bonding == Enum.TooltipDataItemBinding.BindToBnetAccount then
+            itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.btw"].."|r"
+        elseif bonding == Enum.TooltipDataItemBinding.BindOnEquip and classID ~= Enum.ItemClass.Recipe then
+            itemBondingText = "|cffffffff"..L["itemInfoOverlay.bonding.boe"] .."|r"
+        elseif bonding == Enum.TooltipDataItemBinding.AccountUntilEquipped or bonding == Enum.TooltipDataItemBinding.BindToAccountUntilEquipped then
+            itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.wue"] .."|r"
+        end
+
+        if spellKnown then
+            itemTypeText = "|cff00ff00"..itemTypeText.."|r"
+        end
+
+    elseif type == "keystone" then
         -- 史诗钥石
         local _, itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", itemLink)
         local r, g, b = C_ChallengeMode.GetKeystoneLevelRarityColor(level):GetRGB()
         itemLevelText = format("|cff%02x%02x%02x+%d|r", r * 255, g * 255, b * 255, level)
+    elseif type == "battlepet" then
+        itemTypeText = PET
     end
 
-    if bonding == Enum.TooltipDataItemBinding.Account or bonding == Enum.TooltipDataItemBinding.BindToBnetAccount then
-        itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.btw"].."|r"
-    elseif bonding == Enum.TooltipDataItemBinding.BindOnEquip then
-        itemBondingText = "|cffffffff"..L["itemInfoOverlay.bonding.boe"] .."|r"
-    elseif bonding == Enum.TooltipDataItemBinding.AccountUntilEquipped or bonding == Enum.TooltipDataItemBinding.BindToAccountUntilEquipped then
-        itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.wue"] .."|r"
-    end
+    
 
     if Module:GetConfig(CONFIG_ITEM_LEVEL) and itemLevelText then
         self.ItemLevel:SetText(itemLevelText)
@@ -149,7 +211,7 @@ function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, itemID, to
         self.ItemLevel:Hide()
     end
 
-    if itemStackCount == 1 and Module:GetConfig(CONFIG_ITEM_TYPE) and itemTypeText then
+    if Module:GetConfig(CONFIG_ITEM_TYPE) and itemTypeText then
         if IsCosmeticItem(itemLink) then
             itemTypeText = "|cffff80ff"..itemTypeText.."|r"
         end
@@ -164,7 +226,7 @@ function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, itemID, to
         self.ItemType:Hide()
     end
 
-    if classID ~= Enum.ItemClass.Recipe and Module:GetConfig(CONFIG_BONDING_TYPE) and itemBondingText then
+    if Module:GetConfig(CONFIG_BONDING_TYPE) and itemBondingText then
         self.BondingType:SetText(itemBondingText)
         self.BondingType:Show()
     else
@@ -191,9 +253,8 @@ function SanluliItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
         end
 
         local itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
-        local itemID = C_Item.GetItemID(itemLocation)
 
-        self:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
+        self:SetItemData(itemLevel, itemLink, tooltipInfo)
     else
         self:Hide()
     end
@@ -208,9 +269,7 @@ function SanluliItemInfoOverlayMixin:SetItemFromLink(itemLink)
 
         local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
-        local itemID = strsplit(":", itemLink)[2]
-
-        self:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
+        self:SetItemData(itemLevel, itemLink, tooltipInfo)
     else
         self:Hide()
     end

@@ -23,3 +23,7 @@ function Module:GetItemLevelFromTooltipInfo(tooltipInfo)
         end
     end
 end
+
+function Module:GetLinkTypeAndID(link)
+    return strmatch(link, "\124c[\\a-fA-F0-9]+\124H([A-Za-z]+):([0-9]+):[^\124]+\124h%b[]\124h\124r")
+end

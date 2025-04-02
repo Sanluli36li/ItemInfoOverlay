@@ -132,7 +132,7 @@ local settings = {
         },
         {
             -- 绑定类型
-            controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
+            controlType = CONTROL_TYPE.CHECKBOX,
             settingType = SETTING_TYPE.ADDON_VARIABLE,
             name = L["itemInfoOverlay.bondingType.title"],
             tooltip = L["itemInfoOverlay.bondingType.tooltip"],
@@ -141,17 +141,28 @@ local settings = {
             onValueChanged = function(value)
                 ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
             end,
-            dropdown = {
-                -- 绑定类型锚点
-                settingType = SETTING_TYPE.ADDON_VARIABLE,
-                key = "itemInfoOverlay.bondingType.point",
-                default = 2,
-                options = POINTS,
-                onValueChanged = function(value)
-                    ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
-                end
-            },
             subSettings = {
+                {
+                    -- 绑定类型独立锚点
+                    controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["characterFrame.itemLevel.anchorToIcon"],
+                    key = "itemInfoOverlay.bondingType.anchorToIcon",
+                    default = false,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                    end,
+                    dropdown = {
+                        -- 绑定类型锚点
+                        settingType = SETTING_TYPE.ADDON_VARIABLE,
+                        key = "itemInfoOverlay.bondingType.point",
+                        default = 2,
+                        options = POINTS,
+                        onValueChanged = function(value)
+                            ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                        end
+                    },
+                },
                 {
                     -- 绑定类型字体
                     controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
