@@ -102,6 +102,12 @@ function ItemInfoOverlay:NewModule(name)
 	return module
 end
 
+function ItemInfoOverlay:GetModule(name)
+	if self.Modules[name] then
+		return self.Modules[name]
+	end
+end
+
 setmetatable(ItemInfoOverlay, {__index = ItemInfoOverlay.Modules})
 
 function ItemInfoOverlay:ForAllModules(event, ...)

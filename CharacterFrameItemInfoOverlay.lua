@@ -1,20 +1,24 @@
 local ADDON_NAME, ItemInfoOverlay = ...
 
 local Module = ItemInfoOverlay:NewModule("characterFrame")
+local Utils = ItemInfoOverlay:GetModule("utils")
 local L = ItemInfoOverlay.Locale
 
 local CONFIG_ITEM_LEVEL = "itemLevel.enable"
 local CONFIG_ITEM_LEVEL_FONT = "itemLevel.font"
 local CONFIG_ITEM_LEVEL_FONT_SIZE = "itemLevel.fontSize"
 local CONFIG_ITEM_LEVEL_POINT = "itemLevel.point"
-local CONFIG_ITEM_LEVEL_POINT_ON_ICON = 1
-local CONFIG_ITEM_LEVEL_POINT_ON_SIDE = 2
+local CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON = "itemLevel.anchorToIcon"
 local CONFIG_SOCKET = "socket.enable"
 local CONFIG_SOCKET_ICON_SIZE = "socket.iconSize"
 local CONFIG_ENCHANT = "enchant.enable"
 local CONFIG_ENCHANT_DISPLAY_MISSING = "enchant.displayMissing"
 local CONFIG_ENCHANT_FONT = "enchant.font"
 local CONFIG_ENCHANT_FONT_SIZE = "enchant.fontSize"
+local CONFIG_DURABILITY = "durability.enable"
+local CONFIG_DURABILITY_POINT = "durability.point"
+local CONFIG_DURABILITY_FONT = "durability.font"
+local CONFIG_DURABILITY_FONT_SIZE = "durability.fontSize"
 
 local CHARACTER_PREFIX = "Character"
 local INSPECT_PREFIX = "Inspect"
@@ -44,6 +48,19 @@ local EQUIPMENT_SLOTS = {
     --    [18] = {id = 18, side = "LEFT", name = "Ranged", canEnchant = false},
     [19] = {id = 19, side = "LEFT", name = "Tabard"}
 }
+
+local POINTS = {
+    "TOPLEFT",
+    "TOP",
+    "TOPRIGHT",
+    "LEFT",
+    "CENTER",
+    "RIGHT",
+    "BOTTOMLEFT",
+    "BOTTOM",
+    "BOTTOMRIGHT"
+}
+
 local itemInfoOverlayPoor = {}
 
 local EQUIP_LOC_CAN_ENCHANT_TWW = {
@@ -66,6 +83,7 @@ local function CanEnchant(itemLevel, itemEquipLoc)
         return false
     end
 end
+
 
 --------------------
 -- Mixin
@@ -116,7 +134,7 @@ end
 
 function SanluliCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
     -- 物品等级位置
-    if Module:GetConfig(CONFIG_ITEM_LEVEL_POINT) == CONFIG_ITEM_LEVEL_POINT_ON_SIDE then
+    if Module:GetConfig(CONFIG_ITEM_LEVEL) and not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) then
         self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint(
             (self.side == "LEFT" and "LEFT") or "RIGHT",
@@ -136,7 +154,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
         )
     else
         self.ItemLevel:ClearAllPoints()
-        self.ItemLevel:SetPoint("TOP", self, "TOP", 0, -2)
+        self.ItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)])
 
         self.GemSocket1:ClearAllPoints()
         self.GemSocket1:SetPoint(
@@ -160,8 +178,11 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
     self.GemSocket2.Quality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) - 2, "OUTLINE")
     self.GemSocket3:SetSize(Module:GetConfig(CONFIG_SOCKET_ICON_SIZE), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE))
     self.GemSocket3.Quality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) - 2, "OUTLINE")
-
-    self:UpdateLines()
+    -- 耐久度
+    self.Durability:SetFont(Module:GetConfig(CONFIG_DURABILITY_FONT), Module:GetConfig(CONFIG_DURABILITY_FONT_SIZE), "OUTLINE")
+    self.Durability:ClearAllPoints()
+    self.Durability:SetPoint(POINTS[Module:GetConfig(CONFIG_DURABILITY_POINT)])
+    self.Durability:SetShown(Module:GetConfig(CONFIG_DURABILITY))
 
     if self:IsVisible() then
         self:Refresh()
@@ -170,7 +191,7 @@ end
 
 function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
     local line1, line2
-    if (Module:GetConfig(CONFIG_ITEM_LEVEL_POINT) == CONFIG_ITEM_LEVEL_POINT_ON_SIDE and self.ItemLevel:IsShown()) or self.GemSocket1:IsShown() then
+    if (not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) and self.ItemLevel:IsShown()) or self.GemSocket1:IsShown() then
         line1 = true
     end
 
@@ -183,7 +204,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
     if line1 and line2 then
 
         -- 物品等级
-        if Module:GetConfig(CONFIG_ITEM_LEVEL_POINT) == CONFIG_ITEM_LEVEL_POINT_ON_SIDE then
+        if (not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) and self.ItemLevel:IsShown()) then
             point, relativeTo, relativePoint, offsetX, offsetY = self.ItemLevel:GetPointByName(self.side)
             self.ItemLevel:SetPoint(point, relativeTo, relativePoint, offsetX, (Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE) / 2) + 1 + (self.offsetY or 0))
         end
@@ -197,7 +218,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
         self.Enchant:SetPoint(point, relativeTo, relativePoint, offsetX, - (Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE) / 2) - 1 + (self.offsetY or 0))
     else
         -- 物品等级
-        if Module:GetConfig(CONFIG_ITEM_LEVEL_POINT) == CONFIG_ITEM_LEVEL_POINT_ON_SIDE then
+        if (not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) and self.ItemLevel:IsShown()) then
             point, relativeTo, relativePoint, offsetX, offsetY = self.ItemLevel:GetPointByName(self.side)
             self.ItemLevel:SetPoint(point, relativeTo, relativePoint, offsetX, self.offsetY or 0)
         end
@@ -212,242 +233,288 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
     end
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:SetItem(itemLocation, itemLink, tooltipInfo)
-    self.itemLocation = itemLocation
-    self.itemLink = itemLink
-    self.tooltipInfo = tooltipInfo
+function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
+    local itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType, 
+    itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
+    expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
 
-    if itemLink or (itemLocation and itemLocation:IsValid()) then
-        self:Show()
-        local itemName, itemQuality, itemLevel, itemID, itemMinLevel, itemType, itemSubType,
-            itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
-            expacID, setID, isCraftingReagent
+    local itemLevelText
 
-        if itemLocation and itemLocation:IsValid() then
-            if not itemLink then
-                itemLink = C_Item.GetItemLink(itemLocation)
-            end
+    local itemEnchant, itemEnchantQuality
+    local itemGemSocketCount = 0
+    local itemGemSockets = {}
+    if tooltipInfo then
+        for i, line in pairs(tooltipInfo.lines) do
+            local text = line.leftText
 
-            itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
-            itemID = C_Item.GetItemID(itemLocation)
-
-            if itemLocation:IsBagAndSlot() then
-                tooltipInfo = C_TooltipInfo.GetBagItem(itemLocation:GetBagAndSlot())
-            elseif itemLocation:IsEquipmentSlot() then
-                tooltipInfo = C_TooltipInfo.GetInventoryItem("player", itemLocation:GetEquipmentSlot())
-            end
-        end
-
-        if itemLink then
-            if not itemID then
-                C_Item.GetItemIDForItemInfo(itemLink)
-            end
-
-            if not tooltipInfo then
-                tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
-            end
-        end
-
-        itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType, 
-        itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
-        expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
-
-        local itemLevelText
-
-        local itemEnchant, itemEnchantQuality
-        local itemGemSocketCount = 0
-        local itemGemSockets = {}
-        if tooltipInfo then
-            for i, line in pairs(tooltipInfo.lines) do
-                local text = line.leftText
-
-                if line.type == Enum.TooltipDataLineType.ItemEnchantmentPermanent then
-                    -- 附魔
-                    local enchant = string.match(text, ENCHANT_PATTERN)
-                    if enchant then
-                        if string.find(enchant, "|A:") then
-                            itemEnchant, itemEnchantQuality = string.match(enchant, ENCHANT_QUALITY_PATTERN)
-                        else
-                            itemEnchant = enchant
-                        end
+            if line.type == Enum.TooltipDataLineType.ItemEnchantmentPermanent then
+                -- 附魔
+                local enchant = string.match(text, ENCHANT_PATTERN)
+                if enchant then
+                    if string.find(enchant, "|A:") then
+                        itemEnchant, itemEnchantQuality = string.match(enchant, ENCHANT_QUALITY_PATTERN)
+                    else
+                        itemEnchant = enchant
                     end
-                elseif line.type == Enum.TooltipDataLineType.GemSocket then
-                    -- 宝石
-                    if line.socketType then
-                        itemGemSocketCount = itemGemSocketCount + 1
-                        itemGemSockets[itemGemSocketCount] = string.format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", line.socketType)
-                    end
-                elseif not itemLevel and strfind(line.leftText, ITEM_LEVEL:gsub("%%d", "%%d+")) then
-                    local i, j = strfind(line.leftText, "%d+")
-                    local ilvl = tonumber(strsub(line.leftText, i, j))
-                    if ilvl then
-                        itemLevel = ilvl
-                    end
+                end
+            elseif line.type == Enum.TooltipDataLineType.GemSocket then
+                -- 宝石
+                if line.socketType then
+                    itemGemSocketCount = itemGemSocketCount + 1
+                    itemGemSockets[itemGemSocketCount] = string.format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", line.socketType)
                 end
             end
         end
+    end
 
-        if not itemLevel then
-            itemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
-        end
+    if itemLevel and itemLevel > 1 then
+        -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
+        local r, g, b = C_Item.GetItemQualityColor(itemQuality)
 
-        if itemLevel > 1 then
-            -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
-            local r, g, b = C_Item.GetItemQualityColor(itemQuality)
+        itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
+    end
 
-            itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
-        end
+    if Module:GetConfig(CONFIG_ITEM_LEVEL) and itemLevelText then
+        self.ItemLevel:SetText(itemLevelText)
+        self.ItemLevel:Show()
+    else
+        self.ItemLevel:Hide()
+    end
 
-        if Module:GetConfig(CONFIG_ITEM_LEVEL) and itemLevelText then
-            self.ItemLevel:SetText(itemLevelText)
-            self.ItemLevel:Show()
+    if Module:GetConfig(CONFIG_ENCHANT) and itemEnchant then
+        self.Enchant:SetText(string.gsub(itemEnchant, "[ \\+]", ""))
+        self.Enchant:Show()
+
+        if self.Enchant:GetUnboundedStringWidth() <= 80 then
+            self.Enchant:SetWidth(self.Enchant:GetUnboundedStringWidth())
         else
-            self.ItemLevel:Hide()
+            self.Enchant:SetWidth(80)
         end
 
-        if Module:GetConfig(CONFIG_ENCHANT) and itemEnchant then
-            self.Enchant:SetText(string.gsub(itemEnchant, "[ \\+]", ""))
-            self.Enchant:Show()
-
-            if self.Enchant:GetUnboundedStringWidth() <= 80 then
-                self.Enchant:SetWidth(self.Enchant:GetUnboundedStringWidth())
-            else
-                self.Enchant:SetWidth(80)
-            end
-
-            if itemEnchantQuality then
-                self.EnchantQuality:SetText("|A:"..itemEnchantQuality..":20:20|a")
-                self.EnchantQuality:Show()
-            else
-                self.EnchantQuality:Hide()
-            end
-        elseif Module:GetConfig(CONFIG_ENCHANT) and Module:GetConfig(CONFIG_ENCHANT_DISPLAY_MISSING) and CanEnchant(itemLevel, itemEquipLoc) then
-            self.Enchant:SetText("|cffff0000"..L["characterFrame.enchant.displayMissing.noenchant"].."|r")
-            self.Enchant:Show()
-
-            if self.Enchant:GetUnboundedStringWidth() <= 80 then
-                self.Enchant:SetWidth(self.Enchant:GetUnboundedStringWidth())
-            else
-                self.Enchant:SetWidth(80)
-            end
-
-            self.EnchantQuality:Hide()
+        if itemEnchantQuality then
+            self.EnchantQuality:SetText("|A:"..itemEnchantQuality..":20:20|a")
+            self.EnchantQuality:Show()
         else
             self.EnchantQuality:Hide()
-            self.Enchant:Hide()
+        end
+    elseif Module:GetConfig(CONFIG_ENCHANT) and Module:GetConfig(CONFIG_ENCHANT_DISPLAY_MISSING) and CanEnchant(itemLevel, itemEquipLoc) then
+        self.Enchant:SetText("|cffff0000"..L["characterFrame.enchant.displayMissing.noenchant"].."|r")
+        self.Enchant:Show()
+
+        if self.Enchant:GetUnboundedStringWidth() <= 80 then
+            self.Enchant:SetWidth(self.Enchant:GetUnboundedStringWidth())
+        else
+            self.Enchant:SetWidth(80)
         end
 
-        if Module:GetConfig(CONFIG_SOCKET) then
-            for i = 1, 3 do
-                if self["GemSocket"..i] then
-                    local gemID = C_Item.GetItemGemID(itemLink, i)
+        self.EnchantQuality:Hide()
+    else
+        self.EnchantQuality:Hide()
+        self.Enchant:Hide()
+    end
 
-                    if gemID then
-                        -- 等待缓存宝石图标的处理方式来自 [Interface\\AddOns\\Blizzard_UIPanels_Game\\Mainline\\PaperDollFrame.lua]:2799
+    if Module:GetConfig(CONFIG_SOCKET) then
+        for i = 1, 3 do
+            if self["GemSocket"..i] then
+                local gemID = C_Item.GetItemGemID(itemLink, i)
 
-                        local gemItem = Item:CreateFromItemID(gemID)
+                if gemID then
+                    -- 等待缓存宝石图标的处理方式来自 [Interface\\AddOns\\Blizzard_UIPanels_Game\\Mainline\\PaperDollFrame.lua]:2799
 
-                        -- 未载入: 先把插槽图标贴上去
-                        if not gemItem:IsItemDataCached() then
-                            self["GemSocket"..i]:SetNormalTexture("Interface\\ItemSocketingFrame\\UI-EmptySocket-Prismatic")
-                        end
-                        -- 等待到宝石物品载入
-                        gemItem:ContinueOnItemLoad(function()
-                            local _, gemLink, _, _, _, _, _, _, _, gemIcon = C_Item.GetItemInfo(gemID)
-                            local professionQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(gemID)
+                    local gemItem = Item:CreateFromItemID(gemID)
 
-                            self["GemSocket"..i]:SetNormalTexture(gemIcon)
+                    -- 未载入: 先把插槽图标贴上去
+                    if not gemItem:IsItemDataCached() then
+                        self["GemSocket"..i]:SetNormalTexture("Interface\\ItemSocketingFrame\\UI-EmptySocket-Prismatic")
+                    end
+                    -- 等待到宝石物品载入
+                    gemItem:ContinueOnItemLoad(function()
+                        local _, gemLink, _, _, _, _, _, _, _, gemIcon = C_Item.GetItemInfo(gemID)
+                        local professionQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(gemID)
 
-                            self["GemSocket"..i]:SetScript("OnEnter", function(self)
-                                GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
-                                GameTooltip:SetHyperlink(gemLink)
-                                GameTooltip:Show()
-                            end)
+                        self["GemSocket"..i]:SetNormalTexture(gemIcon)
 
-                            self["GemSocket"..i]:SetScript("OnLeave", function()
-                                GameTooltip:Hide()
-                            end)
-
-                            if professionQuality then
-                                self["GemSocket"..i].Quality:SetText("|A:".."Professions-ChatIcon-Quality-Tier"..professionQuality..":12:12|a")
-                                self["GemSocket"..i].Quality:Show()
-                            else
-                                self["GemSocket"..i].Quality:Hide()
-                            end
-
-                            self["GemSocket"..i]:Show()
+                        self["GemSocket"..i]:SetScript("OnEnter", function(self)
+                            GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+                            GameTooltip:SetHyperlink(gemLink)
+                            GameTooltip:Show()
                         end)
-                    else
-                        -- 没有宝石
-                        if i <= itemGemSocketCount then
-                            if itemGemSockets[i] then
-                                self["GemSocket"..i]:SetNormalTexture(itemGemSockets[i])
-                                self["GemSocket"..i]:SetScript("OnEnter", function () end)
-                                self["GemSocket"..i]:Show()
-                                self["GemSocket"..i].Quality:Hide()
-                            else
-                                self["GemSocket"..i]:Hide()
-                                self["GemSocket"..i].Quality:Hide()
-                            end
+
+                        self["GemSocket"..i]:SetScript("OnLeave", function()
+                            GameTooltip:Hide()
+                        end)
+
+                        if professionQuality then
+                            self["GemSocket"..i].Quality:SetText("|A:".."Professions-ChatIcon-Quality-Tier"..professionQuality..":12:12|a")
+                            self["GemSocket"..i].Quality:Show()
+                        else
+                            self["GemSocket"..i].Quality:Hide()
+                        end
+
+                        self["GemSocket"..i]:Show()
+                    end)
+                else
+                    -- 没有宝石
+                    if i <= itemGemSocketCount then
+                        if itemGemSockets[i] then
+                            self["GemSocket"..i]:SetNormalTexture(itemGemSockets[i])
+                            self["GemSocket"..i]:SetScript("OnEnter", function () end)
+                            self["GemSocket"..i]:Show()
+                            self["GemSocket"..i].Quality:Hide()
                         else
                             self["GemSocket"..i]:Hide()
                             self["GemSocket"..i].Quality:Hide()
                         end
+                    else
+                        self["GemSocket"..i]:Hide()
+                        self["GemSocket"..i].Quality:Hide()
                     end
                 end
             end
+        end
+    else
+        self.GemSocket1:Hide()
+        self.GemSocket2:Hide()
+        self.GemSocket3:Hide()
+    end
+
+    self:Show()
+    self:UpdateLines()
+end
+
+function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
+    self.itemLocation = itemLocation
+    self.itemLink = nil
+
+    if itemLocation and itemLocation:IsValid() then
+        local itemLink = C_Item.GetItemLink(itemLocation)
+
+        local tooltipInfo
+        if itemLocation:IsBagAndSlot() then
+            tooltipInfo = C_TooltipInfo.GetBagItem(itemLocation:GetBagAndSlot())
+        elseif itemLocation:IsEquipmentSlot() then
+            tooltipInfo = C_TooltipInfo.GetInventoryItem("player", itemLocation:GetEquipmentSlot())
         else
-            self.GemSocket1:Hide()
-            self.GemSocket2:Hide()
-            self.GemSocket3:Hide()
+            tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
         end
 
-        self:UpdateLines()
+        local itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
+
+        self:UpdateDurability()
+        self:SetItemData(itemLevel, itemLink, tooltipInfo)
     else
         self:Hide()
     end
 end
 
-function SanluliItemInfoOverlayMixin:Refresh()
-    self:SetItem(self.itemLocation, self.itemLink, self.tooltipInfo)
+function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLink(itemLink)
+    if itemLink then
+        self.itemLocation = nil
+        self.itemLink = itemLink
+
+        local tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
+
+        local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
+
+        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+    else
+        self:Hide()
+    end
+end
+
+function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromUnitInventory(unit, slotID)
+    local itemLink = GetInventoryItemLink(unit, slotID)
+
+    if itemLink then
+        local tooltipInfo = C_TooltipInfo.GetInventoryItem(unit, slotID)
+
+        local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
+
+        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+    else
+        self:Hide()
+    end
+end
+
+function SanluliCharacterFrameItemInfoOverlayMixin:UpdateDurability()
+    if self.itemLocation and self.itemLocation:IsEquipmentSlot() then
+        local current, maximum = GetInventoryItemDurability(self.itemLocation:GetEquipmentSlot())
+        if current and maximum then
+            local percent = current / maximum * 100
+            if percent > 50 then
+                self.Durability:SetText(format("|cff00ff00%d%%|r", current / maximum * 100))
+            elseif percent > 20 then
+                self.Durability:SetText(format("|cffffff00%d%%|r", current / maximum * 100))
+            else
+                self.Durability:SetText(format("|cffff0000%d%%|r", current / maximum * 100))
+            end
+        else
+            self.Durability:SetText()
+        end
+    end
+end
+
+function SanluliCharacterFrameItemInfoOverlayMixin:Clear()
+    self.itemLocation = nil
+    self.itemLink = nil
+    self:Hide()
+end
+
+function SanluliCharacterFrameItemInfoOverlayMixin:Refresh()
+    if self.itemLocation then
+        self:SetItemFromLocation(self.itemLocation)
+    elseif self.itemLink then
+        self:SetItemFromLink(self.itemLink)
+    else
+        self:Hide()
+    end
+end
+
+SanluliCharacterFrameItemInfoOverlaySettingPriviewMixin = {}
+
+function SanluliCharacterFrameItemInfoOverlaySettingPriviewMixin:OnLoad()
+    self.itemButton:SetItemButtonTexture(6035288)
+    self.itemButton:SetItemButtonQuality(Enum.ItemQuality.Epic)
+    local overlay = Module:CreateItemInfoOverlay(self.itemButton, 1)
+    overlay.Durability:SetText("|cff00ff00100%|r")
+    local testItem = Item:CreateFromItemID(220202)
+    testItem:ContinueOnItemLoad(function()
+        overlay:SetItemFromLink("|cffa335ee|Hitem:220202:7346:213746:213482:::::80:102::6:6:6652:10356:10299:1540:10255:11215:1:28:2462::::|h[间谍大师裹网]|h|r")
+    end)
 end
 
 --------------------
 -- 
 --------------------
 
-local function CreateItemInfoOverlay(frame, slot)
+function Module:CreateItemInfoOverlay(frame, slot)
     frame.ItemInfoOverlay = CreateFrame("Frame", nil, frame, "SanluliCharacterFrameItemInfoOverlayTemplate")
 
     local overlay = frame.ItemInfoOverlay
 
     tinsert(itemInfoOverlayPoor, overlay)
 
-    overlay.slot = slot
-    overlay.side = EQUIPMENT_SLOTS[slot].side
-    overlay.offsetY = EQUIPMENT_SLOTS[slot].offsetY
-    overlay:SetAllPoints(frame)
+    if slot then
+        overlay.slot = slot
+        overlay.side = EQUIPMENT_SLOTS[slot].side
+        overlay.offsetY = EQUIPMENT_SLOTS[slot].offsetY
+        overlay:SetAllPoints(frame)
 
-    overlay:SetSide(EQUIPMENT_SLOTS[slot].side == "LEFT")
-    overlay:UpdateAppearance()
+        overlay:SetSide(EQUIPMENT_SLOTS[slot].side == "LEFT")
+        overlay:UpdateAppearance()
+    end
 
     return overlay
-end
-
-local function GetItemInfoOverlay(frame)
-    if not frame.ItemInfoOverlay then
-        return nil
-    else
-        return frame.ItemInfoOverlay
-    end
 end
 
 local function GetItemInfoOverlayFromSlotID(slotID, isInspect)
     if slotID and EQUIPMENT_SLOTS[slotID] then
         if isInspect then
-            return GetItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX])
+            if InspectFrame then
+                return Utils:GetItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX])
+            end
         else
-            return GetItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX])
+            return Utils:GetItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX])
         end
     end
 end
@@ -459,18 +526,22 @@ function Module:UpdateAllAppearance()
 end
 
 function Module:UpdateAllInspectSlot ()
-    if InspectFrame.unit then
+    if InspectFrame and InspectFrame.unit then
         for slotID, _ in pairs(EQUIPMENT_SLOTS) do
-            local itemLink = GetInventoryItemLink(InspectFrame.unit, slotID)
-            local tooltipInfo = C_TooltipInfo.GetInventoryItem(InspectFrame.unit, slotID)
-            GetItemInfoOverlayFromSlotID(slotID, true):SetItem(nil, itemLink, tooltipInfo)
+            GetItemInfoOverlayFromSlotID(slotID, true):SetItemFromUnitInventory(InspectFrame.unit, slotID)
         end
     end
 end
 
 function Module:UpdateAllCharacterSlot()
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
-        GetItemInfoOverlayFromSlotID(slotID):SetItem(ItemLocation:CreateFromEquipmentSlot(slotID))
+        GetItemInfoOverlayFromSlotID(slotID):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slotID))
+    end
+end
+
+function Module:UpdateAllCharacterSlotDurability()
+    for slotID, _ in pairs(EQUIPMENT_SLOTS) do
+        GetItemInfoOverlayFromSlotID(slotID):UpdateDurability()
     end
 end
 
@@ -479,7 +550,7 @@ function Module:UpdateItemLocation(itemLocation)
         local slotID = itemLocation:GetEquipmentSlot()
         local overlay = GetItemInfoOverlayFromSlotID(slotID)
         if overlay then
-            overlay:SetItem(itemLocation)
+            overlay:SetItemFromLocation(itemLocation)
         end
     end
 end
@@ -490,7 +561,7 @@ end
 
 local function hookInspectUI()
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
-        local overlay = CreateItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
+        local overlay = Module:CreateItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
         function overlay:GetUnit()
             return InspectFrame.unit
         end
@@ -516,7 +587,7 @@ end
 
 function Module:Startup()
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
-        CreateItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
+        Module:CreateItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
     end
 end
 
@@ -540,3 +611,9 @@ function Module:UNIT_INVENTORY_CHANGED(unit)
     end
 end
 Module:RegisterEvent("UNIT_INVENTORY_CHANGED")
+
+-- 耐久度更新
+function Module:UPDATE_INVENTORY_DURABILITY()
+    self:UpdateAllCharacterSlotDurability()
+end
+Module:RegisterEvent("UPDATE_INVENTORY_DURABILITY")

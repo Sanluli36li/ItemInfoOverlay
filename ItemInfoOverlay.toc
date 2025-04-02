@@ -12,9 +12,10 @@
 Libs\libs.xml
 
 Core.lua
+Utils.lua
 
 Locales\locales.xml
-Settings.lua
+Settings.xml
 
 ItemInfoOverlay.xml
 CharacterFrameItemInfoOverlay.xml

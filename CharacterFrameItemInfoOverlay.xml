@@ -5,17 +5,16 @@
     <Frame name="SanluliCharacterFrameItemInfoOverlayTemplate" mixin="SanluliCharacterFrameItemInfoOverlayMixin" virtual="true">
         <Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="ItemLevel" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
-					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
+				<FontString parentKey="ItemLevel" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false"/>
                 <FontString parentKey="Enchant" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
                     <Color r="0" g="1.0" b="0"/>
 				</FontString>
-                <FontString parentKey="EnchantQuality" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
-				</FontString>
-                
+                <FontString parentKey="EnchantQuality" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false"/>
+                <FontString parentKey="Durability" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                    <Anchors>
+						<Anchor point="BOTTOM" x="0" y="0"/>
+					</Anchors>
+                </FontString>
 			</Layer>
 		</Layers>
         <Frames>

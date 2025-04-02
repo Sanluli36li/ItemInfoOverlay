@@ -8,12 +8,17 @@ local L = ItemInfoOverlay.Locale
 
 L["addon.name"] = ADDON_NAME
 L["addon.sanluliUtils.tooltip"] = "\n\n|cffff0000此功能来自\"SanluliUtils\", 若你已载入该插件, 此功能不会生效|r"
+L["characterFrame.durability.title"] = "显示耐久度"
+L["characterFrame.durability.tooltip"] = "在角色面板显示装备的耐久度百分比"
+L["characterFrame.itemLevel.font"] = "耐久度字体"
+L["characterFrame.itemLevel.fontSize"] = "耐久度文字大小"
 L["characterFrame.enchant.displayMissing"] = "显示缺少的附魔"
 L["characterFrame.enchant.displayMissing.noenchant"] = "无附魔"
 L["characterFrame.enchant.font"] = "附魔字体"
 L["characterFrame.enchant.fontSize"] = "附魔文字大小"
 L["characterFrame.enchant.title"] = "显示物品附魔"
 L["characterFrame.enchant.tooltip"] = "在角色面板显示物品附魔"
+L["characterFrame.itemLevel.anchorToIcon"] = "锚定到物品图标"
 L["characterFrame.itemLevel.font"] = "物品等级字体"
 L["characterFrame.itemLevel.fontSize"] = "物品等级文字大小"
 L["characterFrame.itemLevel.point"] = "物品等级显示位置"

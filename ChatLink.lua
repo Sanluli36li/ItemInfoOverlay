@@ -16,7 +16,7 @@ local function chatFilter(chatFrame, event, message, ...)
         -- 物品
         local sourceItemName = strsub(itemName, 2, -2)
         local sourceItemNameWithoutIcon = sourceItemName:gsub("\124.*", "")
-        local name, _, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, _, itemEquipLoc, itemTexture, _, classID, subclassID, bindType, expacID, setID, isCraftingReagent = GetItemInfo(link)
+        local name, _, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, _, itemEquipLoc, itemTexture, _, classID, subclassID, bindType, expacID, setID, isCraftingReagent = C_Item.GetItemInfo(link)
         local displayItemName = sourceItemNameWithoutIcon
 
         if not name then return end

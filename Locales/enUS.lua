@@ -4,12 +4,17 @@ local L = ItemInfoOverlay.Locale
 
 L["addon.name"] = ADDON_NAME
 L["addon.sanluliUtils.tooltip"] = "\n\n|cffff0000This feature is transplanted from \"SanluliUtils\", if you have loaded the add-on, this feature will not take effect|r"
+L["characterFrame.durability.title"] = "Display Durability"
+L["characterFrame.durability.tooltip"] = "Display Durability on Item Icon of Character Frame"
+L["characterFrame.itemLevel.font"] = "Durability Font"
+L["characterFrame.itemLevel.fontSize"] = "Durability Font Size"
 L["characterFrame.enchant.displayMissing"] = "Display Missing Enchant"
 L["characterFrame.enchant.displayMissing.noenchant"] = "NoEnchant"
 L["characterFrame.enchant.font"] = "Enchant Font"
 L["characterFrame.enchant.fontSize"] = "Enchant Font Size"
 L["characterFrame.enchant.title"] = "Display Item Enchant"
 L["characterFrame.enchant.tooltip"] = "Display Item Enchant on Item Icon of Character Frame and Inspect Frame"
+L["characterFrame.itemLevel.anchorToIcon"] = "Anchor to Icon"
 L["characterFrame.itemLevel.font"] = "ItemLevel Font"
 L["characterFrame.itemLevel.fontSize"] = "ItemLevel Font Size"
 L["characterFrame.itemLevel.point"] = "Display Location of ItemLevel"
