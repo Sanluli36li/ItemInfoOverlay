@@ -330,11 +330,21 @@ end)
 
 function Module:AfterStartup()
     if NDui then
-        -- NDui 整合背包
+        -- NDui整合背包 https://ngabbs.com/read.php?tid=5483616
         hooksecurefunc(NDui.cargBags:GetImplementation("NDui_Backpack"):GetItemButtonClass(), "OnUpdateButton", function(button, item)
             local bag = item.bagId
             local slot = item.slotId
             Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
         end)
     end
+
+    if NDui_Bags then
+        -- NDui整合背包 独立插件版 https://ngabbs.com/read.php?tid=34318074
+        hooksecurefunc(NDui_Bags.cargBags:GetImplementation("NDui_Backpack"):GetItemButtonClass(), "OnUpdateButton", function(button, item)
+            local bag = item.bagId
+            local slot = item.slotId
+            Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+        end)
+    end
 end
+
