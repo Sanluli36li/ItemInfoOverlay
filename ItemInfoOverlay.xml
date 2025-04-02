@@ -25,7 +25,6 @@
 					</Anchors>
 				</FontString>
                 <FontString parentKey="ItemType" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
-					<Size x="60"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="0"/>
 					</Anchors>

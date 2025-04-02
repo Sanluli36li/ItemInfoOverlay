@@ -38,6 +38,18 @@ local POINTS = {
     "BOTTOMRIGHT"
 }
 
+local POINT_JUSTIFY_H = {
+    "LEFT",
+    "CENTER",
+    "RIGHT",
+    "LEFT",
+    "CENTER",
+    "RIGHT",
+    "LEFT",
+    "CENTER",
+    "RIGHT"
+}
+
 --------------------
 -- Mixin
 --------------------
@@ -53,6 +65,7 @@ function SanluliItemInfoOverlayMixin:UpdateAppearance()
     self.BondingType:SetPoint(POINTS[Module:GetConfig(CONFIG_BONDING_TYPE_POINT)])
 
     self.ItemType:SetFont(Module:GetConfig(CONFIG_ITEM_TYPE_FONT), Module:GetConfig(CONFIG_ITEM_TYPE_FONT_SIZE), "OUTLINE")
+    self.ItemType:SetJustifyH(POINT_JUSTIFY_H[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)])
     self.ItemType:ClearAllPoints()
     self.ItemType:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)])
 
@@ -61,7 +74,7 @@ function SanluliItemInfoOverlayMixin:UpdateAppearance()
     end
 end
 
-function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
+function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
     local itemLevelText
     local itemTypeText
     local itemBondingText
@@ -141,8 +154,12 @@ function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInf
             itemTypeText = "|cffff80ff"..itemTypeText.."|r"
         end
 
-        self.ItemType:SetText(L["itemInfoOverlay.itemType.replacer"](itemTypeText))
+        self.ItemType:SetTextToFit(L["itemInfoOverlay.itemType.replacer"](itemTypeText))
         self.ItemType:Show()
+
+        if self.ItemType:GetUnboundedStringWidth() >= 50 then
+            self.ItemType:SetWidth(50)
+        end
     else
         self.ItemType:Hide()
     end
@@ -174,8 +191,9 @@ function SanluliItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
         end
 
         local itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
+        local itemID = C_Item.GetItemID(itemLocation)
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+        self:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
     else
         self:Hide()
     end
@@ -190,7 +208,9 @@ function SanluliItemInfoOverlayMixin:SetItemFromLink(itemLink)
 
         local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+        local itemID = strsplit(":", itemLink)[2]
+
+        self:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
     else
         self:Hide()
     end

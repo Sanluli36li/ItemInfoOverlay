@@ -233,7 +233,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
     end
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
+function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
     local itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType, 
     itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
     expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
@@ -282,12 +282,10 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
     end
 
     if Module:GetConfig(CONFIG_ENCHANT) and itemEnchant then
-        self.Enchant:SetText(string.gsub(itemEnchant, "[ \\+]", ""))
+        self.Enchant:SetTextToFit(string.gsub(itemEnchant, "[ \\+]", ""))
         self.Enchant:Show()
 
-        if self.Enchant:GetUnboundedStringWidth() <= 80 then
-            self.Enchant:SetWidth(self.Enchant:GetUnboundedStringWidth())
-        else
+        if self.Enchant:GetUnboundedStringWidth() >= 80 then
             self.Enchant:SetWidth(80)
         end
 
@@ -298,12 +296,10 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
             self.EnchantQuality:Hide()
         end
     elseif Module:GetConfig(CONFIG_ENCHANT) and Module:GetConfig(CONFIG_ENCHANT_DISPLAY_MISSING) and CanEnchant(itemLevel, itemEquipLoc) then
-        self.Enchant:SetText("|cffff0000"..L["characterFrame.enchant.displayMissing.noenchant"].."|r")
+        self.Enchant:SetTextToFit("|cffff0000"..L["characterFrame.enchant.displayMissing.noenchant"].."|r")
         self.Enchant:Show()
 
-        if self.Enchant:GetUnboundedStringWidth() <= 80 then
-            self.Enchant:SetWidth(self.Enchant:GetUnboundedStringWidth())
-        else
+        if self.Enchant:GetUnboundedStringWidth() >= 80 then
             self.Enchant:SetWidth(80)
         end
 
@@ -399,9 +395,9 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLocation(itemLocat
         end
 
         local itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
+        local itemID = C_Item.GetItemID(itemLocation)
 
-        self:UpdateDurability()
-        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+        self:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
     else
         self:Hide()
     end
@@ -416,7 +412,9 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLink(itemLink)
 
         local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+        local itemID = strsplit(":", itemLink)[2]
+
+        self:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
     else
         self:Hide()
     end
@@ -430,7 +428,9 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromUnitInventory(unit
 
         local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+        local itemID = strsplit(":", itemLink)[2]
+
+        self:SetItemData(itemLevel, itemLink, itemID, tooltipInfo)
     else
         self:Hide()
     end
