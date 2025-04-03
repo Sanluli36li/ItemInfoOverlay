@@ -544,11 +544,13 @@ function Module:UpdateAllInspectSlot ()
             if itemLink then
                 local stats = C_Item.GetItemStats(itemLink)
 
-                for _, stat in pairs(totalStats) do
-                    if stat[1] == "MAIN_STAT" then
-                        stat[2] = stat[2] + (stats.ITEM_MOD_STRENGTH_SHORT or stats.ITEM_MOD_AGILITY_SHORT or stats.ITEM_MOD_INTELLECT_SHORT or 0)
-                    elseif stats[stat[1]] then
-                        stat[2] = stat[2] + stats[stat[1]]
+                if stats then
+                    for _, stat in pairs(totalStats) do
+                        if stat[1] == "MAIN_STAT" then
+                            stat[2] = stat[2] + (stats.ITEM_MOD_STRENGTH_SHORT or stats.ITEM_MOD_AGILITY_SHORT or stats.ITEM_MOD_INTELLECT_SHORT or 0)
+                        elseif stats[stat[1]] then
+                            stat[2] = stat[2] + stats[stat[1]]
+                        end
                     end
                 end
             end
@@ -576,11 +578,13 @@ function Module:UpdateAllCharacterSlot()
         if itemLink then
             local stats = C_Item.GetItemStats(itemLink)
 
-            for _, stat in pairs(Module.playerStats) do
-                if stat[1] == "MAIN_STAT" then
-                    stat[2] = stat[2] + (stats.ITEM_MOD_STRENGTH_SHORT or stats.ITEM_MOD_AGILITY_SHORT or stats.ITEM_MOD_INTELLECT_SHORT or 0)
-                elseif stats[stat[1]] then
-                    stat[2] = stat[2] + stats[stat[1]]
+            if stats then
+                for _, stat in pairs(Module.playerStats) do
+                    if stat[1] == "MAIN_STAT" then
+                        stat[2] = stat[2] + (stats.ITEM_MOD_STRENGTH_SHORT or stats.ITEM_MOD_AGILITY_SHORT or stats.ITEM_MOD_INTELLECT_SHORT or 0)
+                    elseif stats[stat[1]] then
+                        stat[2] = stat[2] + stats[stat[1]]
+                    end
                 end
             end
         end
