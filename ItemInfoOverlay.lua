@@ -397,13 +397,13 @@ hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound
     -- 商人界面
     Utils:GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
 end)
-
+--[[
 hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
     -- 装备栏/专业装备栏
     local slot = button:GetID()
     Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slot))
 end)
-
+]]
 hooksecurefunc("BankFrameItemButton_Update", function(button)
     -- 银行/材料银行
     local bag = button:GetParent():GetID()

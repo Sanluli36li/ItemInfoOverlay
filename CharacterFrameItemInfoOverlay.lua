@@ -629,7 +629,7 @@ local function hookInspectUI()
     InspectFrame.StatsButton = CreateFrame("Button", nil, InspectFrame, "UIPanelButtonTemplate")
     InspectFrame.StatsButton:SetText(L["characterFrame.compareStats.title"])
     InspectFrame.StatsButton:SetSize(80, 24)
-    InspectFrame.StatsButton:SetPoint("TOPRIGHT", InspectFrame, "BOTTOMRIGHT", -10, 2)
+    InspectFrame.StatsButton:SetPoint("TOPRIGHT", InspectPaperDollItemsFrame.InspectTalents, "BOTTOMRIGHT", 0, -4)
 
     InspectFrame.StatsButton:SetScript("OnEnter", function(self)
         if InspectFrame.StatsButton.stats then
@@ -707,6 +707,10 @@ function Module:Startup()
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
         Module:CreateItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
     end
+end
+
+function Module:AfterStartup()
+    self:UpdateAllCharacterSlot()
 end
 
 function Module:ADDON_LOADED(AddOnName)
