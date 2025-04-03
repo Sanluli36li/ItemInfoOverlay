@@ -188,7 +188,7 @@ function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInf
             itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.wue"] .."|r"
         end
 
-        if spellKnown then
+        if spellKnown and itemTypeText then
             itemTypeText = "|cff00ff00"..itemTypeText.."|r"
         end
 
