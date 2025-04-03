@@ -73,7 +73,7 @@ local settings = {
                     minValue = 5,
                     maxValue = 20,
                     step = 1,
-                    default = 12,
+                    default = 14,
                     onValueChanged = function(value)
                         ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
                     end
@@ -123,7 +123,7 @@ local settings = {
                     minValue = 5,
                     maxValue = 20,
                     step = 1,
-                    default = 10,
+                    default = 12,
                     onValueChanged = function(value)
                         ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
                     end
@@ -184,7 +184,7 @@ local settings = {
                     minValue = 5,
                     maxValue = 20,
                     step = 1,
-                    default = 10,
+                    default = 12,
                     onValueChanged = function(value)
                         ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
                     end
@@ -322,7 +322,7 @@ local settings = {
                             minValue = 5,
                             maxValue = 20,
                             step = 1,
-                            default = 12,
+                            default = 14,
                             onValueChanged = function(value)
                                 ItemInfoOverlay.characterFrame:UpdateAllAppearance()
                             end
@@ -370,7 +370,7 @@ local settings = {
                             minValue = 5,
                             maxValue = 20,
                             step = 1,
-                            default = 10,
+                            default = 12,
                             onValueChanged = function(value)
                                 ItemInfoOverlay.characterFrame:UpdateAllAppearance()
                             end
@@ -448,7 +448,7 @@ local settings = {
                             minValue = 5,
                             maxValue = 20,
                             step = 1,
-                            default = 10,
+                            default = 12,
                             onValueChanged = function(value)
                                 ItemInfoOverlay.characterFrame:UpdateAllAppearance()
                             end
