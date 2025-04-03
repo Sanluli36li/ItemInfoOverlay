@@ -8,6 +8,10 @@ local L = ItemInfoOverlay.Locale
 
 L["addon.name"] = ADDON_NAME
 L["addon.sanluliUtils.tooltip"] = "\n\n|cffff0000此功能来自\"SanluliUtils\", 若你已载入该插件, 此功能不会生效|r"
+L["characterFrame.compareStats.mainStat"] = "主属性"
+L["characterFrame.compareStats.title"] = "属性对比"
+L["characterFrame.compareStats.tooltip.title"] = "装备属性: %s"
+L["characterFrame.compareStats.tooltip.info"] = "属性仅来源于装备\n不包括附魔/宝石/Buff\n仅供参考"
 L["characterFrame.durability.title"] = "显示耐久度"
 L["characterFrame.durability.tooltip"] = "在角色面板显示装备的耐久度百分比"
 L["characterFrame.itemLevel.font"] = "耐久度字体"

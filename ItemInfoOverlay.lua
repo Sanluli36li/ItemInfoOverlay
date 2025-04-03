@@ -255,6 +255,8 @@ function SanluliItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
         local itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
 
         self:SetItemData(itemLevel, itemLink, tooltipInfo)
+
+        return itemLevel, itemLink, tooltipInfo
     else
         self:Hide()
     end
@@ -270,6 +272,8 @@ function SanluliItemInfoOverlayMixin:SetItemFromLink(itemLink)
         local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
         self:SetItemData(itemLevel, itemLink, tooltipInfo)
+
+        return itemLevel, itemLink, tooltipInfo
     else
         self:Hide()
     end

@@ -4,6 +4,10 @@ local L = ItemInfoOverlay.Locale
 
 L["addon.name"] = ADDON_NAME
 L["addon.sanluliUtils.tooltip"] = "\n\n|cffff0000This feature is transplanted from \"SanluliUtils\", if you have loaded the add-on, this feature will not take effect|r"
+L["characterFrame.compareStats.mainStat"] = "Main Stat"
+L["characterFrame.compareStats.title"] = "Stats"
+L["characterFrame.compareStats.tooltip.title"] = "Equipment Stats: %s"
+L["characterFrame.compareStats.tooltip.info"] = "Stats are only from equipment\nDoes not include enchants/gems/buffs\nFor reference only"
 L["characterFrame.durability.title"] = "Display Durability"
 L["characterFrame.durability.tooltip"] = "Display Durability on Item Icon of Character Frame"
 L["characterFrame.itemLevel.font"] = "Durability Font"

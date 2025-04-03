@@ -84,7 +84,6 @@ local function CanEnchant(itemLevel, itemEquipLoc)
     end
 end
 
-
 --------------------
 -- Mixin
 --------------------
@@ -397,6 +396,8 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLocation(itemLocat
         local itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
 
         self:SetItemData(itemLevel, itemLink, tooltipInfo)
+
+        return itemLevel, itemLink, tooltipInfo
     else
         self:Hide()
     end
@@ -412,6 +413,8 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLink(itemLink)
         local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
         self:SetItemData(itemLevel, itemLink, tooltipInfo)
+
+        return itemLevel, itemLink, tooltipInfo
     else
         self:Hide()
     end
@@ -426,6 +429,8 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromUnitInventory(unit
         local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
         self:SetItemData(itemLevel, itemLink, tooltipInfo)
+
+        return itemLevel, itemLink, tooltipInfo
     else
         self:Hide()
     end
@@ -522,15 +527,63 @@ end
 
 function Module:UpdateAllInspectSlot ()
     if InspectFrame and InspectFrame.unit then
+        local totalStats = {
+            { "MAIN_STAT", 0 },                     -- 主属性
+            { "ITEM_MOD_STAMINA_SHORT", 0 },        -- 耐力
+            { "ITEM_MOD_CRIT_RATING_SHORT", 0 },    -- 爆击
+            { "ITEM_MOD_HASTE_RATING_SHORT", 0 },   -- 急速
+            { "ITEM_MOD_MASTERY_RATING_SHORT", 0 }, -- 精通
+            { "ITEM_MOD_VERSATILITY", 0 },          -- 全能
+            { "ITEM_MOD_CR_SPEED_SHORT", 0 },       -- 加速
+            { "ITEM_MOD_CR_LIFESTEAL_SHORT", 0 },   -- 吸血
+            { "ITEM_MOD_CR_AVOIDANCE_SHORT", 0 },   -- 闪避
+        }
+
         for slotID, _ in pairs(EQUIPMENT_SLOTS) do
-            GetItemInfoOverlayFromSlotID(slotID, true):SetItemFromUnitInventory(InspectFrame.unit, slotID)
+            local itemLevel, itemLink, tooltipInfo = GetItemInfoOverlayFromSlotID(slotID, true):SetItemFromUnitInventory(InspectFrame.unit, slotID)
+            if itemLink then
+                local stats = C_Item.GetItemStats(itemLink)
+
+                for _, stat in pairs(totalStats) do
+                    if stat[1] == "MAIN_STAT" then
+                        stat[2] = stat[2] + (stats.ITEM_MOD_STRENGTH_SHORT or stats.ITEM_MOD_AGILITY_SHORT or stats.ITEM_MOD_INTELLECT_SHORT or 0)
+                    elseif stats[stat[1]] then
+                        stat[2] = stat[2] + stats[stat[1]]
+                    end
+                end
+            end
         end
+
+        InspectFrame.StatsButton.stats = totalStats
     end
 end
 
 function Module:UpdateAllCharacterSlot()
+    Module.playerStats = {
+        { "MAIN_STAT", 0 },                     -- 主属性
+        { "ITEM_MOD_STAMINA_SHORT", 0 },        -- 耐力
+        { "ITEM_MOD_CRIT_RATING_SHORT", 0 },    -- 爆击
+        { "ITEM_MOD_HASTE_RATING_SHORT", 0 },   -- 急速
+        { "ITEM_MOD_MASTERY_RATING_SHORT", 0 }, -- 精通
+        { "ITEM_MOD_VERSATILITY", 0 },          -- 全能
+        { "ITEM_MOD_CR_SPEED_SHORT", 0 },       -- 加速
+        { "ITEM_MOD_CR_LIFESTEAL_SHORT", 0 },   -- 吸血
+        { "ITEM_MOD_CR_AVOIDANCE_SHORT", 0 },   -- 闪避
+    }
+
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
-        GetItemInfoOverlayFromSlotID(slotID):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slotID))
+        local itemLevel, itemLink, tooltipInfo = GetItemInfoOverlayFromSlotID(slotID):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slotID))
+        if itemLink then
+            local stats = C_Item.GetItemStats(itemLink)
+
+            for _, stat in pairs(Module.playerStats) do
+                if stat[1] == "MAIN_STAT" then
+                    stat[2] = stat[2] + (stats.ITEM_MOD_STRENGTH_SHORT or stats.ITEM_MOD_AGILITY_SHORT or stats.ITEM_MOD_INTELLECT_SHORT or 0)
+                elseif stats[stat[1]] then
+                    stat[2] = stat[2] + stats[stat[1]]
+                end
+            end
+        end
     end
 end
 
@@ -569,11 +622,77 @@ local function hookInspectUI()
 
     InspectModelFrame.ItemLevelOverlay:SetPoint("BOTTOM", InspectModelFrame, "BOTTOM", 0, 20)
 
+    InspectFrame.StatsButton = CreateFrame("Button", nil, InspectFrame, "UIPanelButtonTemplate")
+    InspectFrame.StatsButton:SetText(L["characterFrame.compareStats.title"])
+    InspectFrame.StatsButton:SetSize(80, 24)
+    InspectFrame.StatsButton:SetPoint("TOPRIGHT", InspectFrame, "BOTTOMRIGHT", -10, 2)
+
+    InspectFrame.StatsButton:SetScript("OnEnter", function(self)
+        if InspectFrame.StatsButton.stats then
+            local _, className = UnitClass(InspectFrame.unit)
+            local colorMarkup = "|cffffffff"
+            if className then
+                local color = C_ClassColor.GetClassColor(className)
+                if color then
+                    colorMarkup = color:GenerateHexColorMarkup()
+                end
+            end
+
+            GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
+            GameTooltip:SetText(format(L["characterFrame.compareStats.tooltip.title"], colorMarkup..UnitName(InspectFrame.unit).."|r"))
+            for _, stat in ipairs(InspectFrame.StatsButton.stats) do
+                if stat[1] == "MAIN_STAT" then
+                    GameTooltip:AddDoubleLine(L["characterFrame.compareStats.mainStat"], stat[2], nil, nil, nil, 1, 1, 1)
+                elseif _G[stat[1]] then
+                    GameTooltip:AddDoubleLine(_G[stat[1]], stat[2], nil, nil, nil, 1, 1, 1)
+                end
+            end
+
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine(L["characterFrame.compareStats.tooltip.info"])
+
+            GameTooltip:Show()
+
+            if Module.playerStats then
+                _, className = UnitClass("player")
+                colorMarkup = "|cffffffff"
+                if className then
+                    local color = C_ClassColor.GetClassColor(className)
+                    if color then
+                        colorMarkup = color:GenerateHexColorMarkup()
+                    end
+                end
+                GameTooltip.shoppingTooltips[1]:SetOwner(GameTooltip, "ANCHOR_NONE")
+                GameTooltip.shoppingTooltips[1]:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 2, 0)
+
+                GameTooltip.shoppingTooltips[1]:SetText(format(L["characterFrame.compareStats.tooltip.title"], colorMarkup..UnitName("player").."|r"))
+                for _, stat in ipairs(Module.playerStats) do
+                    if stat[1] == "MAIN_STAT" then
+                        GameTooltip.shoppingTooltips[1]:AddDoubleLine(L["characterFrame.compareStats.mainStat"], stat[2], nil, nil, nil, 1, 1, 1)
+                    elseif _G[stat[1]] then
+                        GameTooltip.shoppingTooltips[1]:AddDoubleLine(_G[stat[1]], stat[2], nil, nil, nil, 1, 1, 1)
+                    end
+                end
+
+                GameTooltip.shoppingTooltips[1]:Show()
+            end
+        end
+    end)
+
+    InspectFrame.StatsButton:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+        GameTooltip.shoppingTooltips[1]:Hide()
+    end)
+
+    InspectFrame.StatsButton:Show()
+
+
     hooksecurefunc("InspectPaperDollFrame_UpdateButtons", function ()
         InspectModelFrame.ItemLevelOverlay:SetText(STAT_AVERAGE_ITEM_LEVEL..": "..C_PaperDollInfo.GetInspectItemLevel(InspectFrame.unit))
 
         Module:UpdateAllInspectSlot()
     end)
+    Module:UpdateAllCharacterSlot()
 end
 
 --------------------
