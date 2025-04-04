@@ -224,7 +224,7 @@ local settings = {
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
                     name = L["chatLink.hyperlinkEnhance.displayItemLevel.title"],
-                    tooltip = L["chatLink.hyperlinkEnhance.displayItemLevel.tooltip"]..L["addon.sanluliUtils.tooltip"],
+                    tooltip = L["chatLink.hyperlinkEnhance.displayItemLevel.tooltip"],
                     key = "chatLink.hyperlinkEnhance.displayItemLevel",
                     default = true,
                     isModifiable = function ()
@@ -236,7 +236,7 @@ local settings = {
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
                     name = L["chatLink.hyperlinkEnhance.displayItemType.title"],
-                    tooltip = L["chatLink.hyperlinkEnhance.displayItemType.tooltip"]..L["addon.sanluliUtils.tooltip"],
+                    tooltip = L["chatLink.hyperlinkEnhance.displayItemType.tooltip"],
                     key = "chatLink.hyperlinkEnhance.displayItemType",
                     default = true,
                     isModifiable = function ()
@@ -248,9 +248,21 @@ local settings = {
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
                     name = L["chatLink.hyperlinkEnhance.displaySockets.title"],
-                    tooltip = L["chatLink.hyperlinkEnhance.displaySockets.tooltip"]..L["addon.sanluliUtils.tooltip"],
+                    tooltip = L["chatLink.hyperlinkEnhance.displaySockets.tooltip"],
                     key = "chatLink.hyperlinkEnhance.displaySockets",
                     default = false,
+                    isModifiable = function ()
+                        return not SanluliUtils
+                    end
+                },
+                {
+                    -- 应用于公会新闻
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["chatLink.hyperlinkEnhance.applyToGuildNews.title"],
+                    tooltip = L["chatLink.hyperlinkEnhance.applyToGuildNews.tooltip"],
+                    key = "chatLink.hyperlinkEnhance.applyToGuildNews",
+                    default = true,
                     isModifiable = function ()
                         return not SanluliUtils
                     end
