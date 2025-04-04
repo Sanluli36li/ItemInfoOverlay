@@ -365,6 +365,17 @@ end)
 
 hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, quality, itemIDOrLink, suppressOverlays, isBound)
     if button.location then
+        -- EquipmentFlyoutButton
+        if
+            EquipmentFlyoutFrame and
+            EquipmentFlyoutFrame.button and
+            EquipmentFlyoutFrame.button:GetParent() and
+            EquipmentFlyoutFrame.button:GetParent().flyoutSettings and
+            EquipmentFlyoutFrame.button:GetParent().flyoutSettings.useItemLocation
+        then
+            Utils:GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
+            return
+        end
         -- 装备栏快捷更换按钮
         local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(button.location)
         if bags then
