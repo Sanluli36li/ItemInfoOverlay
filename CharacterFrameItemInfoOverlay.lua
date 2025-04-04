@@ -186,11 +186,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
     self.Durability:SetPoint(POINTS[Module:GetConfig(CONFIG_DURABILITY_POINT)])
     self.Durability:SetShown(Module:GetConfig(CONFIG_DURABILITY))
 
-    if self:IsVisible() then
-        self:Refresh()
-    else
-        self:UpdateLines()
-    end
+    self:Refresh()
 end
 
 function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
