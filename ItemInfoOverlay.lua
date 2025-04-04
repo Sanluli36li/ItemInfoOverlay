@@ -364,11 +364,7 @@ hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, s
 end)
 
 hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, quality, itemIDOrLink, suppressOverlays, isBound)
-    if button.GetItemLocation and button:GetItemLocation() and button:GetItemLocation():IsValid() then
-        -- 背包、材料背包、银行背包、战团银行
-        Utils:GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
-        return
-    elseif button.location then
+    if button.location then
         -- 装备栏快捷更换按钮
         local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(button.location)
         if bags then
@@ -380,6 +376,10 @@ hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, qualit
             Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slot))
             return
         end
+    elseif button.GetItemLocation and button:GetItemLocation() and button:GetItemLocation():IsValid() then
+        -- 背包、材料背包、银行背包、战团银行
+        Utils:GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
+        return
     end
 
     if itemIDOrLink then
