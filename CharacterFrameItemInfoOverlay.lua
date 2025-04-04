@@ -263,8 +263,8 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
                 end
             elseif line.type == Enum.TooltipDataLineType.GemSocket then
                 -- 宝石
+                itemGemSocketCount = itemGemSocketCount + 1
                 if line.socketType then
-                    itemGemSocketCount = itemGemSocketCount + 1
                     itemGemSockets[itemGemSocketCount] = string.format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", line.socketType)
                 end
             end
