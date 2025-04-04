@@ -188,6 +188,8 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
 
     if self:IsVisible() then
         self:Refresh()
+    else
+        self:UpdateLines()
     end
 end
 
