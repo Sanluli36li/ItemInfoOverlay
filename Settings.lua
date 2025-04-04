@@ -95,7 +95,7 @@ local settings = {
                 -- 物品分类锚点
                 settingType = SETTING_TYPE.ADDON_VARIABLE,
                 key = "itemInfoOverlay.itemType.point",
-                default = 2,
+                default = 8,
                 options = POINTS,
                 onValueChanged = function(value)
                     ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
@@ -431,7 +431,7 @@ local settings = {
                             -- 耐久度字体
                             controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
-                            name = L["itemInfoOverlay.itemLevel.font"],
+                            name = L["characterFrame.durability.font"],
                             key = "characterFrame.durability.font",
                             mediaType = LibSharedMedia.MediaType.FONT,
                             default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
@@ -443,7 +443,7 @@ local settings = {
                             -- 耐久度文字大小
                             controlType = CONTROL_TYPE.SLIDER,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
-                            name = L["itemInfoOverlay.itemLevel.fontSize"],
+                            name = L["characterFrame.durability.fontSize"],
                             key = "characterFrame.durability.fontSize",
                             minValue = 5,
                             maxValue = 20,
