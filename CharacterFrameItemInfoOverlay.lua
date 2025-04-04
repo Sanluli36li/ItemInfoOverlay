@@ -711,6 +711,7 @@ end
 
 function Module:AfterStartup()
     self:UpdateAllCharacterSlot()
+    self:UpdateAllCharacterSlotDurability()
 end
 
 function Module:ADDON_LOADED(AddOnName)
