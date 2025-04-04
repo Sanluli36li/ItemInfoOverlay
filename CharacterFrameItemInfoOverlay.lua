@@ -72,7 +72,10 @@ local EQUIP_LOC_CAN_ENCHANT_TWW = {
     INVTYPE_FINGER = true,      -- 手指
     INVTYPE_CLOAK = true,       -- 背部
     INVTYPE_WEAPON = true,      -- 武器
+    INVTYPE_RANGED = true,      -- 远程武器
     INVTYPE_2HWEAPON = true,    -- 双手武器
+    INVTYPE_WEAPONMAINHAND = true,  -- 主手武器
+    INVTYPE_RANGEDRIGHT = true, -- 远程武器
 }
 
 local function CanEnchant(itemLevel, itemEquipLoc)
