@@ -320,10 +320,9 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
 
                 if gemID then
                     -- 等待缓存宝石图标的处理方式来自 [Interface\\AddOns\\Blizzard_UIPanels_Game\\Mainline\\PaperDollFrame.lua]:2799
-
                     local gemItem = Item:CreateFromItemID(gemID)
 
-                    -- 未载入: 先把插槽图标贴上去
+                    -- 未载入: 贴个棱彩插槽上去
                     if not gemItem:IsItemDataCached() then
                         self["GemSocket"..i]:SetNormalTexture("Interface\\ItemSocketingFrame\\UI-EmptySocket-Prismatic")
                     end

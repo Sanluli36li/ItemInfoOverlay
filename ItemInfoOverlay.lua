@@ -188,8 +188,14 @@ function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInf
             itemBondingText = "|cff00ccff"..L["itemInfoOverlay.bonding.wue"] .."|r"
         end
 
-        if spellKnown and itemTypeText then
-            itemTypeText = "|cff00ff00"..itemTypeText.."|r"
+        if itemTypeText then
+            if spellKnown then
+                -- 已经学会
+                itemTypeText = "|cff00ff00"..itemTypeText.."|r"
+            elseif IsCosmeticItem(itemLink) then
+                -- 装饰品
+                itemTypeText = "|cffff80ff"..itemTypeText.."|r"
+            end
         end
 
     elseif type == "keystone" then
