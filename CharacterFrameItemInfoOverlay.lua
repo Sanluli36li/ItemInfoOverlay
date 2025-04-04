@@ -726,6 +726,18 @@ function Module:SOCKET_INFO_UPDATE()
 end
 Module:RegisterEvent("SOCKET_INFO_UPDATE")
 
+-- 耐久度更新
+function Module:UPDATE_INVENTORY_DURABILITY()
+    self:UpdateAllCharacterSlotDurability()
+end
+Module:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
+
+-- 装备变更: 更新所有栏位
+function Module:PLAYER_EQUIPMENT_CHANGED()
+    self:UpdateAllCharacterSlot()
+end
+Module:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+
 -- 玩家物品栏更新: 更新所有栏位
 function Module:UNIT_INVENTORY_CHANGED(unit)
     if unit == "player" then
@@ -733,9 +745,3 @@ function Module:UNIT_INVENTORY_CHANGED(unit)
     end
 end
 Module:RegisterEvent("UNIT_INVENTORY_CHANGED")
-
--- 耐久度更新
-function Module:UPDATE_INVENTORY_DURABILITY()
-    self:UpdateAllCharacterSlotDurability()
-end
-Module:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
