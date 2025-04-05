@@ -611,93 +611,9 @@ end
 -- 暴雪函数安全钩子
 --------------------
 
-local function hookInspectUI()
-    for slotID, _ in pairs(EQUIPMENT_SLOTS) do
-        local overlay = Module:CreateItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
-        function overlay:GetUnit()
-            return InspectFrame.unit
-        end
-    end
-
-    InspectModelFrame.ItemLevelOverlay = InspectModelFrame:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-
-    InspectModelFrame.ItemLevelOverlay:SetFont(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
-    InspectModelFrame.ItemLevelOverlay:SetShadowOffset(1, -1)
-
-    InspectModelFrame.ItemLevelOverlay:SetPoint("BOTTOM", InspectModelFrame, "BOTTOM", 0, 20)
-
-    InspectFrame.StatsButton = CreateFrame("Button", nil, InspectFrame, "UIPanelButtonTemplate")
-    InspectFrame.StatsButton:SetText(L["characterFrame.compareStats.title"])
-    InspectFrame.StatsButton:SetSize(80, 24)
-    InspectFrame.StatsButton:SetPoint("TOPRIGHT", InspectPaperDollItemsFrame.InspectTalents, "BOTTOMRIGHT", 0, -4)
-
-    InspectFrame.StatsButton:SetScript("OnEnter", function(self)
-        if InspectFrame.StatsButton.stats then
-            local _, className = UnitClass(InspectFrame.unit)
-            local colorMarkup = "|cffffffff"
-            if className then
-                local color = C_ClassColor.GetClassColor(className)
-                if color then
-                    colorMarkup = color:GenerateHexColorMarkup()
-                end
-            end
-
-            GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
-            GameTooltip:SetText(format(L["characterFrame.compareStats.tooltip.title"], colorMarkup..UnitName(InspectFrame.unit).."|r"))
-            for _, stat in ipairs(InspectFrame.StatsButton.stats) do
-                if stat[1] == "MAIN_STAT" then
-                    GameTooltip:AddDoubleLine(L["characterFrame.compareStats.mainStat"], stat[2], nil, nil, nil, 1, 1, 1)
-                elseif _G[stat[1]] then
-                    GameTooltip:AddDoubleLine(_G[stat[1]], stat[2], nil, nil, nil, 1, 1, 1)
-                end
-            end
-
-            GameTooltip:AddLine(" ")
-            GameTooltip:AddLine(L["characterFrame.compareStats.tooltip.info"])
-
-            GameTooltip:Show()
-
-            if Module.playerStats then
-                _, className = UnitClass("player")
-                colorMarkup = "|cffffffff"
-                if className then
-                    local color = C_ClassColor.GetClassColor(className)
-                    if color then
-                        colorMarkup = color:GenerateHexColorMarkup()
-                    end
-                end
-                GameTooltip.shoppingTooltips[1]:SetOwner(GameTooltip, "ANCHOR_NONE")
-                GameTooltip.shoppingTooltips[1]:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 2, 0)
-
-                GameTooltip.shoppingTooltips[1]:SetText(format(L["characterFrame.compareStats.tooltip.title"], colorMarkup..UnitName("player").."|r"))
-                for _, stat in ipairs(Module.playerStats) do
-                    if stat[1] == "MAIN_STAT" then
-                        GameTooltip.shoppingTooltips[1]:AddDoubleLine(L["characterFrame.compareStats.mainStat"], stat[2], nil, nil, nil, 1, 1, 1)
-                    elseif _G[stat[1]] then
-                        GameTooltip.shoppingTooltips[1]:AddDoubleLine(_G[stat[1]], stat[2], nil, nil, nil, 1, 1, 1)
-                    end
-                end
-
-                GameTooltip.shoppingTooltips[1]:Show()
-            end
-        end
-    end)
-
-    InspectFrame.StatsButton:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-        GameTooltip.shoppingTooltips[1]:Hide()
-    end)
-
-    InspectFrame.StatsButton:Show()
-
-
-    hooksecurefunc("InspectPaperDollFrame_UpdateButtons", function ()
-        InspectModelFrame.ItemLevelOverlay:SetText(STAT_AVERAGE_ITEM_LEVEL..": "..C_PaperDollInfo.GetInspectItemLevel(InspectFrame.unit))
-
-        Module:UpdateAllInspectSlot()
-    end)
+hooksecurefunc(CharacterFrame, "Show", function(self)
     Module:UpdateAllCharacterSlot()
-end
+end)
 
 --------------------
 -- 事件处理
@@ -716,7 +632,91 @@ end
 
 function Module:ADDON_LOADED(AddOnName)
     if AddOnName == "Blizzard_InspectUI" then
-        hookInspectUI()
+        -- 观察界面载入
+        for slotID, _ in pairs(EQUIPMENT_SLOTS) do
+            local overlay = Module:CreateItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
+            function overlay:GetUnit()
+                return InspectFrame.unit
+            end
+        end
+
+        InspectModelFrame.ItemLevelOverlay = InspectModelFrame:CreateFontString(nil, "OVERLAY", "GameTooltipText")
+
+        InspectModelFrame.ItemLevelOverlay:SetFont(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
+        InspectModelFrame.ItemLevelOverlay:SetShadowOffset(1, -1)
+
+        InspectModelFrame.ItemLevelOverlay:SetPoint("BOTTOM", InspectModelFrame, "BOTTOM", 0, 20)
+
+        InspectFrame.StatsButton = CreateFrame("Button", nil, InspectFrame, "UIPanelButtonTemplate")
+        InspectFrame.StatsButton:SetText(L["characterFrame.compareStats.title"])
+        InspectFrame.StatsButton:SetSize(80, 24)
+        InspectFrame.StatsButton:SetPoint("TOPRIGHT", InspectPaperDollItemsFrame.InspectTalents, "BOTTOMRIGHT", 0, -4)
+
+        InspectFrame.StatsButton:SetScript("OnEnter", function(self)
+            if InspectFrame.StatsButton.stats then
+                local _, className = UnitClass(InspectFrame.unit)
+                local colorMarkup = "|cffffffff"
+                if className then
+                    local color = C_ClassColor.GetClassColor(className)
+                    if color then
+                        colorMarkup = color:GenerateHexColorMarkup()
+                    end
+                end
+
+                GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
+                GameTooltip:SetText(format(L["characterFrame.compareStats.tooltip.title"], colorMarkup..UnitName(InspectFrame.unit).."|r"))
+                for _, stat in ipairs(InspectFrame.StatsButton.stats) do
+                    if stat[1] == "MAIN_STAT" then
+                        GameTooltip:AddDoubleLine(L["characterFrame.compareStats.mainStat"], stat[2], nil, nil, nil, 1, 1, 1)
+                    elseif _G[stat[1]] then
+                        GameTooltip:AddDoubleLine(_G[stat[1]], stat[2], nil, nil, nil, 1, 1, 1)
+                    end
+                end
+
+                GameTooltip:AddLine(" ")
+                GameTooltip:AddLine(L["characterFrame.compareStats.tooltip.info"])
+
+                GameTooltip:Show()
+
+                if Module.playerStats then
+                    _, className = UnitClass("player")
+                    colorMarkup = "|cffffffff"
+                    if className then
+                        local color = C_ClassColor.GetClassColor(className)
+                        if color then
+                            colorMarkup = color:GenerateHexColorMarkup()
+                        end
+                    end
+                    GameTooltip.shoppingTooltips[1]:SetOwner(GameTooltip, "ANCHOR_NONE")
+                    GameTooltip.shoppingTooltips[1]:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 2, 0)
+
+                    GameTooltip.shoppingTooltips[1]:SetText(format(L["characterFrame.compareStats.tooltip.title"], colorMarkup..UnitName("player").."|r"))
+                    for _, stat in ipairs(Module.playerStats) do
+                        if stat[1] == "MAIN_STAT" then
+                            GameTooltip.shoppingTooltips[1]:AddDoubleLine(L["characterFrame.compareStats.mainStat"], stat[2], nil, nil, nil, 1, 1, 1)
+                        elseif _G[stat[1]] then
+                            GameTooltip.shoppingTooltips[1]:AddDoubleLine(_G[stat[1]], stat[2], nil, nil, nil, 1, 1, 1)
+                        end
+                    end
+
+                    GameTooltip.shoppingTooltips[1]:Show()
+                end
+            end
+        end)
+
+        InspectFrame.StatsButton:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+            GameTooltip.shoppingTooltips[1]:Hide()
+        end)
+
+        InspectFrame.StatsButton:Show()
+
+
+        hooksecurefunc("InspectPaperDollFrame_UpdateButtons", function ()
+            InspectModelFrame.ItemLevelOverlay:SetText(STAT_AVERAGE_ITEM_LEVEL..": "..C_PaperDollInfo.GetInspectItemLevel(InspectFrame.unit))
+            Module:UpdateAllInspectSlot()
+        end)
+        Module:UpdateAllCharacterSlot()
     end
 end
 Module:RegisterEvent("ADDON_LOADED")
