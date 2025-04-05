@@ -93,6 +93,7 @@ function SanluliItemInfoOverlayMixin:UpdateAppearance()
     self.ItemType:ClearAllPoints()
     self.ItemType:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)])
 
+    -- 由于数量庞大, 并且很多按钮在显示时会更新一次, 所以仅刷新显示中的图标, 防止修改设置时的卡顿
     if self:IsVisible() then
         self:Refresh()
     end
@@ -431,20 +432,26 @@ end)
 function Module:AfterStartup()
     if NDui then
         -- NDui整合背包 https://ngabbs.com/read.php?tid=5483616
-        hooksecurefunc(NDui.cargBags:GetImplementation("NDui_Backpack"):GetItemButtonClass(), "OnUpdateButton", function(button, item)
-            local bag = item.bagId
-            local slot = item.slotId
-            Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
-        end)
+        local NDuiBagpack = NDui.cargBags:GetImplementation("NDui_Backpack")
+        if NDuiBagpack then
+            hooksecurefunc(NDuiBagpack:GetItemButtonClass(), "OnUpdateButton", function(button, item)
+                local bag = item.bagId
+                local slot = item.slotId
+                Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+            end)
+        end
     end
 
     if NDui_Bags then
         -- NDui整合背包 独立插件版 https://ngabbs.com/read.php?tid=34318074
-        hooksecurefunc(NDui_Bags.cargBags:GetImplementation("NDui_Backpack"):GetItemButtonClass(), "OnUpdateButton", function(button, item)
-            local bag = item.bagId
-            local slot = item.slotId
-            Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
-        end)
+        local NDuiBagpack = NDui_Bags.cargBags:GetImplementation("NDui_Backpack")
+        if NDuiBagpack then
+            hooksecurefunc(NDuiBagpack:GetItemButtonClass(), "OnUpdateButton", function(button, item)
+                local bag = item.bagId
+                local slot = item.slotId
+                Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+            end)
+        end
     end
 end
 
