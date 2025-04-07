@@ -212,11 +212,11 @@ local settings = {
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
                     name = L["chatLink.hyperlinkEnhance.displayIcon.title"],
-                    tooltip = L["chatLink.hyperlinkEnhance.displayIcon.tooltip"]..L["addon.sanluliUtils.tooltip"],
+                    tooltip = L["chatLink.hyperlinkEnhance.displayIcon.tooltip"],
                     key = "chatLink.hyperlinkEnhance.displayIcon",
                     default = true,
-                    isModifiable = function ()
-                        return not SanluliUtils
+                    isVisible = function ()
+                        return not C_AddOns.IsAddOnLoadable("SanluliUtils", UnitNameUnmodified("player"))
                     end
                 },
                 {
@@ -227,8 +227,8 @@ local settings = {
                     tooltip = L["chatLink.hyperlinkEnhance.displayItemLevel.tooltip"],
                     key = "chatLink.hyperlinkEnhance.displayItemLevel",
                     default = true,
-                    isModifiable = function ()
-                        return not SanluliUtils
+                    isVisible = function ()
+                        return not C_AddOns.IsAddOnLoadable("SanluliUtils", UnitNameUnmodified("player"))
                     end
                 },
                 {
@@ -239,8 +239,8 @@ local settings = {
                     tooltip = L["chatLink.hyperlinkEnhance.displayItemType.tooltip"],
                     key = "chatLink.hyperlinkEnhance.displayItemType",
                     default = true,
-                    isModifiable = function ()
-                        return not SanluliUtils
+                    isVisible = function ()
+                        return not C_AddOns.IsAddOnLoadable("SanluliUtils", UnitNameUnmodified("player"))
                     end
                 },
                 {
@@ -251,8 +251,8 @@ local settings = {
                     tooltip = L["chatLink.hyperlinkEnhance.displaySockets.tooltip"],
                     key = "chatLink.hyperlinkEnhance.displaySockets",
                     default = false,
-                    isModifiable = function ()
-                        return not SanluliUtils
+                    isVisible = function ()
+                        return not C_AddOns.IsAddOnLoadable("SanluliUtils", UnitNameUnmodified("player"))
                     end
                 },
                 {
@@ -263,8 +263,8 @@ local settings = {
                     tooltip = L["chatLink.hyperlinkEnhance.applyToGuildNews.tooltip"],
                     key = "chatLink.hyperlinkEnhance.applyToGuildNews",
                     default = true,
-                    isModifiable = function ()
-                        return not SanluliUtils
+                    isVisible = function ()
+                        return not C_AddOns.IsAddOnLoadable("SanluliUtils", UnitNameUnmodified("player"))
                     end
                 },
             }
@@ -466,6 +466,27 @@ local settings = {
                             end
                         }
                     }
+                },
+            }
+        },
+        {
+            name = "装备总览",
+            settings = {
+                {
+                    -- 显示玩家装备总览
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = "显示玩家装备总览",
+                    key = "equipmentSummary.player.enable",
+                    default = true,
+                },
+                {
+                    -- 观察时显示装备总览
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = "观察时显示装备总览",
+                    key = "equipmentSummary.inspect.enable",
+                    default = true,
                 },
             }
         }
