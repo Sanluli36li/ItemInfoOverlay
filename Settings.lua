@@ -470,23 +470,27 @@ local settings = {
             }
         },
         {
-            name = "装备总览",
+            name = L["equipmentSummary.title"],
             settings = {
                 {
                     -- 显示玩家装备总览
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = "显示玩家装备总览",
+                    name = L["equipmentSummary.player.title"],
+                    tooltip = L["equipmentSummary.player.tooltip"],
                     key = "equipmentSummary.player.enable",
                     default = true,
+                    newFeature = true
                 },
                 {
                     -- 观察时显示装备总览
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = "观察时显示装备总览",
+                    name = L["equipmentSummary.inspect.title"],
+                    tooltip = L["equipmentSummary.inspect.tooltip"],
                     key = "equipmentSummary.inspect.enable",
                     default = true,
+                    newFeature = true
                 },
             }
         }
