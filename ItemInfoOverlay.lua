@@ -5,8 +5,6 @@ local Utils = ItemInfoOverlay:GetModule("utils")
 local L = ItemInfoOverlay.Locale
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
-
-
 local CONFIG_ITEM_LEVEL = "itemLevel.enable"
 local CONFIG_ITEM_LEVEL_POINT = "itemLevel.point"
 local CONFIG_ITEM_LEVEL_FONT = "itemLevel.font"
@@ -372,7 +370,7 @@ end)
 
 hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, quality, itemIDOrLink, suppressOverlays, isBound)
     if button.location then
-        -- EquipmentFlyoutButton
+        -- EquipmentFlyoutButton 需要确认使用的是ItemLocation还是button.location
         if
             EquipmentFlyoutFrame and
             EquipmentFlyoutFrame.button and
@@ -380,27 +378,32 @@ hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, qualit
             EquipmentFlyoutFrame.button:GetParent().flyoutSettings and
             EquipmentFlyoutFrame.button:GetParent().flyoutSettings.useItemLocation
         then
+            -- 使用ItemLocation
             Utils:GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
             return
+        else
+            -- 使用button.location
+            local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(button.location)
+            if bags then
+                -- 背包中的物品
+                Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+                return
+            elseif player then
+                -- 玩家物品栏
+                Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slot))
+                return
+            end
         end
-        -- 装备栏快捷更换按钮
-        local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(button.location)
-        if bags then
-            -- 背包中的物品
-            Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
-            return
-        elseif player then
-            -- 玩家物品栏
-            Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slot))
-            return
-        end
+        
     elseif button.GetItemLocation and button:GetItemLocation() and button:GetItemLocation():IsValid() then
-        -- 背包、材料背包、银行背包、战团银行
+        -- GetItemLocation (背包/战团银行)
         Utils:GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
         return
-    end
-
-    if itemIDOrLink then
+    elseif button.GetItemLocationCallback and button:GetItemLocationCallback() and button:GetItemLocationCallback():IsValid() then
+        -- GetItemLocationCallback (专业装备栏)
+        Utils:GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocationCallback())
+        return
+    elseif itemIDOrLink then
         if tonumber(itemIDOrLink) then
         else
             -- 能直接获取到物品链接
@@ -411,22 +414,16 @@ hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, qualit
     Utils:GetItemInfoOverlay(button):Hide()
 end)
 
-hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound)
-    -- 商人界面
-    Utils:GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
-end)
---[[
-hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
-    -- 装备栏/专业装备栏
-    local slot = button:GetID()
-    Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slot))
-end)
-]]
 hooksecurefunc("BankFrameItemButton_Update", function(button)
     -- 银行/材料银行
     local bag = button:GetParent():GetID()
     local slot = button:GetID()
     Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+end)
+
+hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound)
+    -- 商人界面
+    Utils:GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
 end)
 
 function Module:AfterStartup()
