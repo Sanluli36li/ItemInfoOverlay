@@ -204,9 +204,30 @@ function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInf
         itemLevelText = format("|cff%02x%02x%02x+%d|r", r * 255, g * 255, b * 255, level)
     elseif type == "battlepet" then
         itemTypeText = PET
-    end
 
-    
+        local _, speciesID, level, breedQuality, maxHealth, power, speed, battlePetID = strsplit(":", itemLink)
+        local r, g, b = C_Item.GetItemQualityColor(breedQuality)
+
+        if speciesID then
+            if BPBID_Internal and speciesID and breedQuality then
+                local breedNum = BPBID_Internal.CalculateBreedID(
+                    tonumber(speciesID),
+                    tonumber(breedQuality)+1,
+                    tonumber(level),
+                    tonumber(maxHealth),
+                    tonumber(power),
+                    tonumber(speed),
+                    false,
+                    false
+                )
+                local breed = BPBID_Internal.RetrieveBreedName(breedNum)
+                if breed and breed ~= "NEW" then
+                    itemTypeText = breed
+                end
+            end
+        end
+        itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, level)
+    end
 
     if Module:GetConfig(CONFIG_ITEM_LEVEL) and itemLevelText then
         self.ItemLevel:SetText(itemLevelText)
