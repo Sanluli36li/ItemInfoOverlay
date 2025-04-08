@@ -367,7 +367,7 @@ function SanluliEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec()
         _, specName, _, specIcon  = GetSpecializationInfo(GetSpecialization())
     else
         itemLevel = C_PaperDollInfo.GetInspectItemLevel(self.unit)
-        _, specName, _, specIcon  = GetSpecializationInfoForSpecID(GetInspectSpecialization("target"))
+        _, specName, _, specIcon  = GetSpecializationInfoForSpecID(GetInspectSpecialization(self.unit))
     end
 
     if specIcon then
