@@ -226,6 +226,10 @@ function SanluliEquipmentSummaryFrameMixin:OnLoad()
     end
 end
 
+function SanluliEquipmentSummaryFrameMixin:OnShow()
+    self:Refresh()
+end
+
 function SanluliEquipmentSummaryFrameMixin:UpdateAppearance()
     for i, entry in pairs(self.slots) do
         entry:UpdateAppearance()
@@ -247,6 +251,7 @@ function SanluliEquipmentSummaryFrameMixin:SetUnit(unit)
 end
 
 function SanluliEquipmentSummaryFrameMixin:Refresh()
+    if not self:IsShown() then return end
     if self.unit then
         local name = UnitNameUnmodified(self.unit)
         local className, classFilename = UnitClass(self.unit)
