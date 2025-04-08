@@ -395,14 +395,14 @@ local function UpdateSummaryPoints()
             EquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", EquipmentSummaryInspectFrame, "TOPRIGHT")
         end
 
-        if CharacterFrame:IsVisible() then
+        if PaperDollFrame:IsVisible() then
             EquipmentSummaryInspectFrame:ClearAllPoints()
             EquipmentSummaryInspectFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
         else
             EquipmentSummaryInspectFrame:ClearAllPoints()
             EquipmentSummaryInspectFrame:SetPoint("TOPLEFT", InspectFrame, "TOPRIGHT")
         end
-    elseif Module:GetConfig(CONFIG_PLAYER_ENABLE) and CharacterFrame:IsVisible() then
+    elseif Module:GetConfig(CONFIG_PLAYER_ENABLE) and PaperDollFrame:IsVisible() then
         EquipmentSummaryInspectFrame:Hide()
         EquipmentSummaryPlayerFrame:Show()
 
@@ -414,12 +414,12 @@ local function UpdateSummaryPoints()
     end
 end
 
-hooksecurefunc(CharacterFrame, "Show", function(self)
+PaperDollFrame:HookScript("OnShow", function(self)
     EquipmentSummaryPlayerFrame:Refresh()
     UpdateSummaryPoints()
 end)
 
-hooksecurefunc(CharacterFrame, "Hide", function(self)
+PaperDollFrame:HookScript("OnHide", function(self)
     UpdateSummaryPoints()
 end)
 
