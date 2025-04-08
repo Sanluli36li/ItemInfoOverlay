@@ -7,6 +7,26 @@ local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 local CONFIG_PLAYER_ENABLE = "player.enable"
 local CONFIG_INSPECT_ENABLE = "inspect.enable"
+local CONFIG_SLOT_NAME = "slotName.enable"
+local CONFIG_STAT_ICON = "statIcon.enable"
+local CONFIG_STAT_ICON_STYLE = "statIcon.style"
+local CONFIG_FONT_SIZE = "fontSize"
+local CONFIG_TITLE_FONT_SIZE = "title.fontSize"
+
+local STAT_ICONS = {
+    ["Armory"] = {
+        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\crit.png",
+        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\haste.png",
+        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\mastery.png",
+        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\versatility.png"
+    },
+    ["GearStatSummary"] = {
+        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\crit.tga",
+        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\haste.tga",
+        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\mastery.tga",
+        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\vers.tga"
+    },
+}
 
 local EQUIPMENT_SLOTS = {
     {slotId = 1, name = HEADSLOT},
@@ -33,6 +53,64 @@ local EQUIPMENT_SLOTS = {
 SanluliEquipmentSummaryEntryMixin = {}
 
 function SanluliEquipmentSummaryEntryMixin:OnLoad()
+    self:UpdateAppearance()
+end
+
+function SanluliEquipmentSummaryEntryMixin:UpdateAppearance()
+    local font, size, style = GameTooltipText:GetFont()
+    self.SlotName:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemLevel:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemLink:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+
+    self.Crit:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
+    self.Crit:SetTexture(STAT_ICONS[Module:GetConfig(CONFIG_STAT_ICON_STYLE)][1])
+
+    self.Haste:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
+    self.Haste:SetTexture(STAT_ICONS[Module:GetConfig(CONFIG_STAT_ICON_STYLE)][2])
+
+    self.Mastery:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
+    self.Mastery:SetTexture(STAT_ICONS[Module:GetConfig(CONFIG_STAT_ICON_STYLE)][3])
+
+    self.Versatility:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
+    self.Versatility:SetTexture(STAT_ICONS[Module:GetConfig(CONFIG_STAT_ICON_STYLE)][4])
+
+    self:SetHeight(Module:GetConfig(CONFIG_FONT_SIZE) + 2)
+
+    if Module:GetConfig(CONFIG_SLOT_NAME) then
+        self.Crit:ClearAllPoints()
+        self.Crit:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 2, 0)
+
+        self.SlotName:Show()
+    else
+        self.Crit:ClearAllPoints()
+        self.Crit:SetPoint("TOPLEFT", self)
+        self.SlotName:Hide()
+    end
+
+    if Module:GetConfig(CONFIG_STAT_ICON) then
+        self.ItemLevel:ClearAllPoints()
+        self.ItemLevel:SetPoint("TOPLEFT", self.Versatility, "TOPRIGHT", 4, 0)
+    else
+        self.ItemLevel:ClearAllPoints()
+        self.ItemLevel:SetPoint(
+            "TOPLEFT",
+            (Module:GetConfig(CONFIG_SLOT_NAME) and self.SlotName) or self,
+            (Module:GetConfig(CONFIG_SLOT_NAME) and "TOPRIGHT") or "TOPLEFT",
+            (Module:GetConfig(CONFIG_SLOT_NAME) and 2) or 0,
+            0
+        )
+        self:ToggleStats()
+    end
+
+    local temp = self.ItemLevel:GetText()
+
+    -- 重新计算宽度
+    self.ItemLevel:SetText("1000")
+    local itemLevelWidth = self.ItemLevel:GetUnboundedStringWidth()
+    self.ItemLevel:SetWidth(itemLevelWidth)
+    self.ItemLevel:SetText(temp)
+
+    self.ItemLink:SetWidth((Module:GetConfig(CONFIG_FONT_SIZE) * 14) - itemLevelWidth)
 end
 
 function SanluliEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, itemLink, itemLevel, stats)
@@ -43,7 +121,7 @@ function SanluliEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, 
         itemLevel = itemLevel or Utils:GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(unit, slot))
 
         stats = stats or C_Item.GetItemStats(itemLink)
-        if stats then
+        if Module:GetConfig(CONFIG_STAT_ICON) and stats then
             self:ToggleStats(
                 stats.ITEM_MOD_CRIT_RATING_SHORT and stats.ITEM_MOD_CRIT_RATING_SHORT > 0,
                 stats.ITEM_MOD_HASTE_RATING_SHORT and stats.ITEM_MOD_HASTE_RATING_SHORT > 0,
@@ -141,10 +219,26 @@ function SanluliEquipmentSummaryFrameMixin:OnLoad()
         self.slots[slotId]:Show()
 
         self.slots[slotId].slotName = slot.name
+        self.slots[slotId].SlotName:SetText(slot.name)
 
         self.slotNum = self.slotNum + 1
         lastRegion = self.slots[slotId]
     end
+end
+
+function SanluliEquipmentSummaryFrameMixin:UpdateAppearance()
+    for i, entry in pairs(self.slots) do
+        entry:UpdateAppearance()
+    end
+
+    local font, size, style = GameTooltipText:GetFont()
+    self.SubTitle:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.Text:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+
+    font, size, style = GameTooltipHeaderText:GetFont()
+    self.Title:SetFont(font, Module:GetConfig(CONFIG_TITLE_FONT_SIZE), style)
+
+    self:Refresh()
 end
 
 function SanluliEquipmentSummaryFrameMixin:SetUnit(unit)
@@ -157,7 +251,7 @@ function SanluliEquipmentSummaryFrameMixin:Refresh()
         local name = UnitNameUnmodified(self.unit)
         local className, classFilename = UnitClass(self.unit)
         local classColor = C_ClassColor.GetClassColor(classFilename)
-        
+
         if classColor then
             self:SetBackdropBorderColor(classColor:GetRGBA())
             self.Title:SetTextColor(classColor:GetRGB())
@@ -234,8 +328,20 @@ function SanluliEquipmentSummaryFrameMixin:Refresh()
         self.Text:SetText(text)
 
         -- local width = math.max(self.Text:GetStringWidth() + self.Title:GetStringWidth())
-        local height = 12 + self.Title:GetStringHeight() + 10 + self.SubTitle:GetStringHeight() + (self.slotNum * 14) + 10 + self.Text:GetStringHeight() + 12
-        self:SetHeight(height)
+        local height = 12
+            + self.Title:GetStringHeight()
+            + 10
+            + self.SubTitle:GetStringHeight()
+            + (self.slotNum * (Module:GetConfig(CONFIG_FONT_SIZE) + 2))
+            + 10
+            + self.Text:GetStringHeight()
+            + 12
+        local width = 12
+            + (Module:GetConfig(CONFIG_SLOT_NAME) and 42 or 0)
+            + (Module:GetConfig(CONFIG_STAT_ICON) and (Module:GetConfig(CONFIG_FONT_SIZE) * 4 + 8) or 0)
+            + (Module:GetConfig(CONFIG_FONT_SIZE) * 14)
+            + 12
+        self:SetSize(width, height)
     else
 
     end
@@ -308,11 +414,14 @@ hooksecurefunc(CharacterFrame, "Hide", function(self)
 end)
 
 function Module:AfterStartup()
+    EquipmentSummaryPlayerFrame:UpdateAppearance()
     EquipmentSummaryPlayerFrame:SetUnit("player")
 end
 
 function Module:ADDON_LOADED(AddOnName)
     if AddOnName == "Blizzard_InspectUI" then
+        EquipmentSummaryInspectFrame:UpdateAppearance()
+
         hooksecurefunc("InspectPaperDollFrame_UpdateButtons", function ()
             EquipmentSummaryInspectFrame:SetUnit(InspectFrame.unit)
             UpdateSummaryPoints()

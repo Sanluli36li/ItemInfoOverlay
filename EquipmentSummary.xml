@@ -30,6 +30,12 @@
                         <Anchor point="LEFT" relativeKey="$parent.Mastery" relativePoint="RIGHT" x="2"/>
                     </Anchors>
                 </Texture>
+                <FontString parentKey="SlotName" inherits="GameTooltipText">
+                    <Size x="40"/>
+                    <Anchors>
+                        <Anchor point="LEFT"/>
+                    </Anchors>
+                </FontString>
                 <FontString parentKey="ItemLevel" inherits="GameTooltipText">
                     <Size x="24"/>
                     <Anchors>

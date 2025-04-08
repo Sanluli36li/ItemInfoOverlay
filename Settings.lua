@@ -479,8 +479,7 @@ local settings = {
                     name = L["equipmentSummary.player.title"],
                     tooltip = L["equipmentSummary.player.tooltip"],
                     key = "equipmentSummary.player.enable",
-                    default = true,
-                    newFeature = true
+                    default = true
                 },
                 {
                     -- 观察时显示装备总览
@@ -489,9 +488,98 @@ local settings = {
                     name = L["equipmentSummary.inspect.title"],
                     tooltip = L["equipmentSummary.inspect.tooltip"],
                     key = "equipmentSummary.inspect.enable",
+                    default = true
+                },
+                {
+                    -- 显示部位名称
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.slotName.title"],
+                    tooltip = L["equipmentSummary.slotName.tooltip"],
+                    key = "equipmentSummary.slotName.enable",
+                    default = false,
+                    newFeature = true,
+                    onValueChanged = function(value)
+                        EquipmentSummaryPlayerFrame:UpdateAppearance()
+                        EquipmentSummaryInspectFrame:UpdateAppearance()
+                    end
+                },
+                {
+                    -- 显示属性图标
+                    controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.statIcon.title"],
+                    tooltip = L["equipmentSummary.statIcon.tooltip"],
+                    key = "equipmentSummary.statIcon.enable",
                     default = true,
+                    onValueChanged = function(value)
+                        EquipmentSummaryPlayerFrame:UpdateAppearance()
+                        EquipmentSummaryInspectFrame:UpdateAppearance()
+                    end,
+                    newFeature = true,
+                    dropdown = {
+                        -- 属性图标风格
+                        settingType = SETTING_TYPE.ADDON_VARIABLE,
+                        key = "equipmentSummary.statIcon.style",
+                        default = "Armory",
+                        options = {
+                            {
+                                "Armory",
+                                L["equipmentSummary.statIcon.style.armory.title"]..
+                                " |TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\crit.png:12|t"..
+                                "|TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\haste.png:12|t"..
+                                "|TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\mastery.png:12|t"..
+                                "|TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\versatility.png:12|t",
+                                ""
+                            },
+                            {
+                                "GearStatSummary",
+                                L["equipmentSummary.statIcon.style.gearStatSummary.title"]..
+                                " |TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\crit.tga:12|t"..
+                                "|TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\haste.tga:12|t"..
+                                "|TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\mastery.tga:12|t"..
+                                "|TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\vers.tga:12|t",
+                                ""
+                            },
+                        },
+                        onValueChanged = function(value)
+                            EquipmentSummaryPlayerFrame:UpdateAppearance()
+                            EquipmentSummaryInspectFrame:UpdateAppearance()
+                        end
+                    },
+                },
+                {
+                    -- 标题文本尺寸
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.title.fontSize"],
+                    key = "equipmentSummary.title.fontSize",
+                    minValue = 5,
+                    maxValue = 20,
+                    step = 1,
+                    default = 16,
+                    onValueChanged = function(value)
+                        EquipmentSummaryPlayerFrame:UpdateAppearance()
+                        EquipmentSummaryInspectFrame:UpdateAppearance()
+                    end,
                     newFeature = true
                 },
+                {
+                    -- 内容文本尺寸
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.fontSize"],
+                    key = "equipmentSummary.fontSize",
+                    minValue = 5,
+                    maxValue = 20,
+                    step = 1,
+                    default = 13,
+                    onValueChanged = function(value)
+                        EquipmentSummaryPlayerFrame:UpdateAppearance()
+                        EquipmentSummaryInspectFrame:UpdateAppearance()
+                    end,
+                    newFeature = true
+                }
             }
         }
     }
