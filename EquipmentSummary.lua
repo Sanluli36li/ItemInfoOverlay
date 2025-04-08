@@ -381,6 +381,11 @@ function SanluliEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec()
 end
 
 local function UpdateSummaryPoints()
+    local characterRelative = CharacterFrame
+    if CCS_TOAST then
+        characterRelative = CharacterFrameBg
+    end
+
     if Module:GetConfig(CONFIG_INSPECT_ENABLE) and InspectFrame and InspectFrame:IsVisible() then
         EquipmentSummaryInspectFrame:Show()
 
@@ -392,7 +397,7 @@ local function UpdateSummaryPoints()
 
         if CharacterFrame:IsVisible() then
             EquipmentSummaryInspectFrame:ClearAllPoints()
-            EquipmentSummaryInspectFrame:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT")
+            EquipmentSummaryInspectFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
         else
             EquipmentSummaryInspectFrame:ClearAllPoints()
             EquipmentSummaryInspectFrame:SetPoint("TOPLEFT", InspectFrame, "TOPRIGHT")
@@ -402,7 +407,7 @@ local function UpdateSummaryPoints()
         EquipmentSummaryPlayerFrame:Show()
 
         EquipmentSummaryPlayerFrame:ClearAllPoints()
-        EquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", CharacterFrame, "TOPRIGHT")
+        EquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
     else
         EquipmentSummaryInspectFrame:Hide()
         EquipmentSummaryPlayerFrame:Hide()
