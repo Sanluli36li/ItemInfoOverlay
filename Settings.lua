@@ -201,7 +201,7 @@ local settings = {
             settingType = SETTING_TYPE.ADDON_VARIABLE,
             name = "鼠标提示装等|cffff0000测试|r",
             tooltip = "在鼠标提示中添加单位的物品等级显示\n\n当获取一名玩家装等后, 60秒内不会尝试更新其装等(除非你手动观察他)\n\n此功能依赖于观察, 因此当观察界面打开时(被占用), 鼠标提示只会显示已缓存的数据, 并不会获取新的数据\n\n|cffff0000这是一个测试功能, 不保证其稳定性|r\n|cffff0000This is a testing feature, its stability is not guaranteed|r",
-            key = "tooltip.itemLevel.enable",
+            key = "tooltip.itemLevel.enable.test",
             default = false,
         },
         {

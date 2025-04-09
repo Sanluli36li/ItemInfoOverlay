@@ -3,7 +3,7 @@ local ADDON_NAME, ItemInfoOverlay = ...
 local Module = ItemInfoOverlay:NewModule("tooltip")
 local L = ItemInfoOverlay.Locale
 
-local CONFIG_ITEM_LEVEL = "itemLevel.enable"
+local CONFIG_ITEM_LEVEL = "itemLevel.enable.test"
 
 local playerItemLevelCache = { }
 
