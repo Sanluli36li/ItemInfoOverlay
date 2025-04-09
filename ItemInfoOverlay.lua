@@ -209,6 +209,7 @@ function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInf
         local r, g, b = C_Item.GetItemQualityColor(breedQuality)
 
         if speciesID then
+            -- 需要 BattlePetBreedID 插件
             if BPBID_Internal and speciesID and breedQuality then
                 local breedNum = BPBID_Internal.CalculateBreedID(
                     tonumber(speciesID),
