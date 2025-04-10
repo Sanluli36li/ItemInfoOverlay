@@ -1,11 +1,8 @@
 if not(GetLocale() == "ruRU") then
     return
 end
-
 local ADDON_NAME, ItemInfoOverlay = ...
-
 local L = ItemInfoOverlay.Locale
-
 L["addon.name"] = ADDON_NAME
 L["addon.sanluliUtils.tooltip"] = "\n\n|cffff0000Эта функция перенесена из \"SanluliUtils\". Если у вас загружен этот аддон, данная функция не будет работать.|r"
 L["characterFrame.compareStats.mainStat"] = "Основная характеристика"
@@ -47,12 +44,12 @@ L["chatLink.hyperlinkEnhance.displaySockets.tooltip"] = "Отображать г
 L["chatLink.hyperlinkEnhance.title"] = "Улучшение ссылок в чате"
 L["chatLink.hyperlinkEnhance.tooltip"] = "Добавляет дополнительную информацию в ссылки чата"
 L["equipmentSummary.equipmentStats"] = "Характеристики экипировки"
-L["equipmentSummary.inspect.title"] = "Display Inspect Summary"
-L["equipmentSummary.inspect.tooltip"] = "Displays the Equipment Summary frame of the inspected target, which is used to display equipment lists, sets, attributes, etc."
+L["equipmentSummary.inspect.title"] = "Отображение обзора сводки"
+L["equipmentSummary.inspect.tooltip"] = "Отображает окно сводки экипировки проверенной цели, который используется для отображения списков экипировки, сетов, атрибутов и т. д."
 L["equipmentSummary.mainStat"] = "Основная характеристика"
-L["equipmentSummary.player.title"] = "Display Player Summary"
-L["equipmentSummary.player.tooltip"] = "Displays the Equipment Summary frame on right side of Character Frame, which is used to display equipment lists, sets, attributes, etc."
-L["equipmentSummary.title"] = "Equipment Summary"
+L["equipmentSummary.player.title"] = "Отображение сводки игрока"
+L["equipmentSummary.player.tooltip"] = "Отображает окно сводки экипировки справа от рамки персонажа, которая используется для отображения списков экипировки, сетов, атрибутов и т. д."
+L["equipmentSummary.title"] = "Обзор экипировки"
 L["itemInfoOverlay.bonding.boe"] = "BoE"
 L["itemInfoOverlay.bonding.btw"] = "ПкО"
 L["itemInfoOverlay.bondingType.font"] = "Шрифт типа привязки"
