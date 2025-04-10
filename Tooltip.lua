@@ -11,6 +11,8 @@ local itemLevelLine
 local isBlzInspecting
 local isIIOInspecting
 local lastInspectTime
+local lastInspectGuid
+local added
 
 local function SearchUnitFromGUID(guid)
     if UnitGUID("target") == guid then
@@ -34,6 +36,7 @@ end
 
 hooksecurefunc(GameTooltip, "Show", function (self)
     if Module:GetConfig(CONFIG_ITEM_LEVEL) then
+        if added then return end
         itemLevelLine = nil
         if self:IsTooltipType(Enum.TooltipDataType.Unit) then
             local name, unit, guid = TooltipUtil.GetDisplayedUnit(self)
@@ -43,15 +46,21 @@ hooksecurefunc(GameTooltip, "Show", function (self)
                     if playerItemLevelCache[guid] then
                         self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", playerItemLevelCache[guid][2], nil, nil, nil, 1, 1, 1)
                         itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
+                        added = true
                     else
                         self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
                         itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
+                        added = true
                     end
                 end
             end
         end
         GameTooltip_CalculatePadding(self)
     end
+end)
+
+hooksecurefunc(GameTooltip, "ClearLines", function (self)
+    added = false
 end)
 
 hooksecurefunc("InspectUnit", function (unit)
@@ -63,6 +72,7 @@ end)
 hooksecurefunc("NotifyInspect", function(unit)
     -- print("NotifyInspect:", unit, UnitGUID(unit))
     lastInspectTime = GetTime()
+    lastInspectGuid = UnitGUID(unit)
 end)
 
 hooksecurefunc("ClearInspectPlayer", function()
@@ -73,6 +83,7 @@ end)
 function Module:INSPECT_READY(guid)
     -- print("INSPECT_READY:", guid)
     lastInspectTime = nil
+    lastInspectGuid = nil
 
     if Module:GetConfig(CONFIG_ITEM_LEVEL) then
         local unit = SearchUnitFromGUID(guid)
@@ -81,10 +92,8 @@ function Module:INSPECT_READY(guid)
             -- print(C_PaperDollInfo.GetInspectItemLevel(unit))
             local itemLevel = C_PaperDollInfo.GetInspectItemLevel(unit)
             playerItemLevelCache[guid] = { GetTime(), itemLevel }
-        end
 
-        if UnitGUID("mouseover") == guid then
-            if itemLevelLine then
+            if itemLevelLine and playerItemLevelCache[guid] then
                 itemLevelLine:SetText(playerItemLevelCache[guid][2])
             end
         end
@@ -99,7 +108,7 @@ Module:RegisterEvent("INSPECT_READY")
 
 function Module:UPDATE_MOUSEOVER_UNIT()
     if Module:GetConfig(CONFIG_ITEM_LEVEL) then
-        if not UnitIsUnit("player", "mouseover") then
+        if not UnitIsUnit("player", "mouseover") and CanInspect("mouseover") then
             local guid = UnitGUID("mouseover")
 
             if playerItemLevelCache[guid] then
@@ -108,8 +117,16 @@ function Module:UPDATE_MOUSEOVER_UNIT()
                     return
                 end
             end
-
-            if not isBlzInspecting and (not lastInspectTime or (lastInspectTime and isIIOInspecting) or (lastInspectTime + 5 > GetTime())) and CanInspect("mouseover") then
+            -- print(isBlzInspecting, isIIOInspecting, guid, lastInspectGuid, lastInspectTime)
+            if (
+                not isBlzInspecting and
+                (
+                    not lastInspectTime or
+                    (lastInspectTime and isIIOInspecting) or
+                    (lastInspectTime + 3 > GetTime())
+                )
+            ) then
+                ClearInspectPlayer()
                 NotifyInspect("mouseover")
                 isIIOInspecting = true
             end
