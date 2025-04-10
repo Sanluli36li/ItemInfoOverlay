@@ -11,6 +11,7 @@ local CONFIG_ITEM_LEVEL_POINT = "itemLevel.point"
 local CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON = "itemLevel.anchorToIcon"
 local CONFIG_SOCKET = "socket.enable"
 local CONFIG_SOCKET_ICON_SIZE = "socket.iconSize"
+local CONFIG_SOCKET_DISPLAY_MAX_SOCKETS = "socket.displayMaxSockets"
 local CONFIG_ENCHANT = "enchant.enable"
 local CONFIG_ENCHANT_DISPLAY_MISSING = "enchant.displayMissing"
 local CONFIG_ENCHANT_FONT = "enchant.font"
@@ -78,6 +79,14 @@ local EQUIP_LOC_CAN_ENCHANT_TWW = {
     INVTYPE_RANGEDRIGHT = true, -- 远程武器
 }
 
+local EQUIP_LOC_MAX_SOCKETS_TWW = {
+    INVTYPE_HEAD = 1,
+    INVTYPE_WAIST = 1,
+    INVTYPE_WRIST = 1,
+    INVTYPE_NECK = 2,
+    INVTYPE_FINGER = 2
+}
+
 local function CanEnchant(itemLevel, itemEquipLoc)
     if itemLevel > 535 then
         -- TWW
@@ -85,6 +94,19 @@ local function CanEnchant(itemLevel, itemEquipLoc)
     else
         return false
     end
+end
+
+local function MaxSockets(itemLevel, itemLink)
+    local itemEquipLoc, _, _, _, _, _, expansionID = select(9, C_Item.GetItemInfo(itemLink))
+
+    if itemLevel > 535 or expansionID == LE_EXPANSION_WAR_WITHIN then
+        return EQUIP_LOC_MAX_SOCKETS_TWW[itemEquipLoc] or 0
+    elseif expansionID == LE_EXPANSION_DRAGONFLIGHT then
+        if itemEquipLoc == INVTYPE_NECK then
+            return 3
+        end
+    end
+    return 0
 end
 
 --------------------
@@ -243,6 +265,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
     local itemEnchant, itemEnchantQuality
     local itemGemSocketCount = 0
     local itemGemSockets = {}
+    local itemGemSocketsText = {}
     if tooltipInfo then
         for i, line in pairs(tooltipInfo.lines) do
             local text = line.leftText
@@ -262,6 +285,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
                 itemGemSocketCount = itemGemSocketCount + 1
                 if line.socketType then
                     itemGemSockets[itemGemSocketCount] = string.format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", line.socketType)
+                    itemGemSocketsText[itemGemSocketCount] = line.leftText
                 end
             end
         end
@@ -321,6 +345,8 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
                     -- 未载入: 贴个棱彩插槽上去
                     if not gemItem:IsItemDataCached() then
                         self["GemSocket"..i]:SetNormalTexture("Interface\\ItemSocketingFrame\\UI-EmptySocket-Prismatic")
+                        self["GemSocket"..i]:GetNormalTexture():SetVertexColor(1, 1, 1)
+                        self["GemSocket"..i]:SetAlpha(1)
                     end
                     -- 等待到宝石物品载入
                     gemItem:ContinueOnItemLoad(function()
@@ -328,6 +354,8 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
                         local professionQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(gemID)
 
                         self["GemSocket"..i]:SetNormalTexture(gemIcon)
+                        self["GemSocket"..i]:GetNormalTexture():SetVertexColor(1, 1, 1)
+                        self["GemSocket"..i]:SetAlpha(1)
 
                         self["GemSocket"..i]:SetScript("OnEnter", function(self)
                             GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
@@ -353,13 +381,30 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
                     if i <= itemGemSocketCount then
                         if itemGemSockets[i] then
                             self["GemSocket"..i]:SetNormalTexture(itemGemSockets[i])
-                            self["GemSocket"..i]:SetScript("OnEnter", function () end)
+                            self["GemSocket"..i]:GetNormalTexture():SetVertexColor(1, 1, 1)
+                            self["GemSocket"..i]:SetAlpha(1)
+                            self["GemSocket"..i]:SetScript("OnEnter", function ()
+                                GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+                                GameTooltip:SetText(itemGemSocketsText[i])
+                                GameTooltip:Show()
+                            end)
                             self["GemSocket"..i]:Show()
                             self["GemSocket"..i].Quality:Hide()
                         else
                             self["GemSocket"..i]:Hide()
                             self["GemSocket"..i].Quality:Hide()
                         end
+                    elseif Module:GetConfig(CONFIG_SOCKET_DISPLAY_MAX_SOCKETS) and i <= MaxSockets(itemLevel, itemLink) then
+                        self["GemSocket"..i]:SetNormalTexture("Interface\\ItemSocketingFrame\\UI-EmptySocket-Prismatic")
+                        self["GemSocket"..i]:GetNormalTexture():SetVertexColor(1, 0.5, 0.5)
+                        self["GemSocket"..i]:SetAlpha(0.5)
+                        self["GemSocket"..i]:SetScript("OnEnter", function ()
+                            GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+                            GameTooltip:SetText(L["characterFrame.socket.displayMaxSockets.message"])
+                            GameTooltip:Show()
+                        end)
+                        self["GemSocket"..i]:Show()
+                        self["GemSocket"..i].Quality:Hide()
                     else
                         self["GemSocket"..i]:Hide()
                         self["GemSocket"..i].Quality:Hide()

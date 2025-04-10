@@ -411,6 +411,14 @@ local settings = {
                     end,
                     subSettings = {
                         {
+                            -- 显示可打孔
+                            controlType = CONTROL_TYPE.CHECKBOX,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["characterFrame.socket.displayMaxSockets"],
+                            key = "characterFrame.socket.displayMaxSockets",
+                            default = false,
+                        },
+                        {
                             -- 插槽图标尺寸
                             controlType = CONTROL_TYPE.SLIDER,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
