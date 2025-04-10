@@ -438,6 +438,10 @@ end)
 
 hooksecurefunc("BankFrameItemButton_Update", function(button)
     -- 银行/材料银行
+    if button.isBag  then
+        -- 过滤银行背包栏
+        return
+    end
     local bag = button:GetParent():GetID()
     local slot = button:GetID()
     Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
