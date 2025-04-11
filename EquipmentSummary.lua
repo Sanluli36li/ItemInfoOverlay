@@ -201,6 +201,10 @@ function IIOEquipmentSummaryFrameMixin:OnLoad()
         insets = { left = 3, right = 3, top = 3, bottom = 3 },
     })
 
+    if ElvUI then
+        self:SetTemplate("Transparent")
+    end
+
     self.slots = {}
     self.slotNum = 0
 
@@ -392,14 +396,17 @@ local function UpdateSummaryPoints()
         if Module:GetConfig(CONFIG_PLAYER_ENABLE) then
             EquipmentSummaryPlayerFrame:Show()
             EquipmentSummaryPlayerFrame:ClearAllPoints()
+            EquipmentSummaryPlayerFrame:SetParent(EquipmentSummaryInspectFrame)
             EquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", EquipmentSummaryInspectFrame, "TOPRIGHT")
         end
 
         if PaperDollFrame:IsVisible() then
             EquipmentSummaryInspectFrame:ClearAllPoints()
+            EquipmentSummaryInspectFrame:SetParent(characterRelative)
             EquipmentSummaryInspectFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
         else
             EquipmentSummaryInspectFrame:ClearAllPoints()
+            EquipmentSummaryInspectFrame:SetParent(InspectFrame)
             EquipmentSummaryInspectFrame:SetPoint("TOPLEFT", InspectFrame, "TOPRIGHT")
         end
     elseif Module:GetConfig(CONFIG_PLAYER_ENABLE) and PaperDollFrame:IsVisible() then
@@ -407,6 +414,7 @@ local function UpdateSummaryPoints()
         EquipmentSummaryPlayerFrame:Show()
 
         EquipmentSummaryPlayerFrame:ClearAllPoints()
+        EquipmentSummaryPlayerFrame:SetParent(characterRelative)
         EquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
     else
         EquipmentSummaryInspectFrame:Hide()
