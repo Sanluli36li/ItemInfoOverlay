@@ -391,39 +391,39 @@ local function UpdateSummaryPoints()
     end
 
     if Module:GetConfig(CONFIG_INSPECT_ENABLE) and InspectFrame and InspectFrame:IsVisible() then
-        EquipmentSummaryInspectFrame:Show()
+        IIOEquipmentSummaryInspectFrame:Show()
 
         if Module:GetConfig(CONFIG_PLAYER_ENABLE) then
-            EquipmentSummaryPlayerFrame:Show()
-            EquipmentSummaryPlayerFrame:ClearAllPoints()
-            EquipmentSummaryPlayerFrame:SetParent(EquipmentSummaryInspectFrame)
-            EquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", EquipmentSummaryInspectFrame, "TOPRIGHT")
+            IIOEquipmentSummaryPlayerFrame:Show()
+            IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
+            IIOEquipmentSummaryPlayerFrame:SetParent(IIOEquipmentSummaryInspectFrame)
+            IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", IIOEquipmentSummaryInspectFrame, "TOPRIGHT")
         end
 
         if PaperDollFrame:IsVisible() then
-            EquipmentSummaryInspectFrame:ClearAllPoints()
-            EquipmentSummaryInspectFrame:SetParent(characterRelative)
-            EquipmentSummaryInspectFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
+            IIOEquipmentSummaryInspectFrame:ClearAllPoints()
+            IIOEquipmentSummaryInspectFrame:SetParent(characterRelative)
+            IIOEquipmentSummaryInspectFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
         else
-            EquipmentSummaryInspectFrame:ClearAllPoints()
-            EquipmentSummaryInspectFrame:SetParent(InspectFrame)
-            EquipmentSummaryInspectFrame:SetPoint("TOPLEFT", InspectFrame, "TOPRIGHT")
+            IIOEquipmentSummaryInspectFrame:ClearAllPoints()
+            IIOEquipmentSummaryInspectFrame:SetParent(InspectFrame)
+            IIOEquipmentSummaryInspectFrame:SetPoint("TOPLEFT", InspectFrame, "TOPRIGHT")
         end
     elseif Module:GetConfig(CONFIG_PLAYER_ENABLE) and PaperDollFrame:IsVisible() then
-        EquipmentSummaryInspectFrame:Hide()
-        EquipmentSummaryPlayerFrame:Show()
+        IIOEquipmentSummaryInspectFrame:Hide()
+        IIOEquipmentSummaryPlayerFrame:Show()
 
-        EquipmentSummaryPlayerFrame:ClearAllPoints()
-        EquipmentSummaryPlayerFrame:SetParent(characterRelative)
-        EquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
+        IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
+        IIOEquipmentSummaryPlayerFrame:SetParent(characterRelative)
+        IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
     else
-        EquipmentSummaryInspectFrame:Hide()
-        EquipmentSummaryPlayerFrame:Hide()
+        IIOEquipmentSummaryInspectFrame:Hide()
+        IIOEquipmentSummaryPlayerFrame:Hide()
     end
 end
 
 PaperDollFrame:HookScript("OnShow", function(self)
-    EquipmentSummaryPlayerFrame:Refresh()
+    IIOEquipmentSummaryPlayerFrame:Refresh()
     UpdateSummaryPoints()
 end)
 
@@ -432,16 +432,16 @@ PaperDollFrame:HookScript("OnHide", function(self)
 end)
 
 function Module:AfterStartup()
-    EquipmentSummaryPlayerFrame:UpdateAppearance()
-    EquipmentSummaryPlayerFrame:SetUnit("player")
+    IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+    IIOEquipmentSummaryPlayerFrame:SetUnit("player")
 end
 
 function Module:ADDON_LOADED(AddOnName)
     if AddOnName == "Blizzard_InspectUI" then
-        EquipmentSummaryInspectFrame:UpdateAppearance()
+        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
 
         hooksecurefunc("InspectPaperDollFrame_UpdateButtons", function ()
-            EquipmentSummaryInspectFrame:SetUnit(InspectFrame.unit)
+            IIOEquipmentSummaryInspectFrame:SetUnit(InspectFrame.unit)
             UpdateSummaryPoints()
         end)
 
@@ -454,26 +454,26 @@ Module:RegisterEvent("ADDON_LOADED")
 
 -- 装备变更: 刷新总览
 function Module:PLAYER_EQUIPMENT_CHANGED()
-    EquipmentSummaryPlayerFrame:Refresh()
+    IIOEquipmentSummaryPlayerFrame:Refresh()
 end
 Module:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 
 -- 玩家物品栏更新: 刷新总览
 function Module:UNIT_INVENTORY_CHANGED(unit)
     if unit == "player" then
-        EquipmentSummaryPlayerFrame:Refresh()
+        IIOEquipmentSummaryPlayerFrame:Refresh()
     end
 end
 Module:RegisterEvent("UNIT_INVENTORY_CHANGED")
 
 -- 平均装等更新: 更新装等和专精
 function Module:PLAYER_AVG_ITEM_LEVEL_UPDATE()
-    EquipmentSummaryPlayerFrame:RefreshItemLevelAndSpec()
+    IIOEquipmentSummaryPlayerFrame:RefreshItemLevelAndSpec()
 end
 Module:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE")
 
 -- 玩家专精改变: 更新装等和专精
 function Module:ACTIVE_PLAYER_SPECIALIZATION_CHANGED()
-    EquipmentSummaryPlayerFrame:RefreshItemLevelAndSpec()
+    IIOEquipmentSummaryPlayerFrame:RefreshItemLevelAndSpec()
 end
 Module:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED")

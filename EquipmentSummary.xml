@@ -94,6 +94,6 @@
 		</Scripts>
     </Frame>
 
-    <Frame name="EquipmentSummaryPlayerFrame" inherits="IIOEquipmentSummaryFrameTemplate" hidden="true" />
-    <Frame name="EquipmentSummaryInspectFrame" inherits="IIOEquipmentSummaryFrameTemplate" hidden="true" />
+    <Frame name="IIOEquipmentSummaryPlayerFrame" inherits="IIOEquipmentSummaryFrameTemplate" hidden="true" />
+    <Frame name="IIOEquipmentSummaryInspectFrame" inherits="IIOEquipmentSummaryFrameTemplate" hidden="true" />
 </Ui>
