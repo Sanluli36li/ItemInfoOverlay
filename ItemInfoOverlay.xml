@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
     <Script file="ItemInfoOverlay.lua"/>
 
-    <Font name="SanluliItemInfoFont" virtual="true" height="12" outline="NORMAL">
+    <Font name="IIOItemInfoFont" virtual="true" height="12" outline="NORMAL">
         <Shadow>
             <Offset>
                 <AbsDimension x="1" y="-1"/>
@@ -11,20 +11,20 @@
         </Shadow>
     </Font>
 
-    <Frame name="SanluliItemInfoOverlayTemplate" mixin="SanluliItemInfoOverlayMixin" virtual="true">
+    <Frame name="IIOItemInfoOverlayTemplate" mixin="IIOItemInfoOverlayMixin" virtual="true">
         <Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="ItemLevel" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+				<FontString parentKey="ItemLevel" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false">
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOP" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-                <FontString parentKey="BondingType" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                <FontString parentKey="BondingType" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.ItemLevel" relativePoint="BOTTOM" x="0" y="-1"/>
 					</Anchors>
 				</FontString>
-                <FontString parentKey="ItemType" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                <FontString parentKey="ItemType" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false">
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="0"/>
 					</Anchors>
@@ -32,4 +32,18 @@
 			</Layer>
 		</Layers>
     </Frame>
+
+	<GameTooltip name="IIOTooltip" mixin="TooltipDataHandlerMixin" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="SharedTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				GameTooltip_OnLoad(self);
+			</OnLoad>
+			<OnTooltipCleared>
+				GameTooltip_ClearMoney(self);
+				SharedTooltip_ClearInsertedFrames(self);
+				GameTooltip_ClearStyle(self);
+				self:ClearHandlerInfo();
+			</OnTooltipCleared>
+		</Scripts>
+	</GameTooltip>
 </Ui>

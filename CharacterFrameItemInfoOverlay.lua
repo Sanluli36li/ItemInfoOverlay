@@ -108,8 +108,8 @@ local function MaxSockets(itemLevel, itemLink, isPvpItem)
             return 0
         end
     elseif expansionID == LE_EXPANSION_DRAGONFLIGHT then
-        if itemEquipLoc == INVTYPE_NECK then
-            return 3
+        if itemEquipLoc == "INVTYPE_NECK" then
+            return 3, 192994
         end
     end
     return 0
@@ -118,9 +118,9 @@ end
 --------------------
 -- Mixin
 --------------------
-SanluliCharacterFrameItemInfoOverlayMixin = {}
+IIOCharacterFrameItemInfoOverlayMixin = {}
 
-function SanluliCharacterFrameItemInfoOverlayMixin:SetSide(isLeft)
+function IIOCharacterFrameItemInfoOverlayMixin:SetSide(isLeft)
     self.side = (isLeft and "LEFT") or "RIGHT"
 
     -- 附魔
@@ -162,7 +162,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetSide(isLeft)
     )
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
+function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
     -- 物品等级位置
     if Module:GetConfig(CONFIG_ITEM_LEVEL) and not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) then
         self.ItemLevel:ClearAllPoints()
@@ -217,7 +217,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
     self:Refresh()
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
+function IIOCharacterFrameItemInfoOverlayMixin:UpdateLines()
     local line1, line2
     if (not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) and self.ItemLevel:IsShown()) or self.GemSocket1:IsShown() then
         line1 = true
@@ -261,7 +261,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateLines()
     end
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
+function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
     local itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType, 
     itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
     expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
@@ -369,7 +369,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
                         socketIcon:SetAlpha(1)
 
                         socketIcon:SetScript("OnEnter", function(self)
-                            GameTooltip:SetOwner(socketIcon, "ANCHOR_TOPLEFT")
+                            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
                             GameTooltip:SetHyperlink(gemLink)
                             GameTooltip:Show()
                         end)
@@ -395,8 +395,8 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
                             socketIcon:GetNormalTexture():SetVertexColor(1, 1, 1)
                             socketIcon:SetAlpha(1)
 
-                            socketIcon:SetScript("OnEnter", function ()
-                                GameTooltip:SetOwner(socketIcon, "ANCHOR_TOPLEFT")
+                            socketIcon:SetScript("OnEnter", function(self)
+                                GameTooltip:SetOwner(socketIcon, "ANCHOR_RIGHT")
                                 GameTooltip:SetText(itemGemSocketsText[i])
                                 GameTooltip:Show()
                             end)
@@ -421,21 +421,31 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
                         else
                             socketIcon.addSocketItemLink = nil
                         end
-                        
 
                         socketIcon:SetNormalTexture("Interface\\ItemSocketingFrame\\UI-EmptySocket-Prismatic")
                         socketIcon:GetNormalTexture():SetVertexColor(1, 0.5, 0.5)
                         socketIcon:SetAlpha(0.5)
 
-                        socketIcon:SetScript("OnEnter", function ()
-                            GameTooltip:SetOwner(socketIcon, "ANCHOR_TOPLEFT")
+                        socketIcon:SetScript("OnEnter", function(self)
+                            GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
                             GameTooltip:SetText(L["characterFrame.socket.displayMaxSockets.message"])
-                            GameTooltip:AddLine(socketIcon.addSocketItemLink)
+                            if self.addSocketItemLink then
+                                IIOTooltip:SetOwner(GameTooltip, "ANCHOR_NONE")
+                                IIOTooltip:SetPoint("TOPLEFT", GameTooltip, "BOTTOMLEFT", 0, -2)
+                                IIOTooltip:SetHyperlink(self.addSocketItemLink)
+                                IIOTooltip:Show()
+                                --GameTooltip.shoppingTooltips[1]:SetOwner(GameTooltip, "ANCHOR_NONE")
+                                --GameTooltip.shoppingTooltips[1]:SetPoint("TOPLEFT", GameTooltip, "BOTTOMLEFT", 0, -2)
+                                --GameTooltip.shoppingTooltips[1]:SetHyperlink(self.addSocketItemLink)
+                                --GameTooltip.shoppingTooltips[1]:Show()
+                            end
                             GameTooltip:Show()
                         end)
 
                         socketIcon:SetScript("OnLeave", function()
                             GameTooltip:Hide()
+                            GameTooltip.shoppingTooltips[1]:Hide()
+                            IIOTooltip:Hide()
                         end)
 
                         socketIcon:Show()
@@ -457,7 +467,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLi
     self:UpdateLines()
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
+function IIOCharacterFrameItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
     self.itemLocation = itemLocation
     self.itemLink = nil
 
@@ -483,7 +493,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLocation(itemLocat
     end
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLink(itemLink)
+function IIOCharacterFrameItemInfoOverlayMixin:SetItemFromLink(itemLink)
     if itemLink then
         self.itemLocation = nil
         self.itemLink = itemLink
@@ -500,7 +510,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromLink(itemLink)
     end
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromUnitInventory(unit, slotID)
+function IIOCharacterFrameItemInfoOverlayMixin:SetItemFromUnitInventory(unit, slotID)
     local itemLink = GetInventoryItemLink(unit, slotID)
 
     if itemLink then
@@ -516,7 +526,7 @@ function SanluliCharacterFrameItemInfoOverlayMixin:SetItemFromUnitInventory(unit
     end
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:UpdateDurability()
+function IIOCharacterFrameItemInfoOverlayMixin:UpdateDurability()
     if self.itemLocation and self.itemLocation:IsEquipmentSlot() then
         local current, maximum = GetInventoryItemDurability(self.itemLocation:GetEquipmentSlot())
         if current and maximum then
@@ -534,13 +544,13 @@ function SanluliCharacterFrameItemInfoOverlayMixin:UpdateDurability()
     end
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:Clear()
+function IIOCharacterFrameItemInfoOverlayMixin:Clear()
     self.itemLocation = nil
     self.itemLink = nil
     self:Hide()
 end
 
-function SanluliCharacterFrameItemInfoOverlayMixin:Refresh()
+function IIOCharacterFrameItemInfoOverlayMixin:Refresh()
     if self.itemLocation then
         self:SetItemFromLocation(self.itemLocation)
     elseif self.itemLink then
@@ -550,9 +560,9 @@ function SanluliCharacterFrameItemInfoOverlayMixin:Refresh()
     end
 end
 
-SanluliCharacterFrameItemInfoOverlaySettingPriviewMixin = {}
+IIOCharacterFrameItemInfoOverlaySettingPriviewMixin = {}
 
-function SanluliCharacterFrameItemInfoOverlaySettingPriviewMixin:OnLoad()
+function IIOCharacterFrameItemInfoOverlaySettingPriviewMixin:OnLoad()
     self.itemButton:SetItemButtonTexture(6035288)
     self.itemButton:SetItemButtonQuality(Enum.ItemQuality.Epic)
     local overlay = Module:CreateItemInfoOverlay(self.itemButton, 1)
@@ -568,7 +578,7 @@ end
 --------------------
 
 function Module:CreateItemInfoOverlay(frame, slot)
-    frame.ItemInfoOverlay = CreateFrame("Frame", nil, frame, "SanluliCharacterFrameItemInfoOverlayTemplate")
+    frame.ItemInfoOverlay = CreateFrame("Frame", nil, frame, "IIOCharacterFrameItemInfoOverlayTemplate")
 
     local overlay = frame.ItemInfoOverlay
 

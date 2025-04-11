@@ -2,15 +2,15 @@
 ..\FrameXML\UI.xsd">
     <Script file="CharacterFrameItemInfoOverlay.lua"/>
 
-    <Frame name="SanluliCharacterFrameItemInfoOverlayTemplate" mixin="SanluliCharacterFrameItemInfoOverlayMixin" virtual="true">
+    <Frame name="IIOCharacterFrameItemInfoOverlayTemplate" mixin="IIOCharacterFrameItemInfoOverlayMixin" virtual="true">
         <Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="ItemLevel" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false"/>
-                <FontString parentKey="Enchant" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+				<FontString parentKey="ItemLevel" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false"/>
+                <FontString parentKey="Enchant" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false">
                     <Color r="0" g="1.0" b="0"/>
 				</FontString>
-                <FontString parentKey="EnchantQuality" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false"/>
-                <FontString parentKey="Durability" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                <FontString parentKey="EnchantQuality" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false"/>
+                <FontString parentKey="Durability" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false">
                     <Anchors>
 						<Anchor point="BOTTOM" x="0" y="0"/>
 					</Anchors>
@@ -25,7 +25,7 @@
                 </Anchors>
                 <Layers>
                     <Layer level="OVERLAY">
-                        <FontString parentKey="Quality" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                        <FontString parentKey="Quality" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false">
                             <Anchors>
                                 <Anchor point="CENTER" relativePoint="TOP" x="1" y="0"/>
                             </Anchors>
@@ -40,7 +40,7 @@
                 </Anchors>
                 <Layers>
                     <Layer level="OVERLAY">
-                        <FontString parentKey="Quality" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                        <FontString parentKey="Quality" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false">
                             <Anchors>
                                 <Anchor point="CENTER" relativePoint="TOP" x="1" y="0"/>
                             </Anchors>
@@ -55,7 +55,7 @@
                 </Anchors>
                 <Layers>
                     <Layer level="OVERLAY">
-                        <FontString parentKey="Quality" font="SanluliItemInfoFont" wordwrap="false" nonspacewrap="false">
+                        <FontString parentKey="Quality" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false">
                             <Anchors>
                                 <Anchor point="CENTER" relativePoint="TOP" x="1" y="0"/>
                             </Anchors>

@@ -50,13 +50,13 @@ local EQUIPMENT_SLOTS = {
 --------------------
 -- Mixin
 --------------------
-SanluliEquipmentSummaryEntryMixin = {}
+IIOEquipmentSummaryEntryMixin = {}
 
-function SanluliEquipmentSummaryEntryMixin:OnLoad()
+function IIOEquipmentSummaryEntryMixin:OnLoad()
     self:UpdateAppearance()
 end
 
-function SanluliEquipmentSummaryEntryMixin:UpdateAppearance()
+function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     local font, size, style = GameTooltipText:GetFont()
     self.SlotName:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemLevel:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
@@ -113,7 +113,7 @@ function SanluliEquipmentSummaryEntryMixin:UpdateAppearance()
     self.ItemLink:SetWidth((Module:GetConfig(CONFIG_FONT_SIZE) * 14) - itemLevelWidth)
 end
 
-function SanluliEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, itemLink, itemLevel, stats)
+function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, itemLink, itemLevel, stats)
     self.unit = unit
     self.slot = slot
     itemLink = itemLink or GetInventoryItemLink(unit, slot)
@@ -141,14 +141,14 @@ function SanluliEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, 
     end
 end
 
-function SanluliEquipmentSummaryEntryMixin:Clear()
+function IIOEquipmentSummaryEntryMixin:Clear()
     self:ToggleStats()
     self.ItemLevel:SetText("|cff7f7f7f-|r")
     self.ItemLink:SetText("|cff7f7f7f"..(self.slotName or "-").."|r")
 end
 
 
-function SanluliEquipmentSummaryEntryMixin:ToggleStats(crit, haste, mastery, versatility)
+function IIOEquipmentSummaryEntryMixin:ToggleStats(crit, haste, mastery, versatility)
     if crit then
         self.Crit:Show()
     else
@@ -174,7 +174,7 @@ function SanluliEquipmentSummaryEntryMixin:ToggleStats(crit, haste, mastery, ver
     end
 end
 
-function SanluliEquipmentSummaryEntryMixin:OnEnter()
+function IIOEquipmentSummaryEntryMixin:OnEnter()
     if self.unit and self.slot then
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetInventoryItem(self.unit, self.slot)
@@ -183,13 +183,13 @@ function SanluliEquipmentSummaryEntryMixin:OnEnter()
     end
 end
 
-function SanluliEquipmentSummaryEntryMixin:OnLeave()
+function IIOEquipmentSummaryEntryMixin:OnLeave()
     GameTooltip:Hide()
 end
 
-SanluliEquipmentSummaryFrameMixin = {}
+IIOEquipmentSummaryFrameMixin = {}
 
-function SanluliEquipmentSummaryFrameMixin:OnLoad()
+function IIOEquipmentSummaryFrameMixin:OnLoad()
     BackdropTemplateMixin.OnBackdropLoaded(self)
     self:SetBackdrop({
         bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
@@ -211,7 +211,7 @@ function SanluliEquipmentSummaryFrameMixin:OnLoad()
         local slotId = slot.slotId
 
         if not self.slots[slotId] then
-            self.slots[slotId] = CreateFrame("Frame", nil, self, "SanluliEquipmentSummaryEntryTemplate")
+            self.slots[slotId] = CreateFrame("Frame", nil, self, "IIOEquipmentSummaryEntryTemplate")
         end
 
         self.slots[slotId]:SetPoint("TOPLEFT", lastRegion, "BOTTOMLEFT")
@@ -226,11 +226,11 @@ function SanluliEquipmentSummaryFrameMixin:OnLoad()
     end
 end
 
-function SanluliEquipmentSummaryFrameMixin:OnShow()
+function IIOEquipmentSummaryFrameMixin:OnShow()
     self:Refresh()
 end
 
-function SanluliEquipmentSummaryFrameMixin:UpdateAppearance()
+function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
     for i, entry in pairs(self.slots) do
         entry:UpdateAppearance()
     end
@@ -245,12 +245,12 @@ function SanluliEquipmentSummaryFrameMixin:UpdateAppearance()
     self:Refresh()
 end
 
-function SanluliEquipmentSummaryFrameMixin:SetUnit(unit)
+function IIOEquipmentSummaryFrameMixin:SetUnit(unit)
     self.unit = unit
     self:Refresh()
 end
 
-function SanluliEquipmentSummaryFrameMixin:Refresh()
+function IIOEquipmentSummaryFrameMixin:Refresh()
     if not self:IsShown() then return end
     if self.unit then
         local name = UnitNameUnmodified(self.unit)
@@ -352,7 +352,7 @@ function SanluliEquipmentSummaryFrameMixin:Refresh()
     end
 end
 
-function SanluliEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec()
+function IIOEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec()
     local className, classFilename = UnitClass(self.unit)
     local classColor = C_ClassColor.GetClassColor(classFilename)
     local hexColorMarkup = "|cfffffff"

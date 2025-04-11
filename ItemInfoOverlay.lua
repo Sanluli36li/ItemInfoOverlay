@@ -64,9 +64,9 @@ local POINTS_BONDING_TYPE_ANCHOR_TO_ITEMLEVEL = {
 --------------------
 -- Mixin
 --------------------
-SanluliItemInfoOverlayMixin = {}
+IIOItemInfoOverlayMixin = {}
 
-function SanluliItemInfoOverlayMixin:UpdateAppearance()
+function IIOItemInfoOverlayMixin:UpdateAppearance()
     self.ItemLevel:SetFont(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
     self.ItemLevel:ClearAllPoints()
     self.ItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)])
@@ -97,7 +97,7 @@ function SanluliItemInfoOverlayMixin:UpdateAppearance()
     end
 end
 
-function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
+function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
     local itemLevelText
     local itemTypeText
     local itemBondingText
@@ -263,7 +263,7 @@ function SanluliItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInf
     self:Show()
 end
 
-function SanluliItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
+function IIOItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
     self.itemLocation = itemLocation
     self.itemLink = nil
 
@@ -289,7 +289,7 @@ function SanluliItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
     end
 end
 
-function SanluliItemInfoOverlayMixin:SetItemFromLink(itemLink)
+function IIOItemInfoOverlayMixin:SetItemFromLink(itemLink)
     if itemLink then
         self.itemLocation = nil
         self.itemLink = itemLink
@@ -306,13 +306,13 @@ function SanluliItemInfoOverlayMixin:SetItemFromLink(itemLink)
     end
 end
 
-function SanluliItemInfoOverlayMixin:Clear()
+function IIOItemInfoOverlayMixin:Clear()
     self.itemLocation = nil
     self.itemLink = nil
     self:Hide()
 end
 
-function SanluliItemInfoOverlayMixin:Refresh()
+function IIOItemInfoOverlayMixin:Refresh()
     if self.itemLocation then
         self:SetItemFromLocation(self.itemLocation)
     elseif self.itemLink then
@@ -322,9 +322,9 @@ function SanluliItemInfoOverlayMixin:Refresh()
     end
 end
 
-SanluliItemInfoOverlaySettingPriviewMixin = {}
+IIOItemInfoOverlaySettingPriviewMixin = {}
 
-function SanluliItemInfoOverlaySettingPriviewMixin:OnLoad()
+function IIOItemInfoOverlaySettingPriviewMixin:OnLoad()
     self.itemButton1:SetItemButtonTexture(6035288)
     self.itemButton1:SetItemButtonQuality(Enum.ItemQuality.Epic)
     local overlay1 = Module:CreateItemInfoOverlay(self.itemButton1)
@@ -348,7 +348,7 @@ end
 --------------------
 
 function Module:CreateItemInfoOverlay(frame)
-    frame.ItemInfoOverlay = CreateFrame("Frame", nil, frame, "SanluliItemInfoOverlayTemplate")
+    frame.ItemInfoOverlay = CreateFrame("Frame", nil, frame, "IIOItemInfoOverlayTemplate")
 
     local overlay = frame.ItemInfoOverlay
 

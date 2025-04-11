@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
     <Script file="EquipmentSummary.lua"/>
 
-    <Frame name="SanluliEquipmentSummaryEntryTemplate" mixin="SanluliEquipmentSummaryEntryMixin" virtual="true">
+    <Frame name="IIOEquipmentSummaryEntryTemplate" mixin="IIOEquipmentSummaryEntryMixin" virtual="true">
         <Size y="14"/>
         <Layers>
             <Layer level="BACKGROUND">
@@ -56,7 +56,7 @@
         </Scripts>
     </Frame>
 
-    <Frame name="SanluliEquipmentSummaryFrameTemplate" mixin="SanluliEquipmentSummaryFrameMixin" frameStrata="MEDIUM" hidden="true"  parent="UIParent" virtual="true" inherits="BackdropTemplate">
+    <Frame name="IIOEquipmentSummaryFrameTemplate" mixin="IIOEquipmentSummaryFrameMixin" frameStrata="MEDIUM" hidden="true"  parent="UIParent" virtual="true" inherits="BackdropTemplate">
         <Size x="256"/>
         <Layers>
             <Layer level="BORDER">
@@ -94,6 +94,6 @@
 		</Scripts>
     </Frame>
 
-    <Frame name="EquipmentSummaryPlayerFrame" inherits="SanluliEquipmentSummaryFrameTemplate" hidden="true" />
-    <Frame name="EquipmentSummaryInspectFrame" inherits="SanluliEquipmentSummaryFrameTemplate" hidden="true" />
+    <Frame name="EquipmentSummaryPlayerFrame" inherits="IIOEquipmentSummaryFrameTemplate" hidden="true" />
+    <Frame name="EquipmentSummaryInspectFrame" inherits="IIOEquipmentSummaryFrameTemplate" hidden="true" />
 </Ui>

@@ -28,7 +28,7 @@ local settings = {
             -- 预览
             controlType = CONTROL_TYPE.CUSTOM_FRAME,
             name = PREVIEW,
-            template = "SanluliItemInfoOverlaySettingPriviewTemplate"
+            template = "IIOItemInfoOverlaySettingPriviewTemplate"
         },
         {
             -- 物品等级
@@ -287,7 +287,7 @@ local settings = {
                     -- 预览
                     controlType = CONTROL_TYPE.CUSTOM_FRAME,
                     name = PREVIEW,
-                    template = "SanluliCharacterFrameItemInfoOverlaySettingPriviewTemplate"
+                    template = "IIOCharacterFrameItemInfoOverlaySettingPriviewTemplate"
                 },
                 {
                     -- 物品等级
