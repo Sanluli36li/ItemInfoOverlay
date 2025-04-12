@@ -13,6 +13,9 @@ local CONFIG_STAT_ICON_STYLE = "statIcon.style"
 local CONFIG_FONT_SIZE = "fontSize"
 local CONFIG_TITLE_FONT_SIZE = "title.fontSize"
 
+local ITEM_LEVEL_AND_SPEC_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d", "%%.1f").."|r %s%s%s|r\n "
+local ITEM_LEVEL_AND_SPEC_WITH_PVP_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d", "%%.1f").."|r %s%s%s|r\n|cffffd200"..ITEM_UPGRADE_PVP_ITEM_LEVEL_STAT_FORMAT:gsub("%%d", "%%.1f").."|r\n "
+
 local STAT_ICONS = {
     ["Armory"] = {
         "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\crit.png",
@@ -267,16 +270,25 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
         end
 
         self.Title:SetText(name)
-        self:RefreshItemLevelAndSpec()
 
         local totalMainStat = 0
         local totalStats = {}
         local numItemSets = 0
         local itemSets = {}
 
+        local totalItemLevel = 0
+        local totalPvpItemLevel = 0
+
         for i, entry in pairs(self.slots) do
             local link = GetInventoryItemLink(self.unit, i)
             if link then
+                local itemLevel, _, pvpItemLevel = Utils:GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(self.unit, i))
+
+                if itemLevel then
+                    totalItemLevel = totalItemLevel + itemLevel
+                    totalPvpItemLevel = totalPvpItemLevel + (pvpItemLevel or itemLevel)
+                end
+
                 local stats = C_Item.GetItemStats(link)
                 if stats then
                     for stat, value in pairs(stats) do
@@ -296,12 +308,33 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                     end
                 end
 
-                local iLvl = Utils:GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(self.unit, i)) or GetDetailedItemLevelInfo(link)
-                entry:SetItemFromUnitInventory(self.unit, i, link, iLvl, stats)
+                
+
+                
+                entry:SetItemFromUnitInventory(self.unit, i, link, itemLevel, stats)
             else
+                if i == 17 then
+                    link = GetInventoryItemLink(self.unit, 16)
+                    if link then
+                        local loc = select(9, C_Item.GetItemInfo(link))
+                        if loc == "INVTYPE_2HWEAPON" or loc == "INVTYPE_RANGED" or loc == "INVTYPE_RANGEDRIGHT" then
+                            local itemLevel, _, pvpItemLevel = Utils:GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(self.unit, 16))
+
+                            if itemLevel then
+                                totalItemLevel = totalItemLevel + itemLevel
+                                totalPvpItemLevel = totalPvpItemLevel + (pvpItemLevel or itemLevel)
+                            end
+                        end
+                        
+                    end
+                    
+                end
+
                 entry:Clear()
             end
         end
+
+        self:RefreshItemLevelAndSpec(totalItemLevel / 16, totalPvpItemLevel / 16)
 
         local text = ""
 
@@ -356,7 +389,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
     end
 end
 
-function IIOEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec()
+function IIOEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec(itemLevel, pvpItemLevel)
     local className, classFilename = UnitClass(self.unit)
     local classColor = C_ClassColor.GetClassColor(classFilename)
     local hexColorMarkup = "|cfffffff"
@@ -365,13 +398,23 @@ function IIOEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec()
         hexColorMarkup = classColor:GenerateHexColorMarkup()
     end
 
-    local specName, itemLevel, specIcon
+    local specName, specIcon
     if self.unit == "player" then
-        _, itemLevel = GetAverageItemLevel()
+        if not itemLevel then
+            _, itemLevel = GetAverageItemLevel()
+        end
         _, specName, _, specIcon  = GetSpecializationInfo(GetSpecialization())
     else
-        itemLevel = C_PaperDollInfo.GetInspectItemLevel(self.unit)
+        if not itemLevel then
+            itemLevel = C_PaperDollInfo.GetInspectItemLevel(self.unit)
+        end
         _, specName, _, specIcon  = GetSpecializationInfoForSpecID(GetInspectSpecialization(self.unit))
+    end
+
+    if pvpItemLevel and pvpItemLevel > itemLevel then
+        self.SubTitle:SetFormattedText(ITEM_LEVEL_AND_SPEC_WITH_PVP_FORMAT, itemLevel, hexColorMarkup, specName or "", className, pvpItemLevel)
+    else
+        self.SubTitle:SetFormattedText(ITEM_LEVEL_AND_SPEC_FORMAT, itemLevel, hexColorMarkup, specName or "", className)
     end
 
     if specIcon then
@@ -380,8 +423,6 @@ function IIOEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec()
     else
         self.SpecIcon:Hide()
     end
-
-    self.SubTitle:SetFormattedText("|cffffd200"..ITEM_LEVEL.."|r %s%s%s|r ".."|n ", itemLevel, hexColorMarkup, specName or "", className)
 end
 
 local function UpdateSummaryPoints()
@@ -468,12 +509,12 @@ Module:RegisterEvent("UNIT_INVENTORY_CHANGED")
 
 -- 平均装等更新: 更新装等和专精
 function Module:PLAYER_AVG_ITEM_LEVEL_UPDATE()
-    IIOEquipmentSummaryPlayerFrame:RefreshItemLevelAndSpec()
+    -- IIOEquipmentSummaryPlayerFrame:RefreshItemLevelAndSpec()
 end
 Module:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE")
 
 -- 玩家专精改变: 更新装等和专精
 function Module:ACTIVE_PLAYER_SPECIALIZATION_CHANGED()
-    IIOEquipmentSummaryPlayerFrame:RefreshItemLevelAndSpec()
+    IIOEquipmentSummaryPlayerFrame:Refresh()
 end
 Module:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED")

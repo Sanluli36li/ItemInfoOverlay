@@ -4,7 +4,7 @@
 
 Other Language README:  
 [简体中文](README-zhCN.md)
-
+ 
 # Feature
 
 Displays item level (including Keystone level), binding type (BoE/WuE), and item type (equipment slot, profession recipe, mount, toy, pet) above item icons.  

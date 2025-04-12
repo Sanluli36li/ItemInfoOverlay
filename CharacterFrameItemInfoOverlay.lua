@@ -261,13 +261,12 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateLines()
     end
 end
 
-function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
+function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
     local itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType, 
     itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
     expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
 
     local itemLevelText
-    local pvpItemLevel
     local itemEnchant, itemEnchantQuality
     local itemGemSocketCount = 0
     local itemGemSockets = {}
@@ -293,8 +292,6 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
                     itemGemSockets[itemGemSocketCount] = string.format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", line.socketType)
                     itemGemSocketsText[itemGemSocketCount] = line.leftText
                 end
-            elseif line.leftText:match(PVP_ITEM_LEVEL_TOOLTIP:gsub("%%d", "(%%d+)")) then
-                pvpItemLevel = line.leftText:match(PVP_ITEM_LEVEL_TOOLTIP:gsub("%%d", "(%%d+)"))
             end
         end
     end
@@ -483,9 +480,13 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
             tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
         end
 
-        local itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
+        local itemLevel, _, pvpItemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo)
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+        if not itemLevel then
+            itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
+        end
+
+        self:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
 
         return itemLevel, itemLink, tooltipInfo
     else
@@ -500,9 +501,13 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemFromLink(itemLink)
 
         local tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
 
-        local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
+        local itemLevel, _, pvpItemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo)
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+        if not itemLevel then
+            itemLevel = GetDetailedItemLevelInfo(itemLink)
+        end
+
+        self:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
 
         return itemLevel, itemLink, tooltipInfo
     else
