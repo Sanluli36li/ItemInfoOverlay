@@ -517,8 +517,8 @@ local settings = {
                     default = false,
                     newFeature = true,
                     onValueChanged = function(value)
-                        EquipmentSummaryPlayerFrame:UpdateAppearance()
-                        EquipmentSummaryInspectFrame:UpdateAppearance()
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                     end
                 },
                 {
@@ -530,8 +530,8 @@ local settings = {
                     key = "equipmentSummary.statIcon.enable",
                     default = true,
                     onValueChanged = function(value)
-                        EquipmentSummaryPlayerFrame:UpdateAppearance()
-                        EquipmentSummaryInspectFrame:UpdateAppearance()
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                     end,
                     newFeature = true,
                     dropdown = {
@@ -560,8 +560,8 @@ local settings = {
                             },
                         },
                         onValueChanged = function(value)
-                            EquipmentSummaryPlayerFrame:UpdateAppearance()
-                            EquipmentSummaryInspectFrame:UpdateAppearance()
+                            IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                            IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                         end
                     },
                 },
@@ -576,8 +576,8 @@ local settings = {
                     step = 1,
                     default = 16,
                     onValueChanged = function(value)
-                        EquipmentSummaryPlayerFrame:UpdateAppearance()
-                        EquipmentSummaryInspectFrame:UpdateAppearance()
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                     end,
                     newFeature = true
                 },
@@ -592,8 +592,8 @@ local settings = {
                     step = 1,
                     default = 13,
                     onValueChanged = function(value)
-                        EquipmentSummaryPlayerFrame:UpdateAppearance()
-                        EquipmentSummaryInspectFrame:UpdateAppearance()
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                     end,
                     newFeature = true
                 }
