@@ -447,6 +447,18 @@ hooksecurefunc("BankFrameItemButton_Update", function(button)
     Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
 end)
 
+hooksecurefunc("GroupLootFrame_OnShow", function(self)
+    -- 队伍Roll点界面
+    local itemLink = GetLootRollItemLink(self.rollID)
+    local tooltipInfo = C_TooltipInfo.GetLootRollItem(self.rollID)
+    local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
+
+    if itemLink then
+        Utils:GetItemInfoOverlay(self.IconFrame):SetItemData(itemLevel, itemLink, tooltipInfo)
+    end
+end)
+
+
 hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound)
     -- 商人界面
     Utils:GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
