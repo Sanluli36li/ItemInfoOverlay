@@ -23,6 +23,7 @@ local POINTS = {
 
 local settings = {
     name = L["addon.name"],
+    database = "ItemInfoOverlayDB",
     settings = {
         {
             -- 预览
@@ -603,7 +604,7 @@ local settings = {
 }
 
 local function Register()
-    local category, layout = LibBlzSettings:RegisterVerticalSettingsTable(ADDON_NAME, settings, ItemInfoOverlayDB, true)
+    local category, layout = LibBlzSettings:RegisterVerticalSettingsTable(ADDON_NAME, settings, nil, true)
 end
 
 
