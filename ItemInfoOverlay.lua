@@ -464,7 +464,7 @@ hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound
     Utils:GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
 end)
 
-function Module:AfterStartup()
+function Module:AfterLogin()
     if NDui then
         -- NDui整合背包 https://ngabbs.com/read.php?tid=5483616
         local NDuiBagpack = NDui.cargBags:GetImplementation("NDui_Backpack")

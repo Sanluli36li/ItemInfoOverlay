@@ -669,11 +669,6 @@ function Module:Startup()
     end
 end
 
-function Module:AfterStartup()
-    -- self:UpdateAllCharacterSlot()
-    -- self:UpdateAllCharacterSlotDurability()
-end
-
 function Module:ADDON_LOADED(AddOnName)
     if AddOnName == "Blizzard_InspectUI" then
         -- 观察界面载入

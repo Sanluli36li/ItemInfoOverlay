@@ -39,7 +39,7 @@ local settings = {
             key = "itemInfoOverlay.itemLevel.enable",
             default = true,
             onValueChanged = function(value)
-                ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
             end,
             dropdown = {
                 -- 物品等级锚点
@@ -48,7 +48,7 @@ local settings = {
                 default = 2,
                 options = POINTS,
                 onValueChanged = function(value)
-                    ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                    ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                 end
             },
             subSettings = {
@@ -61,7 +61,7 @@ local settings = {
                     mediaType = LibSharedMedia.MediaType.FONT,
                     default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
                     onValueChanged = function(value)
-                        ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                     end
                 },
                 {
@@ -75,7 +75,7 @@ local settings = {
                     step = 1,
                     default = 14,
                     onValueChanged = function(value)
-                        ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                     end
                 }
             }
@@ -89,7 +89,7 @@ local settings = {
             key = "itemInfoOverlay.itemType.enable",
             default = true,
             onValueChanged = function(value)
-                ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
             end,
             dropdown = {
                 -- 物品分类锚点
@@ -98,7 +98,7 @@ local settings = {
                 default = 8,
                 options = POINTS,
                 onValueChanged = function(value)
-                    ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                    ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                 end
             },
             subSettings = {
@@ -111,7 +111,7 @@ local settings = {
                     mediaType = LibSharedMedia.MediaType.FONT,
                     default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
                     onValueChanged = function(value)
-                        ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                     end
                 },
                 {
@@ -125,7 +125,7 @@ local settings = {
                     step = 1,
                     default = 12,
                     onValueChanged = function(value)
-                        ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                     end
                 }
             }
@@ -139,7 +139,7 @@ local settings = {
             key = "itemInfoOverlay.bondingType.enable",
             default = true,
             onValueChanged = function(value)
-                ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
             end,
             subSettings = {
                 {
@@ -150,7 +150,7 @@ local settings = {
                     key = "itemInfoOverlay.bondingType.anchorToIcon",
                     default = false,
                     onValueChanged = function(value)
-                        ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                     end,
                     dropdown = {
                         -- 绑定类型锚点
@@ -159,7 +159,7 @@ local settings = {
                         default = 2,
                         options = POINTS,
                         onValueChanged = function(value)
-                            ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                            ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                         end
                     },
                 },
@@ -172,7 +172,7 @@ local settings = {
                     mediaType = LibSharedMedia.MediaType.FONT,
                     default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
                     onValueChanged = function(value)
-                        ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                     end
                 },
                 {
@@ -186,7 +186,7 @@ local settings = {
                     step = 1,
                     default = 12,
                     onValueChanged = function(value)
-                        ItemInfoOverlay.itemInfoOverlay:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                     end
                 }
             }
@@ -298,7 +298,7 @@ local settings = {
                     key = "characterFrame.itemLevel.enable",
                     default = true,
                     onValueChanged = function(value)
-                        ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
                     subSettings = {
                         {
@@ -309,7 +309,7 @@ local settings = {
                             key = "characterFrame.itemLevel.anchorToIcon",
                             default = false,
                             onValueChanged = function(value)
-                                ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
                             dropdown = {
                                 -- 物品等级锚点
@@ -318,7 +318,7 @@ local settings = {
                                 default = 2,
                                 options = POINTS,
                                 onValueChanged = function(value)
-                                    ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                                    ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                                 end
                             },
                         },
@@ -331,7 +331,7 @@ local settings = {
                             mediaType = LibSharedMedia.MediaType.FONT,
                             default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
                             onValueChanged = function(value)
-                                ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end
                         },
                         {
@@ -345,7 +345,7 @@ local settings = {
                             step = 1,
                             default = 14,
                             onValueChanged = function(value)
-                                ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end
                         }
                     }
@@ -359,7 +359,7 @@ local settings = {
                     key = "characterFrame.enchant.enable",
                     default = true,
                     onValueChanged = function(value)
-                        ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
                     subSettings = {
                         {
@@ -379,7 +379,7 @@ local settings = {
                             mediaType = LibSharedMedia.MediaType.FONT,
                             default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
                             onValueChanged = function(value)
-                                ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end
                         },
                         {
@@ -393,7 +393,7 @@ local settings = {
                             step = 1,
                             default = 12,
                             onValueChanged = function(value)
-                                ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end
                         }
                     }
@@ -407,7 +407,7 @@ local settings = {
                     key = "characterFrame.socket.enable",
                     default = true,
                     onValueChanged = function(value)
-                        ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
                     subSettings = {
                         {
@@ -429,7 +429,7 @@ local settings = {
                             step = 1,
                             default = 14,
                             onValueChanged = function(value)
-                                ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end
                         }
                     }
@@ -443,7 +443,7 @@ local settings = {
                     key = "characterFrame.durability.enable",
                     default = true,
                     onValueChanged = function(value)
-                        ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
                     dropdown = {
                         -- 耐久度锚点
@@ -452,7 +452,7 @@ local settings = {
                         default = 8,
                         options = POINTS,
                         onValueChanged = function(value)
-                            ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                            ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                         end
                     },
                     subSettings = {
@@ -465,7 +465,7 @@ local settings = {
                             mediaType = LibSharedMedia.MediaType.FONT,
                             default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
                             onValueChanged = function(value)
-                                ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end
                         },
                         {
@@ -479,7 +479,7 @@ local settings = {
                             step = 1,
                             default = 12,
                             onValueChanged = function(value)
-                                ItemInfoOverlay.characterFrame:UpdateAllAppearance()
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end
                         }
                     }
@@ -607,6 +607,6 @@ local function Register()
 end
 
 
-function Module:BeforeStartup()
+function Module:OnLoad()
     Register()
 end

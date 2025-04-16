@@ -1,14 +1,13 @@
-local ADDON_NAME, ItemInfoOverlay = ...
+local ADDON_NAME, AddOn = ...
 
-_G["ItemInfoOverlay"] = ItemInfoOverlay
+_G[ADDON_NAME] = AddOn
 
-local ADDON_MESSAGE_AFFIX = "|cffffffffItemInfoOverlay: |r"
-local ADDON_LISTENER_SUFFIX = "Listener"
+AddOn.Locale = {}	-- 本地化表
+AddOn.Modules = {}	-- 模块表
 
-ItemInfoOverlay.Locale = {}					-- 本地化表
-ItemInfoOverlay.Modules = {}					-- 模块表
+local ADDON_DATABASE = ADDON_NAME.."DB"
 
-local Listener = CreateFrame('Frame', ADDON_NAME .. ADDON_LISTENER_SUFFIX)
+local Listener = CreateFrame('Frame')
 local EventListeners = {}
 
 Listener:SetScript("OnEvent", function(frame, event, ...)
@@ -24,7 +23,7 @@ Listener:SetScript("OnEvent", function(frame, event, ...)
 end)
 
 -- 注册事件
-function ItemInfoOverlay:RegisterEvent(event, callback, func)
+function AddOn:RegisterEvent(event, callback, func)
     if func == nil then func = 0 end
 	if EventListeners[event] == nil then
 		Listener:RegisterEvent(event)
@@ -35,7 +34,7 @@ function ItemInfoOverlay:RegisterEvent(event, callback, func)
 end
 
 -- 取消注册事件
-function ItemInfoOverlay:UnregisterEvent(event, callback)
+function AddOn:UnregisterEvent(event, callback)
 	local listeners = EventListeners[event]
 	if listeners then
 		local count = 0
@@ -54,46 +53,46 @@ function ItemInfoOverlay:UnregisterEvent(event, callback)
 end
 
 -- 获取配置项
-function ItemInfoOverlay:GetConfig(module, key)
+function AddOn:GetConfig(module, key)
 	if self.Database then
 		return self.Database[module..'.'..key]
 	end
 end
 
 -- 设置配置项
-function ItemInfoOverlay:SetConfig(module, key, value)
+function AddOn:SetConfig(module, key, value)
 	if self.Database then
     	self.Database[module..'.'..key] = value
 	end
 end
 
 -- 插件消息输出
-function ItemInfoOverlay:Print(text, r, g, b, ...)
+function AddOn:Print(text, r, g, b, ...)
     r, g, b = r or 1, g or 1, b or 0
-    DEFAULT_CHAT_FRAME:AddMessage("|cffffffff" .. self.Locale["addon.name"] .. ": |r" .. tostring(text), r, g, b, ...)
+    DEFAULT_CHAT_FRAME:AddMessage("|cffffffff"..(AddOn.Locale["addon.name"] or ADDON_NAME)..": |r".. tostring(text), r, g, b, ...)
 end
 
 -- 模块类
 local ModulePrototype = {
 	RegisterEvent = function (self, event, func)
-		ItemInfoOverlay:RegisterEvent(event, self, func)
+		AddOn:RegisterEvent(event, self, func)
 	end,
 
 	UnregisterEvent = function (self, event)
-		ItemInfoOverlay:UnregisterEvent(event, self)
+		AddOn:UnregisterEvent(event, self)
 	end,
 
 	GetConfig = function(self, key)
-		return ItemInfoOverlay:GetConfig(self.name, key)
+		return AddOn:GetConfig(self.name, key)
 	end,
 
 	SetConfig = function(self, key, value)
-		return ItemInfoOverlay:SetConfig(self.name, key, value)
+		return AddOn:SetConfig(self.name, key, value)
 	end
 }
 
 -- 新建模块
-function ItemInfoOverlay:NewModule(name)
+function AddOn:NewModule(name)
 	local module = {}
 	self.Modules[name] = module
 	setmetatable(module, {__index = ModulePrototype})
@@ -102,37 +101,51 @@ function ItemInfoOverlay:NewModule(name)
 	return module
 end
 
-function ItemInfoOverlay:GetModule(name)
+function AddOn:GetModule(name)
 	if self.Modules[name] then
 		return self.Modules[name]
 	end
 end
 
-setmetatable(ItemInfoOverlay, {__index = ItemInfoOverlay.Modules})
+-- setmetatable(AddOn, {__index = AddOn.Modules})
 
-function ItemInfoOverlay:ForAllModules(event, ...)
-	for _, module in pairs(ItemInfoOverlay.Modules) do
+function AddOn:ForAllModules(event, ...)
+	for _, module in pairs(AddOn.Modules) do
 		if type(module) == 'table' and module[event] then
 			module[event](module, ...)
 		end
 	end
 end
 
-ItemInfoOverlay:RegisterEvent("ADDON_LOADED", ItemInfoOverlay)
 
-function ItemInfoOverlay:ADDON_LOADED(addOnName, containsBindings)
+
+function AddOn:ADDON_LOADED(addOnName, containsBindings)
 	if addOnName == ADDON_NAME then
-		ItemInfoOverlayDB = (type(ItemInfoOverlayDB) == "table" and ItemInfoOverlayDB) or {}
-		self.Database = ItemInfoOverlayDB
+		_G[ADDON_DATABASE] = (type(_G[ADDON_DATABASE]) == "table" and _G[ADDON_DATABASE]) or {}
+		self.Database = _G[ADDON_DATABASE]
 
-		self:ForAllModules('BeforeStartup')
-		self:ForAllModules('Startup')
+		self:ForAllModules("OnLoad")
+		self:ForAllModules("Startup")
 	end
 end
+AddOn:RegisterEvent("ADDON_LOADED", AddOn)
 
-ItemInfoOverlay:RegisterEvent("PLAYER_ENTERING_WORLD", ItemInfoOverlay)
-function ItemInfoOverlay:PLAYER_ENTERING_WORLD()
-	self:ForAllModules('AfterStartup')
 
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD", ItemInfoOverlay)
+function AddOn:PLAYER_LOGIN()
+	self:ForAllModules("OnLogin")
 end
+AddOn:RegisterEvent("PLAYER_LOGIN", AddOn)
+
+
+function AddOn:PLAYER_ENTERING_WORLD()
+	self:ForAllModules('AfterLogin')
+
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", AddOn)
+end
+AddOn:RegisterEvent("PLAYER_ENTERING_WORLD", AddOn)
+
+
+function AddOn:PLAYER_LOGOUT()
+	self:ForAllModules("OnLogout")
+end
+AddOn:RegisterEvent("PLAYER_LOGOUT", AddOn)

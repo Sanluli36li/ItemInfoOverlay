@@ -472,7 +472,7 @@ PaperDollFrame:HookScript("OnHide", function(self)
     UpdateSummaryPoints()
 end)
 
-function Module:AfterStartup()
+function Module:AfterLogin()
     IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
     IIOEquipmentSummaryPlayerFrame:SetUnit("player")
 end
