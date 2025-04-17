@@ -443,7 +443,7 @@ local function UpdateSummaryPoints()
 
         if PaperDollFrame:IsVisible() then
             IIOEquipmentSummaryInspectFrame:ClearAllPoints()
-            IIOEquipmentSummaryInspectFrame:SetParent(characterRelative)
+            IIOEquipmentSummaryInspectFrame:SetParent(PaperDollFrame)
             IIOEquipmentSummaryInspectFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
         else
             IIOEquipmentSummaryInspectFrame:ClearAllPoints()
@@ -455,7 +455,7 @@ local function UpdateSummaryPoints()
         IIOEquipmentSummaryPlayerFrame:Show()
 
         IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
-        IIOEquipmentSummaryPlayerFrame:SetParent(characterRelative)
+        IIOEquipmentSummaryPlayerFrame:SetParent(PaperDollFrame)
         IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
     else
         IIOEquipmentSummaryInspectFrame:Hide()
