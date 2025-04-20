@@ -574,9 +574,13 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemFromUnitInventory(unit, sl
     if itemLink then
         local tooltipInfo = C_TooltipInfo.GetInventoryItem(unit, slotID)
 
-        local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
+        local itemLevel, _, pvpItemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo)
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+        if not itemLevel then
+            itemLevel = GetDetailedItemLevelInfo(itemLink)
+        end
+
+        self:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
 
         return itemLevel, itemLink, tooltipInfo
     else
