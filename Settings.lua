@@ -21,6 +21,9 @@ local POINTS = {
     "BOTTOMRIGHT"
 }
 
+local category, layout
+local characterFrameSelector
+
 local settings = {
     name = L["addon.name"],
     database = "ItemInfoOverlayDB",
@@ -147,8 +150,8 @@ local settings = {
                     -- 绑定类型独立锚点
                     controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["characterFrame.itemLevel.anchorToIcon"],
-                    key = "itemInfoOverlay.bondingType.anchorToIcon",
+                    name = L["itemInfoOverlay.customAnchor"],
+                    key = "itemInfoOverlay.bondingType.customAnchor",
                     default = false,
                     onValueChanged = function(value)
                         ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
@@ -200,10 +203,11 @@ local settings = {
             -- 鼠标提示装等
             controlType = CONTROL_TYPE.CHECKBOX,
             settingType = SETTING_TYPE.ADDON_VARIABLE,
-            name = "鼠标提示装等|cffff0000测试|r",
-            tooltip = "在鼠标提示中添加单位的物品等级显示\n\n当获取一名玩家装等后, 60秒内不会尝试更新其装等(除非你手动观察他)\n\n此功能依赖于观察, 因此当观察界面打开时(被占用), 鼠标提示只会显示已缓存的数据, 并不会获取新的数据\n\n|cffff0000这是一个测试功能, 不保证其稳定性|r\n|cffff0000This is a testing feature, its stability is not guaranteed|r",
-            key = "tooltip.itemLevel.enable.test",
-            default = false,
+            name = L["tooltip.itemLevel.title"],
+            tooltip = L["tooltip.itemLevel.tooltip"],
+            key = "tooltip.itemLevel.enable",
+            newFeature = true,
+            default = true,
         },
         {
             -- 聊天链接增强
@@ -226,7 +230,7 @@ local settings = {
                     key = "chatLink.hyperlinkEnhance.displayIcon",
                     default = true,
                     isVisible = function ()
-                        return not C_AddOns.IsAddOnLoadable("SanluliUtils", UnitNameUnmodified("player"))
+                        return not C_AddOns.IsAddOnLoaded("SanluliUtils")
                     end
                 },
                 {
@@ -238,7 +242,7 @@ local settings = {
                     key = "chatLink.hyperlinkEnhance.displayItemLevel",
                     default = true,
                     isVisible = function ()
-                        return not C_AddOns.IsAddOnLoadable("SanluliUtils", UnitNameUnmodified("player"))
+                        return not C_AddOns.IsAddOnLoaded("SanluliUtils")
                     end
                 },
                 {
@@ -250,7 +254,7 @@ local settings = {
                     key = "chatLink.hyperlinkEnhance.displayItemType",
                     default = true,
                     isVisible = function ()
-                        return not C_AddOns.IsAddOnLoadable("SanluliUtils", UnitNameUnmodified("player"))
+                        return not C_AddOns.IsAddOnLoaded("SanluliUtils")
                     end
                 },
                 {
@@ -262,7 +266,7 @@ local settings = {
                     key = "chatLink.hyperlinkEnhance.displaySockets",
                     default = false,
                     isVisible = function ()
-                        return not C_AddOns.IsAddOnLoadable("SanluliUtils", UnitNameUnmodified("player"))
+                        return not C_AddOns.IsAddOnLoaded("SanluliUtils")
                     end
                 },
                 {
@@ -274,7 +278,7 @@ local settings = {
                     key = "chatLink.hyperlinkEnhance.applyToGuildNews",
                     default = true,
                     isVisible = function ()
-                        return not C_AddOns.IsAddOnLoadable("SanluliUtils", UnitNameUnmodified("player"))
+                        return not C_AddOns.IsAddOnLoaded("SanluliUtils")
                     end
                 },
             }
@@ -291,6 +295,27 @@ local settings = {
                     template = "IIOCharacterFrameItemInfoOverlaySettingPriviewTemplate"
                 },
                 {
+                    controlType = CONTROL_TYPE.DROPDOWN,
+                    settingType = SETTING_TYPE.PROXY,
+                    name = "|cffffffff"..L["characterFrame.selector"].."|r",
+                    key = "characterFrame.selector",
+                    options = {
+                        { value = "itemLevel", name = L["characterFrame.selector.itemLevel"] },
+                        { value = "enchantAndSockets", name = L["characterFrame.selector.enchantAndSockets"] },
+                        { value = "other", name = L["characterFrame.selector.other"] },
+                    },
+                    getValue = function ()
+                        return characterFrameSelector or "itemLevel"
+                    end,
+                    setValue = function (value)
+                        characterFrameSelector = value
+                    end,
+                    onValueChanged = function (value)
+                        -- 刷新面板
+                        SettingsPanel:DisplayLayout(SettingsPanel:GetCurrentLayout())
+                    end,
+                },
+                {
                     -- 物品等级
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -300,6 +325,9 @@ local settings = {
                     default = true,
                     onValueChanged = function(value)
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                    end,
+                    isVisible = function ()
+                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
                     end,
                     subSettings = {
                         {
@@ -322,6 +350,9 @@ local settings = {
                                     ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                                 end
                             },
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                            end,
                         },
                         {
                             -- 物品等级字体
@@ -333,7 +364,10 @@ local settings = {
                             default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
-                            end
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                            end,
                         },
                         {
                             -- 物品等级文字大小
@@ -347,7 +381,84 @@ local settings = {
                             default = 14,
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
-                            end
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                            end,
+                        }
+                    }
+                },
+                {
+                    -- PvP物品等级
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["characterFrame.pvpItemLevel.title"],
+                    tooltip = L["characterFrame.pvpItemLevel.tooltip"],
+                    key = "characterFrame.pvpItemLevel.enable",
+                    default = true,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                    end,
+                    isVisible = function ()
+                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                    end,
+                    newFeature = true,
+                    subSettings = {
+                        {
+                            -- PvP物品等级锚点至物品图标
+                            controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["itemInfoOverlay.customAnchor"],
+                            key = "characterFrame.pvpItemLevel.customAnchor",
+                            default = false,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            dropdown = {
+                                -- PvP物品等级锚点
+                                settingType = SETTING_TYPE.ADDON_VARIABLE,
+                                key = "characterFrame.pvpItemLevel.point",
+                                default = 2,
+                                options = POINTS,
+                                onValueChanged = function(value)
+                                    ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                                end
+                            },
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                            end,
+                        },
+                        {
+                            -- PvP物品等级字体
+                            controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["characterFrame.pvpItemLevel.font"],
+                            key = "characterFrame.pvpItemLevel.font",
+                            mediaType = LibSharedMedia.MediaType.FONT,
+                            default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                            end,
+                        },
+                        {
+                            -- PvP物品等级文字大小
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["characterFrame.pvpItemLevel.fontSize"],
+                            key = "characterFrame.pvpItemLevel.fontSize",
+                            minValue = 5,
+                            maxValue = 20,
+                            step = 1,
+                            default = 12,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                            end,
                         }
                     }
                 },
@@ -362,6 +473,9 @@ local settings = {
                     onValueChanged = function(value)
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
+                    isVisible = function ()
+                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                    end,
                     subSettings = {
                         {
                             -- 显示缺少的附魔
@@ -370,6 +484,9 @@ local settings = {
                             name = L["characterFrame.enchant.displayMissing"],
                             key = "characterFrame.enchant.displayMissing",
                             default = true,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                            end,
                         },
                         {
                             -- 附魔字体
@@ -381,7 +498,10 @@ local settings = {
                             default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
-                            end
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                            end,
                         },
                         {
                             -- 附魔文字大小
@@ -395,7 +515,10 @@ local settings = {
                             default = 12,
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
-                            end
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                            end,
                         }
                     }
                 },
@@ -410,6 +533,9 @@ local settings = {
                     onValueChanged = function(value)
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
+                    isVisible = function ()
+                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                    end,
                     subSettings = {
                         {
                             -- 显示可打孔
@@ -418,6 +544,9 @@ local settings = {
                             name = L["characterFrame.socket.displayMaxSockets"],
                             key = "characterFrame.socket.displayMaxSockets",
                             default = false,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                            end,
                         },
                         {
                             -- 插槽图标尺寸
@@ -431,7 +560,10 @@ local settings = {
                             default = 14,
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
-                            end
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                            end,
                         }
                     }
                 },
@@ -445,6 +577,9 @@ local settings = {
                     default = true,
                     onValueChanged = function(value)
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                    end,
+                    isVisible = function ()
+                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other"
                     end,
                     dropdown = {
                         -- 耐久度锚点
@@ -467,7 +602,10 @@ local settings = {
                             default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
-                            end
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other"
+                            end,
                         },
                         {
                             -- 耐久度文字大小
@@ -481,7 +619,10 @@ local settings = {
                             default = 12,
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
-                            end
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other"
+                            end,
                         }
                     }
                 },
@@ -516,7 +657,6 @@ local settings = {
                     tooltip = L["equipmentSummary.slotName.tooltip"],
                     key = "equipmentSummary.slotName.enable",
                     default = false,
-                    newFeature = true,
                     onValueChanged = function(value)
                         IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
                         IIOEquipmentSummaryInspectFrame:UpdateAppearance()
@@ -534,7 +674,6 @@ local settings = {
                         IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
                         IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                     end,
-                    newFeature = true,
                     dropdown = {
                         -- 属性图标风格
                         settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -580,7 +719,6 @@ local settings = {
                         IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
                         IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                     end,
-                    newFeature = true
                 },
                 {
                     -- 内容文本尺寸
@@ -596,7 +734,6 @@ local settings = {
                         IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
                         IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                     end,
-                    newFeature = true
                 }
             }
         }
@@ -604,7 +741,7 @@ local settings = {
 }
 
 local function Register()
-    local category, layout = LibBlzSettings:RegisterVerticalSettingsTable(ADDON_NAME, settings, nil, true)
+    category, layout = LibBlzSettings:RegisterVerticalSettingsTable(ADDON_NAME, settings, nil, true)
 end
 
 

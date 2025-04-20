@@ -9,6 +9,11 @@ local CONFIG_ITEM_LEVEL_FONT = "itemLevel.font"
 local CONFIG_ITEM_LEVEL_FONT_SIZE = "itemLevel.fontSize"
 local CONFIG_ITEM_LEVEL_POINT = "itemLevel.point"
 local CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON = "itemLevel.anchorToIcon"
+local CONFIG_PVP_ITEM_LEVEL = "pvpItemLevel.enable"
+local CONFIG_PVP_ITEM_LEVEL_FONT = "pvpItemLevel.font"
+local CONFIG_PVP_ITEM_LEVEL_FONT_SIZE = "pvpItemLevel.fontSize"
+local CONFIG_PVP_ITEM_LEVEL_POINT = "pvpItemLevel.point"
+local CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON = "pvpItemLevel.anchorToIcon"
 local CONFIG_SOCKET = "socket.enable"
 local CONFIG_SOCKET_ICON_SIZE = "socket.iconSize"
 local CONFIG_SOCKET_DISPLAY_MAX_SOCKETS = "socket.displayMaxSockets"
@@ -60,6 +65,18 @@ local POINTS = {
     "BOTTOMLEFT",
     "BOTTOM",
     "BOTTOMRIGHT"
+}
+
+local POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL = {
+    {"TOPLEFT", "BOTTOMLEFT", -1},
+    {"TOP", "BOTTOM", -1},
+    {"TOPRIGHT", "BOTTOMRIGHT", -1},
+    {"TOPLEFT", "BOTTOMLEFT", -1},
+    {"TOP", "BOTTOM", -1},
+    {"TOPRIGHT", "BOTTOMRIGHT", -1},
+    {"BOTTOMLEFT", "TOPLEFT", 1},
+    {"BOTTOM", "TOP", -1},
+    {"BOTTOMRIGHT", "TOPRIGHT", -1},
 }
 
 local itemInfoOverlayPoor = {}
@@ -174,6 +191,11 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
             0
         )
 
+        if not Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON) then
+            self.PvPItemLevel:ClearAllPoints()
+            self.PvPItemLevel:SetPoint("TOP")
+        end
+
         self.GemSocket1:ClearAllPoints()
         self.GemSocket1:SetPoint(
             (self.side == "LEFT" and "LEFT") or "RIGHT",
@@ -186,6 +208,17 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
         self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)])
 
+        if not Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON) then
+            self.PvPItemLevel:ClearAllPoints()
+            self.PvPItemLevel:SetPoint(
+                POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][1],
+                self.ItemLevel,
+                POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][2],
+                0,
+                POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][3]
+            )
+        end
+
         self.GemSocket1:ClearAllPoints()
         self.GemSocket1:SetPoint(
             (self.side == "LEFT" and "LEFT") or "RIGHT",
@@ -194,8 +227,15 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
             (self.side == "LEFT" and 9) or -9,
         0)
     end
+
+    if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON) then
+        self.PvPItemLevel:ClearAllPoints()
+        self.PvPItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_POINT)])
+    end
+
     -- 物品等级字体
     self.ItemLevel:SetFont(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
+    self.PvPItemLevel:SetFont(Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
     -- 附魔
     self.Enchant:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_ENCHANT_FONT_SIZE), "OUTLINE")
     self.EnchantQuality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_ENCHANT_FONT_SIZE), "OUTLINE")
@@ -308,6 +348,19 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
         self.ItemLevel:Show()
     else
         self.ItemLevel:Hide()
+    end
+
+    if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL) and pvpItemLevel then
+        if pvpItemLevel > 1 then
+            -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
+            local r, g, b = C_Item.GetItemQualityColor(itemQuality)
+            self.PvPItemLevel:SetFormattedText("|cff%02x%02x%02x(%d)|r", r * 255, g * 255, b * 255, pvpItemLevel)
+            self.PvPItemLevel:Show()
+        else
+            self.PvPItemLevel:Hide()
+        end
+    else
+        self.PvPItemLevel:Hide()
     end
 
     if Module:GetConfig(CONFIG_ENCHANT) and itemEnchant then

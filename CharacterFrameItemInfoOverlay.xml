@@ -6,6 +6,7 @@
         <Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="ItemLevel" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false"/>
+                <FontString parentKey="PvPItemLevel" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false"/>
                 <FontString parentKey="Enchant" font="IIOItemInfoFont" wordwrap="false" nonspacewrap="false">
                     <Color r="0" g="1.0" b="0"/>
 				</FontString>
