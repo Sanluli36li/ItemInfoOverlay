@@ -13,7 +13,7 @@ local CONFIG_PVP_ITEM_LEVEL = "pvpItemLevel.enable"
 local CONFIG_PVP_ITEM_LEVEL_FONT = "pvpItemLevel.font"
 local CONFIG_PVP_ITEM_LEVEL_FONT_SIZE = "pvpItemLevel.fontSize"
 local CONFIG_PVP_ITEM_LEVEL_POINT = "pvpItemLevel.point"
-local CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON = "pvpItemLevel.anchorToIcon"
+local CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON = "pvpItemLevel.customAnchor"
 local CONFIG_SOCKET = "socket.enable"
 local CONFIG_SOCKET_ICON_SIZE = "socket.iconSize"
 local CONFIG_SOCKET_DISPLAY_MAX_SOCKETS = "socket.displayMaxSockets"
@@ -180,8 +180,10 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetSide(isLeft)
 end
 
 function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
-    -- 物品等级位置
+    -- 物品等级字体
+    self.ItemLevel:SetFont(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
     if Module:GetConfig(CONFIG_ITEM_LEVEL) and not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) then
+        -- 默认位置
         self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint(
             (self.side == "LEFT" and "LEFT") or "RIGHT",
@@ -190,12 +192,49 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
             (self.side == "LEFT" and 8) or -8,
             0
         )
+    else
+        -- 显示在图标上
+        self.ItemLevel:ClearAllPoints()
+        self.ItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)])
+    end
 
-        if not Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON) then
-            self.PvPItemLevel:ClearAllPoints()
-            self.PvPItemLevel:SetPoint("TOP")
-        end
+    -- PvP物品等级
+    self.PvPItemLevel:SetFont(Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
+    if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON) then
+        -- 自定义锚点
+        self.PvPItemLevel:ClearAllPoints()
+        self.PvPItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_POINT)])
+    elseif Module:GetConfig(CONFIG_ITEM_LEVEL) and Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) then
+        -- 有物品等级且显示在图标上
+        self.PvPItemLevel:ClearAllPoints()
+        self.PvPItemLevel:SetPoint(
+            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][1],
+            self.ItemLevel,
+            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][2],
+            0,
+            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][3]
+        )
+    else
+        -- 默认锚点
+        self.PvPItemLevel:ClearAllPoints()
+        self.PvPItemLevel:SetPoint("TOP")
+    end
 
+    -- 附魔
+    self.Enchant:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_ENCHANT_FONT_SIZE), "OUTLINE")
+    self.EnchantQuality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_ENCHANT_FONT_SIZE), "OUTLINE")
+    self.EnchantQuality:ClearAllPoints()
+    self.EnchantQuality:SetPoint(self.side, self.Enchant, (self.side == "LEFT" and "RIGHT" or "LEFT"), (self.side == "LEFT" and -4 or 4), 0)
+
+    -- 宝石
+    self.GemSocket1:SetSize(Module:GetConfig(CONFIG_SOCKET_ICON_SIZE), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE))
+    self.GemSocket1.Quality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) - 2, "OUTLINE")
+    self.GemSocket2:SetSize(Module:GetConfig(CONFIG_SOCKET_ICON_SIZE), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE))
+    self.GemSocket2.Quality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) - 2, "OUTLINE")
+    self.GemSocket3:SetSize(Module:GetConfig(CONFIG_SOCKET_ICON_SIZE), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE))
+    self.GemSocket3.Quality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) - 2, "OUTLINE")
+    if Module:GetConfig(CONFIG_ITEM_LEVEL) and not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) then
+        -- 显示物品等级且不在图标上 (插槽移动给装等让位置)
         self.GemSocket1:ClearAllPoints()
         self.GemSocket1:SetPoint(
             (self.side == "LEFT" and "LEFT") or "RIGHT",
@@ -205,20 +244,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
             0
         )
     else
-        self.ItemLevel:ClearAllPoints()
-        self.ItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)])
-
-        if not Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON) then
-            self.PvPItemLevel:ClearAllPoints()
-            self.PvPItemLevel:SetPoint(
-                POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][1],
-                self.ItemLevel,
-                POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][2],
-                0,
-                POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][3]
-            )
-        end
-
+        -- 默认位置
         self.GemSocket1:ClearAllPoints()
         self.GemSocket1:SetPoint(
             (self.side == "LEFT" and "LEFT") or "RIGHT",
@@ -228,26 +254,6 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
         0)
     end
 
-    if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON) then
-        self.PvPItemLevel:ClearAllPoints()
-        self.PvPItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_POINT)])
-    end
-
-    -- 物品等级字体
-    self.ItemLevel:SetFont(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
-    self.PvPItemLevel:SetFont(Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
-    -- 附魔
-    self.Enchant:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_ENCHANT_FONT_SIZE), "OUTLINE")
-    self.EnchantQuality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_ENCHANT_FONT_SIZE), "OUTLINE")
-    self.EnchantQuality:ClearAllPoints()
-    self.EnchantQuality:SetPoint(self.side, self.Enchant, (self.side == "LEFT" and "RIGHT" or "LEFT"), (self.side == "LEFT" and -4 or 4), 0)
-    -- 宝石
-    self.GemSocket1:SetSize(Module:GetConfig(CONFIG_SOCKET_ICON_SIZE), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE))
-    self.GemSocket1.Quality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) - 2, "OUTLINE")
-    self.GemSocket2:SetSize(Module:GetConfig(CONFIG_SOCKET_ICON_SIZE), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE))
-    self.GemSocket2.Quality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) - 2, "OUTLINE")
-    self.GemSocket3:SetSize(Module:GetConfig(CONFIG_SOCKET_ICON_SIZE), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE))
-    self.GemSocket3.Quality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) - 2, "OUTLINE")
     -- 耐久度
     self.Durability:SetFont(Module:GetConfig(CONFIG_DURABILITY_FONT), Module:GetConfig(CONFIG_DURABILITY_FONT_SIZE), "OUTLINE")
     self.Durability:ClearAllPoints()
@@ -351,8 +357,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
     end
 
     if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL) and pvpItemLevel then
-        if pvpItemLevel > 1 then
-            -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
+        if pvpItemLevel > itemLevel then
             local r, g, b = C_Item.GetItemQualityColor(itemQuality)
             self.PvPItemLevel:SetFormattedText("|cff%02x%02x%02x(%d)|r", r * 255, g * 255, b * 255, pvpItemLevel)
             self.PvPItemLevel:Show()
@@ -631,7 +636,7 @@ function IIOCharacterFrameItemInfoOverlaySettingPriviewMixin:OnLoad()
     overlay.Durability:SetText("|cff00ff00100%|r")
     local testItem = Item:CreateFromItemID(220202)
     testItem:ContinueOnItemLoad(function()
-        overlay:SetItemFromLink("|cffa335ee|Hitem:220202:7346:213746:213482:::::80:102::6:6:6652:10356:10299:1540:10255:11215:1:28:2462::::|h[间谍大师裹网]|h|r")
+        overlay:SetItemFromLink("|cffa335ee|Hitem:220202:7346:213746:213482:::::80:102::6:7:12030:6652:10356:10299:1540:10255:11215:1:28:2462:::|h[间谍大师裹网]|h|r")
     end)
 end
 
