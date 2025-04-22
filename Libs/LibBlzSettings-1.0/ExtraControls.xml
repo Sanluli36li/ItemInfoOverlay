@@ -1,0 +1,65 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ExtraControls.lua" />
+
+	<Frame name="LibBlzSettingsEditboxControlTemplate" inherits="SettingsListElementTemplate" mixin="LibBlzSettingsEditboxControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LibBlzSettingsCheckboxEditboxControlTemplate" inherits="SettingsListElementTemplate" mixin="LibBlzSettingsCheckboxEditboxControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LibBlzSettingsColorControlTemplate" inherits="SettingsListElementTemplate" mixin="LibBlzSettingsColorControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<EditBox name="LibBlzSettingsEditboxTemplate" inherits="InputBoxScriptTemplate" mixin="LibBlzSettingsEditboxMixin" autoFocus="false" virtual="true">
+        <Size x="280" y="26"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Left" atlas="common-search-border-left" useAtlasSize="false">
+                    <Size x="8" y="26"/>
+                    <Anchors>
+                        <Anchor point="LEFT" x="-5" y="0"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="Right" atlas="common-search-border-right">
+                    <Size x="8" y="26"/>
+                    <Anchors>
+                        <Anchor point="RIGHT" x="0" y="0"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="Middle" atlas="common-search-border-middle">
+                    <Size x="10" y="26"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+                        <Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <FontString inherits="ChatFontNormal"/>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+			<OnEnable>
+				self:SetTextColor(1, 1, 1)
+			</OnEnable>
+			<OnDisable>
+				self:SetTextColor(0.5, 0.5, 0.5)
+			</OnDisable>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
+        </Scripts>
+    </EditBox>
+</Ui>
