@@ -92,7 +92,7 @@ function IIOItemInfoOverlayMixin:UpdateAppearance()
     self.ItemType:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)])
 
     -- 由于数量庞大, 并且很多按钮在显示时会更新一次, 所以仅刷新显示中的图标, 防止修改设置时的卡顿
-    if self:IsVisible() then
+    if self.alwaysRefresh or self:IsVisible() then
         self:Refresh()
     end
 end
@@ -102,7 +102,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
     local itemTypeText
     local itemBondingText
 
-    local type, id = Utils:GetLinkTypeAndID(itemLink)
+    local type, id = Utils.GetLinkTypeAndID(itemLink)
 
     if type == "item" then
         local itemName, _, itemQuality, _, _, itemType, itemSubType,
@@ -125,7 +125,13 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
         if classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor or classID == Enum.ItemClass.Profession then
             if itemLevel and itemLevel > 1 then
                 -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
-                local r, g, b = C_Item.GetItemQualityColor(itemQuality)
+                local r, g, b = 1, 1, 1
+
+                if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+                elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+                    r, g, b = C_Item.GetItemQualityColor(itemQuality)
+                end
 
                 itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
             end
@@ -144,7 +150,13 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
             end
         elseif classID == Enum.ItemClass.Reagent and subclassID == Enum.ItemReagentSubclass.ContextToken then
             -- 珍玩 套装兑换物(以及暗影国度的武器兑换物)
-            local r, g, b = C_Item.GetItemQualityColor(itemQuality)
+            local r, g, b = 1, 1, 1
+
+            if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+            elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+                r, g, b = C_Item.GetItemQualityColor(itemQuality)
+            end
 
             itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
         elseif classID == Enum.ItemClass.Recipe then
@@ -162,7 +174,13 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
         elseif classID == Enum.ItemClass.Miscellaneous then
             if subclassID == Enum.ItemMiscellaneousSubclass.Junk and itemQuality >= Enum.ItemQuality.Epic and itemLevel and itemLevel > 1 and itemStackCount then
                 -- 史诗品质垃圾 且只能堆叠一个 且物品等级大于1: 大概率是套装兑换物 显示装等
-                local r, g, b = C_Item.GetItemQualityColor(itemQuality)
+                local r, g, b = 1, 1, 1
+
+                if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+                elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+                    r, g, b = C_Item.GetItemQualityColor(itemQuality)
+                end
 
                 itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
             elseif subclassID == Enum.ItemMiscellaneousSubclass.CompanionPet then
@@ -175,7 +193,14 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
         elseif C_Item.IsItemKeystoneByID(id) then
             -- 史诗钥石 (偶尔有物品形式的：比如队友拾取的)
             local _, itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", itemLink)
-            local r, g, b = C_ChallengeMode.GetKeystoneLevelRarityColor(level):GetRGB()
+            local r, g, b = 1, 1, 1
+
+            if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+            elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+                r, g, b = C_ChallengeMode.GetKeystoneLevelRarityColor(level):GetRGB()
+            end
+
             itemLevelText = format("|cff%02x%02x%02x+%d|r", r * 255, g * 255, b * 255, level)
         end
 
@@ -200,20 +225,33 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
     elseif type == "keystone" then
         -- 史诗钥石
         local _, itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", itemLink)
-        local r, g, b = C_ChallengeMode.GetKeystoneLevelRarityColor(level):GetRGB()
+        local r, g, b = 1, 1, 1
+
+        if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+        elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+            r, g, b = C_ChallengeMode.GetKeystoneLevelRarityColor(level):GetRGB()
+        end
+
         itemLevelText = format("|cff%02x%02x%02x+%d|r", r * 255, g * 255, b * 255, level)
     elseif type == "battlepet" then
         itemTypeText = PET
 
         local _, speciesID, level, breedQuality, maxHealth, power, speed, battlePetID = strsplit(":", itemLink)
-        local r, g, b = C_Item.GetItemQualityColor(breedQuality)
+        local r, g, b = 1, 1, 1
+
+        if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+        elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+            r, g, b = C_Item.GetItemQualityColor(breedQuality)
+        end
 
         if speciesID then
             -- 需要 BattlePetBreedID 插件
             if BPBID_Internal and speciesID and breedQuality then
                 local breedNum = BPBID_Internal.CalculateBreedID(
                     tonumber(speciesID),
-                    tonumber(breedQuality)+1,
+                    tonumber(breedQuality) + 1,
                     tonumber(level),
                     tonumber(maxHealth),
                     tonumber(power),
@@ -296,7 +334,7 @@ function IIOItemInfoOverlayMixin:SetItemFromLink(itemLink)
 
         local tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
 
-        local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
+        local itemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
         self:SetItemData(itemLevel, itemLink, tooltipInfo)
 
@@ -328,6 +366,7 @@ function IIOItemInfoOverlaySettingPriviewMixin:OnLoad()
     self.itemButton1:SetItemButtonTexture(6035288)
     self.itemButton1:SetItemButtonQuality(Enum.ItemQuality.Epic)
     local overlay1 = Module:CreateItemInfoOverlay(self.itemButton1)
+    overlay1.alwaysRefresh = true
     local testItem1 = Item:CreateFromItemID(220202)
     testItem1:ContinueOnItemLoad(function()
         overlay1:SetItemFromLink("|cffa335ee|Hitem:220202::::::::80:102::6:6:6652:10356:10299:1540:10255:11215:1:28:2462::::|h[间谍大师裹网]|h|r")
@@ -337,6 +376,7 @@ function IIOItemInfoOverlaySettingPriviewMixin:OnLoad()
     self.itemButton2:SetItemButtonQuality(Enum.ItemQuality.Rare)
     self.itemButton2:SetItemButtonCount(100)
     local overlay2 = Module:CreateItemInfoOverlay(self.itemButton2)
+    overlay2.alwaysRefresh = true
     local testItem2 = Item:CreateFromItemID(222776)
     testItem2:ContinueOnItemLoad(function()
         overlay2:SetItemFromLink("|cff0070dd|Hitem:222776::::::::80:102:::::::::|h[丰盛的贝雷达尔之慷]|h|r")
@@ -383,11 +423,11 @@ hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, s
         if tonumber(itemIDOrLink) then
         else
             -- 能直接获取到物品链接
-            Utils:GetItemInfoOverlay(button):SetItemFromLink(itemIDOrLink)
+            Utils.GetItemInfoOverlay(button):SetItemFromLink(itemIDOrLink)
             return
         end
     end
-    Utils:GetItemInfoOverlay(button):Hide()
+    Utils.GetItemInfoOverlay(button):Hide()
 end)
 
 hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, quality, itemIDOrLink, suppressOverlays, isBound)
@@ -401,39 +441,39 @@ hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, qualit
             EquipmentFlyoutFrame.button:GetParent().flyoutSettings.useItemLocation
         then
             -- 使用ItemLocation
-            Utils:GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
+            Utils.GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
             return
         else
             -- 使用button.location
             local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(button.location)
             if bags then
                 -- 背包中的物品
-                Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
                 return
             elseif player then
                 -- 玩家物品栏
-                Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slot))
+                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slot))
                 return
             end
         end
         
     elseif button.GetItemLocation and button:GetItemLocation() and button:GetItemLocation():IsValid() then
         -- GetItemLocation (背包/战团银行)
-        Utils:GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
+        Utils.GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
         return
     elseif button.GetItemLocationCallback and button:GetItemLocationCallback() and button:GetItemLocationCallback():IsValid() then
         -- GetItemLocationCallback (专业装备栏)
-        Utils:GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocationCallback())
+        Utils.GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocationCallback())
         return
     elseif itemIDOrLink then
         if tonumber(itemIDOrLink) then
         else
             -- 能直接获取到物品链接
-            Utils:GetItemInfoOverlay(button):SetItemFromLink(itemIDOrLink)
+            Utils.GetItemInfoOverlay(button):SetItemFromLink(itemIDOrLink)
             return
         end
     end
-    Utils:GetItemInfoOverlay(button):Hide()
+    Utils.GetItemInfoOverlay(button):Hide()
 end)
 
 hooksecurefunc("BankFrameItemButton_Update", function(button)
@@ -444,24 +484,24 @@ hooksecurefunc("BankFrameItemButton_Update", function(button)
     end
     local bag = button:GetParent():GetID()
     local slot = button:GetID()
-    Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+    Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
 end)
 
 hooksecurefunc("GroupLootFrame_OnShow", function(self)
     -- 队伍Roll点界面
     local itemLink = GetLootRollItemLink(self.rollID)
     local tooltipInfo = C_TooltipInfo.GetLootRollItem(self.rollID)
-    local itemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
+    local itemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
     if itemLink then
-        Utils:GetItemInfoOverlay(self.IconFrame):SetItemData(itemLevel, itemLink, tooltipInfo)
+        Utils.GetItemInfoOverlay(self.IconFrame):SetItemData(itemLevel, itemLink, tooltipInfo)
     end
 end)
 
 
 hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound)
     -- 商人界面
-    Utils:GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
+    Utils.GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
 end)
 
 function Module:AfterLogin()
@@ -472,7 +512,7 @@ function Module:AfterLogin()
             hooksecurefunc(NDuiBagpack:GetItemButtonClass(), "OnUpdateButton", function(button, item)
                 local bag = item.bagId
                 local slot = item.slotId
-                Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
             end)
         end
     end
@@ -484,7 +524,7 @@ function Module:AfterLogin()
             hooksecurefunc(NDuiBagpack:GetItemButtonClass(), "OnUpdateButton", function(button, item)
                 local bag = item.bagId
                 local slot = item.slotId
-                Utils:GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
             end)
         end
     end

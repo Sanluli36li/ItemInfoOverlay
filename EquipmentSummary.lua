@@ -121,7 +121,7 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
     self.slot = slot
     itemLink = itemLink or GetInventoryItemLink(unit, slot)
     if itemLink then
-        itemLevel = itemLevel or Utils:GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(unit, slot))
+        itemLevel = itemLevel or Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(unit, slot))
 
         stats = stats or C_Item.GetItemStats(itemLink)
         if Module:GetConfig(CONFIG_STAT_ICON) and stats then
@@ -282,7 +282,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
         for i, entry in pairs(self.slots) do
             local link = GetInventoryItemLink(self.unit, i)
             if link then
-                local itemLevel, _, pvpItemLevel = Utils:GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(self.unit, i))
+                local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(self.unit, i))
 
                 if itemLevel then
                     totalItemLevel = totalItemLevel + itemLevel
@@ -318,7 +318,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                     if link then
                         local loc = select(9, C_Item.GetItemInfo(link))
                         if loc == "INVTYPE_2HWEAPON" or loc == "INVTYPE_RANGED" or loc == "INVTYPE_RANGEDRIGHT" then
-                            local itemLevel, _, pvpItemLevel = Utils:GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(self.unit, 16))
+                            local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(self.unit, 16))
 
                             if itemLevel then
                                 totalItemLevel = totalItemLevel + itemLevel

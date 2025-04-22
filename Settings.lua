@@ -200,6 +200,42 @@ local settings = {
             name = L["other.title"]
         },
         {
+            -- 物品等级颜色
+            controlType = CONTROL_TYPE.DROPDOWN,
+            settingType = SETTING_TYPE.ADDON_VARIABLE,
+            name = L["itemInfoOverlay.itemLevel.color.title"],
+            tooltip = L["itemInfoOverlay.itemLevel.color.tooltip"],
+            key = "itemInfoOverlay.itemLevel.color",
+            newFeature = true,
+            default = 2,
+            options = {
+                L["itemInfoOverlay.itemLevel.color.customColor"],
+                L["itemInfoOverlay.itemLevel.color.itemQuality"]
+            },
+            onValueChanged = function(value)
+                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                SettingsPanel:DisplayLayout(SettingsPanel:GetCurrentLayout())
+            end,
+            subSettings = {
+                {
+                    -- 自定义颜色
+                    controlType = CONTROL_TYPE.COLOR,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.itemLevel.color.custom.title"],
+                    key = "itemInfoOverlay.itemLevel.color.custom",
+                    newFeature = true,
+                    default = "#ffffff",
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end,
+                    isVisible = function ()
+                        return ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1
+                    end
+                },
+            }
+        },
+        {
             -- 鼠标提示装等
             controlType = CONTROL_TYPE.CHECKBOX,
             settingType = SETTING_TYPE.ADDON_VARIABLE,

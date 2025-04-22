@@ -349,21 +349,32 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
         itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
     end
 
-    if Module:GetConfig(CONFIG_ITEM_LEVEL) and itemLevelText then
-        self.ItemLevel:SetText(itemLevelText)
+    if Module:GetConfig(CONFIG_ITEM_LEVEL) and itemLevel and itemLevel > 1 then
+        local r, g, b = 1, 1, 1
+        
+        if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+        elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+            r, g, b = C_Item.GetItemQualityColor(itemQuality)
+        end
+
+        self.ItemLevel:SetFormattedText("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
         self.ItemLevel:Show()
     else
         self.ItemLevel:Hide()
     end
 
-    if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL) and pvpItemLevel then
-        if pvpItemLevel > itemLevel then
-            local r, g, b = C_Item.GetItemQualityColor(itemQuality)
-            self.PvPItemLevel:SetFormattedText("|cff%02x%02x%02x(%d)|r", r * 255, g * 255, b * 255, pvpItemLevel)
-            self.PvPItemLevel:Show()
-        else
-            self.PvPItemLevel:Hide()
+    if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL) and pvpItemLevel and pvpItemLevel > itemLevel then
+        local r, g, b = 1, 1, 1
+
+        if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+        elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+            r, g, b = C_Item.GetItemQualityColor(itemQuality)
         end
+
+        self.PvPItemLevel:SetFormattedText("|cff%02x%02x%02x(%d)|r", r * 255, g * 255, b * 255, pvpItemLevel)
+        self.PvPItemLevel:Show()
     else
         self.PvPItemLevel:Hide()
     end
@@ -538,7 +549,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
             tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
         end
 
-        local itemLevel, _, pvpItemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo)
+        local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
         if not itemLevel then
             itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
@@ -559,7 +570,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemFromLink(itemLink)
 
         local tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
 
-        local itemLevel, _, pvpItemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo)
+        local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
         if not itemLevel then
             itemLevel = GetDetailedItemLevelInfo(itemLink)
@@ -579,7 +590,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemFromUnitInventory(unit, sl
     if itemLink then
         local tooltipInfo = C_TooltipInfo.GetInventoryItem(unit, slotID)
 
-        local itemLevel, _, pvpItemLevel = Utils:GetItemLevelFromTooltipInfo(tooltipInfo)
+        local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
         if not itemLevel then
             itemLevel = GetDetailedItemLevelInfo(itemLink)
@@ -668,10 +679,10 @@ local function GetItemInfoOverlayFromSlotID(slotID, isInspect)
     if slotID and EQUIPMENT_SLOTS[slotID] then
         if isInspect then
             if InspectFrame then
-                return Utils:GetItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX])
+                return Utils.GetItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX])
             end
         else
-            return Utils:GetItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX])
+            return Utils.GetItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX])
         end
     end
 end

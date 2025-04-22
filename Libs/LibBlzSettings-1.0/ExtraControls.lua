@@ -247,6 +247,8 @@ LibBlzSettings.RegisterControl(
 --- Color Control
 --- Author: Sanluli36li
 ----------------------------------------
+CONTROL_TYPE.COLOR = 5
+
 LibBlzSettingsColorControlMixin = CreateFromMixins(SettingsControlMixin)
 
 local function GetHexColorFromRGBA(r, g, b, a)
@@ -347,24 +349,29 @@ function LibBlzSettingsColorControlMixin:Release()
 	SettingsControlMixin.Release(self)
 end
 
-LibBlzSettings.RegisterControl(5, function (addOnName, category, layout, dataTbl, database)
-    local setting = LibBlzSettings.RegisterSetting(addOnName, category, dataTbl, database, Settings.VarType.String)
+LibBlzSettings.RegisterControl(
+    CONTROL_TYPE.COLOR,
+    function (addOnName, category, layout, dataTbl, database)
+        local setting = LibBlzSettings.RegisterSetting(addOnName, category, dataTbl, database, Settings.VarType.String)
 
-    local data = {
-        name = dataTbl.name,
-        tooltip = dataTbl.tooltip,
-        setting = setting,
-        hasOpacity = dataTbl.hasOpacity,
-        options = {},
-    }
+        local data = {
+            name = dataTbl.name,
+            tooltip = dataTbl.tooltip,
+            setting = setting,
+            hasOpacity = dataTbl.hasOpacity,
+            options = {},
+        }
 
-    local initializer = Settings.CreateSettingInitializer("LibBlzSettingsColorControlTemplate", data)
+        local initializer = Settings.CreateSettingInitializer("LibBlzSettingsColorControlTemplate", data)
 
-    if dataTbl.canSearch or dataTbl.canSearch == nil then
-        initializer:AddSearchTags(dataTbl.name)
-    end
+        if dataTbl.canSearch or dataTbl.canSearch == nil then
+            initializer:AddSearchTags(dataTbl.name)
+        end
 
-    layout:AddInitializer(initializer)
+        layout:AddInitializer(initializer)
 
-    return setting, initializer
-end, {}, {})
+        return setting, initializer
+    end,
+    {},
+    {}
+)
