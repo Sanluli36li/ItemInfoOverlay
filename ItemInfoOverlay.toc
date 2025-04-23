@@ -1,4 +1,4 @@
-## Interface: 110100
+## Interface: 110105
 ## Title: ItemInfoOverlay
 ## Notes: Sanluli36li's Item Info Overlay
 ## Notes-zhCN: 三鹿李的物品信息显示插件
