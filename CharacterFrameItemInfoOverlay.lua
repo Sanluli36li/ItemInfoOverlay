@@ -82,7 +82,7 @@ local POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL = {
 local itemInfoOverlayPoor = {}
 
 local EQUIP_LOC_CAN_ENCHANT_TWW = {
-    INVTYPE_HEAD = select(4, GetBuildInfo()) > 110105 and C_SeasonInfo.GetCurrentDisplaySeasonID() == 25,   -- 头部 腐蚀附魔(仅限TWW第二赛季)
+    INVTYPE_HEAD = C_SeasonInfo.GetCurrentDisplaySeasonID() == 25,   -- 头部 腐蚀附魔(仅限TWW第二赛季)
     INVTYPE_CHEST = true,       -- 胸部
     INVTYPE_ROBE = true,        -- 胸部 (搞不懂为啥胸甲会有两种装备位置)
     INVTYPE_LEGS = true,        -- 腿部
