@@ -102,7 +102,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
     local itemTypeText
     local itemBondingText
 
-    local type, id = Utils.GetLinkTypeAndID(itemLink)
+    local type, metaData, id, name = Utils.GetLinkTypeAndID(itemLink)
 
     if type == "item" then
         local itemName, _, itemQuality, _, _, itemType, itemSubType,
@@ -224,7 +224,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
 
     elseif type == "keystone" then
         -- 史诗钥石
-        local _, itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", itemLink)
+        local itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", metaData)
         local r, g, b = 1, 1, 1
 
         if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
