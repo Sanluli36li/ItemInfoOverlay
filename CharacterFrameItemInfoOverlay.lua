@@ -342,38 +342,15 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
         end
     end
 
-    if itemLevel and itemLevel > 1 then
-        -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
-        local r, g, b = C_Item.GetItemQualityColor(itemQuality)
-
-        itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
-    end
-
     if Module:GetConfig(CONFIG_ITEM_LEVEL) and itemLevel and itemLevel > 1 then
-        local r, g, b = 1, 1, 1
-        
-        if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
-            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
-        elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
-            r, g, b = C_Item.GetItemQualityColor(itemQuality)
-        end
-
-        self.ItemLevel:SetFormattedText("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
+        self.ItemLevel:SetText(Utils.GetColoredItemLevelText(itemLevel, itemLink))
         self.ItemLevel:Show()
     else
         self.ItemLevel:Hide()
     end
 
     if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL) and pvpItemLevel and pvpItemLevel > itemLevel then
-        local r, g, b = 1, 1, 1
-
-        if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
-            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
-        elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
-            r, g, b = C_Item.GetItemQualityColor(itemQuality)
-        end
-
-        self.PvPItemLevel:SetFormattedText("|cff%02x%02x%02x(%d)|r", r * 255, g * 255, b * 255, pvpItemLevel)
+        self.PvPItemLevel:SetText(Utils.GetColoredItemLevelText("("..pvpItemLevel..")", itemLink, true))
         self.PvPItemLevel:Show()
     else
         self.PvPItemLevel:Hide()

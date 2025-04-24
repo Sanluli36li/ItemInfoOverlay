@@ -125,15 +125,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
         if classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor or classID == Enum.ItemClass.Profession then
             if itemLevel and itemLevel > 1 then
                 -- 物品等级为1的装备不显示, 如此可以过滤掉大部分的衬衣和战袍
-                local r, g, b = 1, 1, 1
-
-                if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
-                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
-                elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
-                    r, g, b = C_Item.GetItemQualityColor(itemQuality)
-                end
-
-                itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
+                itemLevelText = Utils.GetColoredItemLevelText(itemLevel, itemLink)
             end
             -- 装备部位
             if classID == Enum.ItemClass.Armor then
@@ -150,15 +142,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
             end
         elseif classID == Enum.ItemClass.Reagent and subclassID == Enum.ItemReagentSubclass.ContextToken then
             -- 珍玩 套装兑换物(以及暗影国度的武器兑换物)
-            local r, g, b = 1, 1, 1
-
-            if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
-            elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
-                r, g, b = C_Item.GetItemQualityColor(itemQuality)
-            end
-
-            itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
+            itemLevelText = Utils.GetColoredItemLevelText(itemLevel, itemLink)
         elseif classID == Enum.ItemClass.Recipe then
             -- 配方
             if itemStackCount == 1 then
@@ -174,15 +158,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
         elseif classID == Enum.ItemClass.Miscellaneous then
             if subclassID == Enum.ItemMiscellaneousSubclass.Junk and itemQuality >= Enum.ItemQuality.Epic and itemLevel and itemLevel > 1 and itemStackCount then
                 -- 史诗品质垃圾 且只能堆叠一个 且物品等级大于1: 大概率是套装兑换物 显示装等
-                local r, g, b = 1, 1, 1
-
-                if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
-                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
-                elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
-                    r, g, b = C_Item.GetItemQualityColor(itemQuality)
-                end
-
-                itemLevelText = format("|cff%02x%02x%02x%d|r", r * 255, g * 255, b * 255, itemLevel)
+                itemLevelText = Utils.GetColoredItemLevelText(itemLevel, itemLink)
             elseif subclassID == Enum.ItemMiscellaneousSubclass.CompanionPet then
                 -- 战斗宠物
                 itemTypeText = PET
@@ -192,7 +168,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
             end
         elseif C_Item.IsItemKeystoneByID(id) then
             -- 史诗钥石 (偶尔有物品形式的：比如队友拾取的)
-            local _, itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", itemLink)
+            local itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", metaData)
             local r, g, b = 1, 1, 1
 
             if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
@@ -237,7 +213,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
     elseif type == "battlepet" then
         itemTypeText = PET
 
-        local _, speciesID, level, breedQuality, maxHealth, power, speed, battlePetID = strsplit(":", itemLink)
+        local speciesID, level, breedQuality, maxHealth, power, speed, battlePetID = strsplit(":", metaData)
         local r, g, b = 1, 1, 1
 
         if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then

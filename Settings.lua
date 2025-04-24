@@ -206,7 +206,6 @@ local settings = {
             name = L["itemInfoOverlay.itemLevel.color.title"],
             tooltip = L["itemInfoOverlay.itemLevel.color.tooltip"],
             key = "itemInfoOverlay.itemLevel.color",
-            newFeature = true,
             default = 2,
             options = {
                 L["itemInfoOverlay.itemLevel.color.customColor"],
@@ -219,12 +218,25 @@ local settings = {
             end,
             subSettings = {
                 {
+                    -- 使用物品升级等级颜色
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = "使用物品升级等级颜色",
+                    tooltip = "对于可升级的物品，物品等级将显示为基于其升级等级(神话/英雄/勇士等...)的颜色",
+                    key = "itemInfoOverlay.itemLevel.color.itemUpgrade",
+                    newFeature = true,
+                    default = true,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                    end
+                },
+                {
                     -- 自定义颜色
                     controlType = CONTROL_TYPE.COLOR,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
                     name = L["itemInfoOverlay.itemLevel.color.custom.title"],
                     key = "itemInfoOverlay.itemLevel.color.custom",
-                    newFeature = true,
                     default = "#ffffff",
                     onValueChanged = function(value)
                         ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
