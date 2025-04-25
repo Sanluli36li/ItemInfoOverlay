@@ -171,9 +171,9 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, p
             local itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", metaData)
             local r, g, b = 1, 1, 1
 
-            if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+            if ItemInfoOverlay:GetConfig("color.itemLevel")  == 1 then
                 r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
-            elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+            elseif ItemInfoOverlay:GetConfig("color.itemLevel")  == 2 then
                 r, g, b = C_ChallengeMode.GetKeystoneLevelRarityColor(level):GetRGB()
             end
 
@@ -203,9 +203,9 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, p
         local itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", metaData)
         local r, g, b = 1, 1, 1
 
-        if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+        if ItemInfoOverlay:GetConfig("color.itemLevel")  == 1 then
             r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
-        elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+        elseif ItemInfoOverlay:GetConfig("color.itemLevel")  == 2 then
             r, g, b = C_ChallengeMode.GetKeystoneLevelRarityColor(level):GetRGB()
         end
 
@@ -216,9 +216,9 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, p
         local speciesID, level, breedQuality, maxHealth, power, speed, battlePetID = strsplit(":", metaData)
         local r, g, b = 1, 1, 1
 
-        if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+        if ItemInfoOverlay:GetConfig("color.itemLevel")  == 1 then
             r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
-        elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+        elseif ItemInfoOverlay:GetConfig("color.itemLevel")  == 2 then
             r, g, b = C_Item.GetItemQualityColor(breedQuality)
         end
 

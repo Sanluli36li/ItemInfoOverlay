@@ -736,32 +736,31 @@ local settings = {
             }
         },
         {
-            name = "颜色",
+            name = L["color.title"],
             settings = {
                 {
                     -- 物品等级颜色
                     controlType = CONTROL_TYPE.DROPDOWN,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.itemLevel.color.title"],
-                    tooltip = L["itemInfoOverlay.itemLevel.color.tooltip"],
-                    key = "itemInfoOverlay.itemLevel.color",
+                    name = L["color.itemLevel.title"],
+                    tooltip = L["color.itemLevel.tooltip"],
+                    key = "color.itemLevel",
                     default = 2,
                     options = {
-                        L["itemInfoOverlay.itemLevel.color.customColor"],
-                        L["itemInfoOverlay.itemLevel.color.itemQuality"]
+                        { L["color.itemLevel.customColor"], L["color.itemLevel.customColor.tooltip"] },
+                        { L["color.itemLevel.itemQuality"], L["color.itemLevel.itemQuality.tooltip"] }
                     },
                     onValueChanged = function(value)
                         ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
-                        SettingsPanel:DisplayLayout(SettingsPanel:GetCurrentLayout())
                     end,
                     subSettings = {
                         {
                             -- 自定义颜色
                             controlType = CONTROL_TYPE.COLOR,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
-                            name = L["itemInfoOverlay.itemLevel.color.custom.title"],
-                            key = "itemInfoOverlay.itemLevel.color.custom",
+                            name = L["color.itemLevel.custom.title"],
+                            key = "color.itemLevel.custom",
                             default = "#ffffff",
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
@@ -773,9 +772,9 @@ local settings = {
                     -- 使用物品升级等级颜色
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = "使用物品升级等级颜色",
-                    tooltip = "对于可升级的物品，物品等级将显示为基于其升级等级(神话/英雄/勇士等...)的颜色",
-                    key = "itemInfoOverlay.itemLevel.color.itemUpgrade",
+                    name = L["color.itemLevel.itemUpgrade.title"],
+                    tooltip = L["color.itemLevel.itemUpgrade.tooltip"],
+                    key = "color.itemLevel.itemUpgrade",
                     default = true,
                     onValueChanged = function(value)
                         ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
@@ -787,8 +786,9 @@ local settings = {
                             -- 神话
                             controlType = CONTROL_TYPE.COLOR,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
-                            name = "神话",
-                            key = "itemInfoOverlay.itemLevel.color.itemUpgrade.myth",
+                            name = L["color.itemLevel.itemUpgrade.myth"],
+                            tooltip = L["color.itemLevel.itemUpgrade.myth.tooltip"],
+                            key = "color.itemLevel.itemUpgrade.myth",
                             default = "#ff7d00",
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
@@ -799,8 +799,9 @@ local settings = {
                             -- 英雄
                             controlType = CONTROL_TYPE.COLOR,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
-                            name = "英雄",
-                            key = "itemInfoOverlay.itemLevel.color.itemUpgrade.hero",
+                            name = L["color.itemLevel.itemUpgrade.hero"],
+                            tooltip = L["color.itemLevel.itemUpgrade.hero.tooltip"],
+                            key = "color.itemLevel.itemUpgrade.hero",
                             default = "#a335ee",
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
@@ -811,8 +812,9 @@ local settings = {
                             -- 勇士
                             controlType = CONTROL_TYPE.COLOR,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
-                            name = "勇士",
-                            key = "itemInfoOverlay.itemLevel.color.itemUpgrade.champion",
+                            name = L["color.itemLevel.itemUpgrade.champion"],
+                            tooltip = L["color.itemLevel.itemUpgrade.champion.tooltip"],
+                            key = "color.itemLevel.itemUpgrade.champion",
                             default = "#0070dd",
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
@@ -823,8 +825,8 @@ local settings = {
                             -- 老兵
                             controlType = CONTROL_TYPE.COLOR,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
-                            name = "老兵",
-                            key = "itemInfoOverlay.itemLevel.color.itemUpgrade.veteran",
+                            name = L["color.itemLevel.itemUpgrade.veteran"],
+                            key = "color.itemLevel.itemUpgrade.veteran",
                             default = "#1eff00",
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
@@ -835,8 +837,8 @@ local settings = {
                             -- 冒险者和探索者
                             controlType = CONTROL_TYPE.COLOR,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
-                            name = "探索者和冒险者",
-                            key = "itemInfoOverlay.itemLevel.color.itemUpgrade.explorer",
+                            name = L["color.itemLevel.itemUpgrade.explorerAndAdventurer"],
+                            key = "color.itemLevel.itemUpgrade.explorer",
                             default = "#ffffff",
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()

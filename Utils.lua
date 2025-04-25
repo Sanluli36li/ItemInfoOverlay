@@ -41,35 +41,35 @@ local TRACK_STRING_ID_EXPLORER = 970
 function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
     local r, g, b = 1, 1, 1
 
-    if ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 1 then
+    if ItemInfoOverlay:GetConfig("color.itemLevel") == 1 then
         -- 固定颜色
-        r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
-    elseif ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color") == 2 then
+        r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.custom"))
+    elseif ItemInfoOverlay:GetConfig("color.itemLevel") == 2 then
         -- 基于物品品质染色
         local itemQuality = C_Item.GetItemQualityByID(itemLink)
         r, g, b = C_Item.GetItemQualityColor(itemQuality)
     end
 
-    if C_Item.IsEquippableItem(itemLink) and ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.itemUpgrade") then
+    if C_Item.IsEquippableItem(itemLink) and ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade") then
         local itemUpgradeInfo = C_Item.GetItemUpgradeInfo(itemLink)
 
         if itemUpgradeInfo and itemUpgradeInfo.trackStringID then
             -- 基于物品升级等级染色
             if itemUpgradeInfo.trackStringID == TRACK_STRING_ID_MYTH or (isPvP and itemUpgradeInfo.trackStringID == TRACK_STRING_ID_CHAMPION) then
                 -- 神话(662-678) / PvP勇士(678)
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.itemUpgrade.myth"))
+                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.myth"))
             elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_HERO or (isPvP and itemUpgradeInfo.trackStringID == TRACK_STRING_ID_VETERAN) then
                 -- 英雄(649-665) / PvP老兵(675)
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.itemUpgrade.hero"))
-            elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_CHAMPION or (isPvP and itemUpgradeInfo.trackStringID == TRACK_STRING_ID_VETERAN) then
+                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.hero"))
+            elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_CHAMPION or (isPvP and itemUpgradeInfo.trackStringID == TRACK_STRING_ID_EXPLORER) then
                 -- 勇士(636-658) / PvP探索者(665)
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.itemUpgrade.champion"))
+                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.champion"))
             elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_VETERAN then
                 -- 老兵(623-645)
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.itemUpgrade.veteran"))
+                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.veteran"))
             elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_ADVENTURER or itemUpgradeInfo.trackStringID == TRACK_STRING_ID_EXPLORER then
                 -- 探索者 / 冒险者
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.itemUpgrade.explorer"))
+                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.explorer"))
             end
         end
     end

@@ -312,7 +312,6 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
     itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
     expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
 
-    local itemLevelText
     local itemEnchant, itemEnchantQuality
     local itemGemSocketCount = 0
     local itemGemSockets = {}

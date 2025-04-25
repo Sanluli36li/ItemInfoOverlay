@@ -55,7 +55,11 @@ end
 -- 获取配置项
 function AddOn:GetConfig(module, key)
 	if self.Database then
-		return self.Database[module..'.'..key]
+		if key then
+			return self.Database[module..'.'..key]
+		else
+			return self.Database[module]
+		end
 	end
 end
 
