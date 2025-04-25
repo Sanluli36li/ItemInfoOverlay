@@ -172,7 +172,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, p
             local r, g, b = 1, 1, 1
 
             if ItemInfoOverlay:GetConfig("color.itemLevel")  == 1 then
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.custom"))
             elseif ItemInfoOverlay:GetConfig("color.itemLevel")  == 2 then
                 r, g, b = C_ChallengeMode.GetKeystoneLevelRarityColor(level):GetRGB()
             end
@@ -204,7 +204,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, p
         local r, g, b = 1, 1, 1
 
         if ItemInfoOverlay:GetConfig("color.itemLevel")  == 1 then
-            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.custom"))
         elseif ItemInfoOverlay:GetConfig("color.itemLevel")  == 2 then
             r, g, b = C_ChallengeMode.GetKeystoneLevelRarityColor(level):GetRGB()
         end
@@ -217,7 +217,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, p
         local r, g, b = 1, 1, 1
 
         if ItemInfoOverlay:GetConfig("color.itemLevel")  == 1 then
-            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("itemInfoOverlay", "itemLevel.color.custom"))
+            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.custom"))
         elseif ItemInfoOverlay:GetConfig("color.itemLevel")  == 2 then
             r, g, b = C_Item.GetItemQualityColor(breedQuality)
         end
