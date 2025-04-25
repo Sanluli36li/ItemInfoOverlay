@@ -97,7 +97,7 @@ function IIOItemInfoOverlayMixin:UpdateAppearance()
     end
 end
 
-function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
+function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
     local itemLevelText
     local itemTypeText
     local itemBondingText
@@ -270,6 +270,9 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo)
     if Module:GetConfig(CONFIG_BONDING_TYPE) and itemBondingText then
         self.BondingType:SetText(itemBondingText)
         self.BondingType:Show()
+    elseif pvpItemLevel then
+        self.BondingType:SetText(Utils.GetColoredItemLevelText("("..pvpItemLevel..")", itemLink, true))
+        self.BondingType:Show()
     else
         self.BondingType:Hide()
     end
@@ -293,9 +296,13 @@ function IIOItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
             tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
         end
 
-        local itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
+        local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+        if not itemLevel then
+            itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
+        end
+
+        self:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
 
         return itemLevel, itemLink, tooltipInfo
     else
@@ -310,9 +317,13 @@ function IIOItemInfoOverlayMixin:SetItemFromLink(itemLink)
 
         local tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
 
-        local itemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
+        local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo)
+        if not itemLevel then
+            itemLevel = GetDetailedItemLevelInfo(itemLink)
+        end
+
+        self:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
 
         return itemLevel, itemLink, tooltipInfo
     else
@@ -463,21 +474,27 @@ hooksecurefunc("BankFrameItemButton_Update", function(button)
     Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
 end)
 
-hooksecurefunc("GroupLootFrame_OnShow", function(self)
-    -- 队伍Roll点界面
-    local itemLink = GetLootRollItemLink(self.rollID)
-    local tooltipInfo = C_TooltipInfo.GetLootRollItem(self.rollID)
-    local itemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
-
-    if itemLink then
-        Utils.GetItemInfoOverlay(self.IconFrame):SetItemData(itemLevel, itemLink, tooltipInfo)
-    end
-end)
-
-
 hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound)
     -- 商人界面
     Utils.GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
+end)
+
+hooksecurefunc("GroupLootContainer_OpenNewFrame", function(rollID, rollTime)
+    -- roll点框体
+    for i = 1, 4 do
+        local frame = _G["GroupLootFrame"..i]
+        if frame and frame.rollID then
+            local overlay = Utils.GetItemInfoOverlay(frame.IconFrame)
+
+            local itemLink = GetLootRollItemLink(frame.rollID)
+            local tooltipInfo = C_TooltipInfo.GetLootRollItem(frame.rollID)
+            local itemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
+
+            if itemLink then
+                overlay:SetItemData(itemLevel, itemLink, tooltipInfo)
+            end
+        end
+    end
 end)
 
 function Module:AfterLogin()
