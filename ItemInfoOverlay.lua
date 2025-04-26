@@ -488,9 +488,9 @@ hooksecurefunc("GroupLootContainer_OpenNewFrame", function(rollID, rollTime)
 
             local itemLink = GetLootRollItemLink(frame.rollID)
             local tooltipInfo = C_TooltipInfo.GetLootRollItem(frame.rollID)
-            local itemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
 
             if itemLink then
+                local itemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
                 overlay:SetItemData(itemLevel, itemLink, tooltipInfo)
             end
         end
