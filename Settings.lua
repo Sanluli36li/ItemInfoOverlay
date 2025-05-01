@@ -138,20 +138,43 @@ local settings = {
             -- 绑定类型
             controlType = CONTROL_TYPE.CHECKBOX,
             settingType = SETTING_TYPE.ADDON_VARIABLE,
-            name = L["itemInfoOverlay.bondingType.title"],
-            tooltip = L["itemInfoOverlay.bondingType.tooltip"],
-            key = "itemInfoOverlay.bondingType.enable",
+            name = L["itemInfoOverlay.extraInfo.title"],
+            tooltip = L["itemInfoOverlay.extraInfo.tooltip"],
+            key = "itemInfoOverlay.extraInfo.enable",
             default = true,
             onValueChanged = function(value)
                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
             end,
             subSettings = {
                 {
-                    -- 绑定类型独立锚点
+                    -- 显示绑定类型
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.extraInfo.bondingType"],
+                    tooltip = L["itemInfoOverlay.extraInfo.bondingType.tooltip"],
+                    key = "itemInfoOverlay.extraInfo.bondingType",
+                    default = true,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end
+                },
+                {
+                    -- 显示PvP物品等级
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.extraInfo.pvpItemLevel"],
+                    key = "itemInfoOverlay.extraInfo.pvpItemLevel",
+                    default = true,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end
+                },
+                {
+                    -- 额外信息独立锚点
                     controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
                     name = L["itemInfoOverlay.customAnchor"],
-                    key = "itemInfoOverlay.bondingType.customAnchor",
+                    key = "itemInfoOverlay.extraInfo.customAnchor",
                     default = false,
                     onValueChanged = function(value)
                         ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
@@ -159,7 +182,7 @@ local settings = {
                     dropdown = {
                         -- 绑定类型锚点
                         settingType = SETTING_TYPE.ADDON_VARIABLE,
-                        key = "itemInfoOverlay.bondingType.point",
+                        key = "itemInfoOverlay.extraInfo.point",
                         default = 2,
                         options = POINTS,
                         onValueChanged = function(value)
@@ -168,11 +191,11 @@ local settings = {
                     },
                 },
                 {
-                    -- 绑定类型字体
+                    -- 额外信息字体
                     controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.bondingType.font"],
-                    key = "itemInfoOverlay.bondingType.font",
+                    name = L["itemInfoOverlay.extraInfo.font"],
+                    key = "itemInfoOverlay.extraInfo.font",
                     mediaType = LibSharedMedia.MediaType.FONT,
                     default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
                     onValueChanged = function(value)
@@ -180,11 +203,11 @@ local settings = {
                     end
                 },
                 {
-                    -- 绑定类型字体大小
+                    -- 额外信息字体大小
                     controlType = CONTROL_TYPE.SLIDER,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.bondingType.fontSize"],
-                    key = "itemInfoOverlay.bondingType.fontSize",
+                    name = L["itemInfoOverlay.extraInfo.fontSize"],
+                    key = "itemInfoOverlay.extraInfo.fontSize",
                     minValue = 5,
                     maxValue = 20,
                     step = 1,
@@ -780,7 +803,6 @@ local settings = {
                         ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
-                    newFeature = true,
                     subSettings = {
                         {
                             -- 神话

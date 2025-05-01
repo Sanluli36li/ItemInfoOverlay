@@ -13,15 +13,13 @@ local CONFIG_ITEM_TYPE = "itemType.enable"
 local CONFIG_ITEM_TYPE_POINT = "itemType.point"
 local CONFIG_ITEM_TYPE_FONT = "itemType.font"
 local CONFIG_ITEM_TYPE_FONT_SIZE = "itemType.fontSize"
-local CONFIG_BONDING_TYPE = "bondingType.enable"
-local CONFIG_BONDING_TYPE_ANCHOR_TO_ICON = "bondingType.customAnchor"
-local CONFIG_BONDING_TYPE_POINT = "bondingType.point"
-local CONFIG_BONDING_TYPE_FONT = "bondingType.font"
-local CONFIG_BONDING_TYPE_FONT_SIZE = "bondingType.fontSize"
-
-local POINT_ITEM_LEVEL_ON_ICON = {"TOP", "TOP", 0, -2}
-local POINT_ITEM_TYPE_ON_ICON = {"BOTTOM", "BOTTOM", 0, 2}
-local POINT_SOCKET_ON_ICON = {"BOTTOMRIGHT", "BOTTOMRIGHT", 0, 0}
+local CONFIG_EXTRA_INFO = "extraInfo.enable"
+local CONFIG_EXTRA_INFO_ANCHOR_TO_ICON = "extraInfo.customAnchor"
+local CONFIG_EXTRA_INFO_POINT = "extraInfo.point"
+local CONFIG_EXTRA_INFO_FONT = "extraInfo.font"
+local CONFIG_EXTRA_INFO_FONT_SIZE = "extraInfo.fontSize"
+local CONFIG_EXTRA_INFO_BONDING_TYPE = "extraInfo.bondingType"
+local CONFIG_EXTRA_INFO_PVP_ITEM_LEVEL = "extraInfo.pvpItemLevel"
 
 local itemInfoOverlayPoor = {}
 
@@ -71,10 +69,10 @@ function IIOItemInfoOverlayMixin:UpdateAppearance()
     self.ItemLevel:ClearAllPoints()
     self.ItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)])
 
-    self.BondingType:SetFont(Module:GetConfig(CONFIG_BONDING_TYPE_FONT), Module:GetConfig(CONFIG_BONDING_TYPE_FONT_SIZE), "OUTLINE")
-    if Module:GetConfig(CONFIG_BONDING_TYPE_ANCHOR_TO_ICON) then
+    self.BondingType:SetFont(Module:GetConfig(CONFIG_EXTRA_INFO_FONT), Module:GetConfig(CONFIG_EXTRA_INFO_FONT_SIZE), "OUTLINE")
+    if Module:GetConfig(CONFIG_EXTRA_INFO_ANCHOR_TO_ICON) then
         self.BondingType:ClearAllPoints()
-        self.BondingType:SetPoint(POINTS[Module:GetConfig(CONFIG_BONDING_TYPE_POINT)])
+        self.BondingType:SetPoint(POINTS[Module:GetConfig(CONFIG_EXTRA_INFO_POINT)])
     else
         self.BondingType:ClearAllPoints()
         self.BondingType:SetPoint(
@@ -267,12 +265,16 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, p
         self.ItemType:Hide()
     end
 
-    if Module:GetConfig(CONFIG_BONDING_TYPE) and itemBondingText then
-        self.BondingType:SetText(itemBondingText)
-        self.BondingType:Show()
-    elseif pvpItemLevel then
-        self.BondingType:SetText(Utils.GetColoredItemLevelText("("..pvpItemLevel..")", itemLink, true))
-        self.BondingType:Show()
+    if Module:GetConfig(CONFIG_EXTRA_INFO)then
+        if Module:GetConfig(CONFIG_EXTRA_INFO_BONDING_TYPE) and itemBondingText then
+            self.BondingType:SetText(itemBondingText)
+            self.BondingType:Show()
+        elseif Module:GetConfig(CONFIG_EXTRA_INFO_PVP_ITEM_LEVEL) and pvpItemLevel then
+            self.BondingType:SetText(Utils.GetColoredItemLevelText("("..pvpItemLevel..")", itemLink, true))
+            self.BondingType:Show()
+        else
+            self.BondingType:Hide()
+        end
     else
         self.BondingType:Hide()
     end
@@ -356,7 +358,7 @@ function IIOItemInfoOverlaySettingPriviewMixin:OnLoad()
     overlay1.alwaysRefresh = true
     local testItem1 = Item:CreateFromItemID(220202)
     testItem1:ContinueOnItemLoad(function()
-        overlay1:SetItemFromLink("|cffa335ee|Hitem:220202::::::::80:102::6:6:6652:10356:10299:1540:10255:11215:1:28:2462::::|h[间谍大师裹网]|h|r")
+        overlay1:SetItemFromLink("|cnIQ4:|Hitem:220202::::::::80:102::6:6:6652:10356:10299:1540:10255:11215:1:28:2462::::|h[间谍大师裹网]|h|r")
     end)
 
     self.itemButton2:SetItemButtonTexture(4672195)
@@ -366,7 +368,16 @@ function IIOItemInfoOverlaySettingPriviewMixin:OnLoad()
     overlay2.alwaysRefresh = true
     local testItem2 = Item:CreateFromItemID(222776)
     testItem2:ContinueOnItemLoad(function()
-        overlay2:SetItemFromLink("|cff0070dd|Hitem:222776::::::::80:102:::::::::|h[丰盛的贝雷达尔之慷]|h|r")
+        overlay2:SetItemFromLink("|cnIQ3:|Hitem:222776::::::::80:102:::::::::|h[丰盛的贝雷达尔之慷]|h|r")
+    end)
+
+    self.itemButton3:SetItemButtonTexture(1322720)
+    self.itemButton3:SetItemButtonQuality(Enum.ItemQuality.Epic)
+    local overlay3 = Module:CreateItemInfoOverlay(self.itemButton3)
+    overlay3.alwaysRefresh = true
+    local testItem3 = Item:CreateFromItemID(229783)
+    testItem3:ContinueOnItemLoad(function()
+        overlay3:SetItemFromLink("|cnIQ4:|Hitem:229783::::::::80:102::14:5:11977:12030:1524:10255:1:28:2462:::::|h[至臻角斗士的勋章]|h|r")
     end)
 end
 

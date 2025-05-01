@@ -14,6 +14,11 @@
 					<Anchor point="LEFT" relativeKey="$parent.itemButton1" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
 			</ItemButton>
+			<ItemButton parentKey="itemButton3">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.itemButton2" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</ItemButton>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
