@@ -1,8 +1,8 @@
 ## Interface: 110105
 ## Title: ItemInfoOverlay
 ## Notes: Sanluli36li's Item Info Overlay
-## Notes-zhCN: 三鹿李的物品信息显示插件
-## Notes-zhTW: 
+## Notes-zhCN: 轻量化物品信息、角色面板增强插件
+## Notes-zhTW: 轻量化物品信息、角色面板增强插件
 ## Category-enUS: Inventory
 ## Category-deDE: Inventar
 ## Category-esES: Inventario
@@ -14,10 +14,10 @@
 ## Category-ruRU: Инвентарь
 ## Category-zhCN: 物品栏
 ## Category-zhTW: 物品欄
+## IconTexture: 625999
+## SavedVariables: ItemInfoOverlayDB
 ## Author: Sanluli36li (Olddruid@CN-Galakrond)
 ## Version: @project-version@
-## SavedVariables: ItemInfoOverlayDB
-## IconTexture: 625999
 ## X-Curse-Project-ID: 1229101
 
 Libs\libs.xml
