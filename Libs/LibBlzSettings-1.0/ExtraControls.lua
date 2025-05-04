@@ -30,7 +30,7 @@ function LibBlzSettingsEditboxMixin:Init(value, initTooltip)
     self:SetTooltipFunc(initTooltip)
 
     self:SetScript("OnTextChanged", function(editbox, userInput)
-        if userInput then   -- 限制: 用户输入才触发
+        if userInput and not IMECandidatesFrame:IsShown() then  -- 限制: 用户输入/输入法框体未显示
             self:TriggerEvent(LibBlzSettingsEditboxMixin.Event.OnValueChanged, editbox:GetText())
         end
     end)
@@ -104,7 +104,7 @@ LibBlzSettings.RegisterControl(CONTROL_TYPE.EDITBOX, function (addOnName, catego
         options = {},
     }
 
-    local initializer = Settings.CreateSettingInitializer("LibBlzSettingsEditboxControlTemplate", data)
+    local initializer = Settings.CreateSettingInitializer(dataTbl.template or "LibBlzSettingsEditboxControlTemplate", data)
 
     if dataTbl.canSearch or dataTbl.canSearch == nil then
         initializer:AddSearchTags(dataTbl.name)
@@ -229,7 +229,7 @@ LibBlzSettings.RegisterControl(
             editboxTooltip = dataTbl.editbox.tooltip or dataTbl.tooltip
         }
 
-        local initializer = Settings.CreateSettingInitializer("LibBlzSettingsCheckboxEditboxControlTemplate", data)
+        local initializer = Settings.CreateSettingInitializer(dataTbl.template or "LibBlzSettingsCheckboxEditboxControlTemplate", data)
 
         if dataTbl.canSearch or dataTbl.canSearch == nil then
             initializer:AddSearchTags(dataTbl.name)
@@ -362,7 +362,7 @@ LibBlzSettings.RegisterControl(
             options = {},
         }
 
-        local initializer = Settings.CreateSettingInitializer("LibBlzSettingsColorControlTemplate", data)
+        local initializer = Settings.CreateSettingInitializer(dataTbl.template or "LibBlzSettingsColorControlTemplate", data)
 
         if dataTbl.canSearch or dataTbl.canSearch == nil then
             initializer:AddSearchTags(dataTbl.name)
