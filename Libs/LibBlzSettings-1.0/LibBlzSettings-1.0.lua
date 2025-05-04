@@ -5,7 +5,7 @@
     This library is based on the Blizzard Settings API and is used to quickly serialize tables into Blizzard Vertical Settings Categories.
 ]]
 
-local MAJOR, MINOR = "LibBlzSettings-1.0", 110102
+local MAJOR, MINOR = "LibBlzSettings-1.0", 110103
 
 local LibBlzSettings = LibStub:NewLibrary(MAJOR, MINOR)
 
@@ -608,6 +608,10 @@ local function SetupControl(addOnName, category, layout, dataTbl, database)
             end
 
             local setting, initializer = CONTROL_TYPE_METADATA[dataTbl.controlType].buildFunction(addOnName, category, layout, dataTbl, database)
+
+            if not initializer then
+                return
+            end
 
             initializer.LibBlzSettingsData = dataTbl
 

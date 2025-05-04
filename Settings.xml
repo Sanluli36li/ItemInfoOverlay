@@ -38,4 +38,25 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="IIOSettingsEditboxControlTemplate" inherits="SettingsListElementTemplate" mixin="LibBlzSettingsEditboxControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="IIOSettingsCheckboxEditboxControlTemplate" inherits="SettingsListElementTemplate" mixin="LibBlzSettingsCheckboxEditboxControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="IIOSettingsColorControlTemplate" inherits="SettingsListElementTemplate" mixin="LibBlzSettingsColorControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 </Ui>

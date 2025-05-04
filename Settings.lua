@@ -787,7 +787,8 @@ local settings = {
                             default = "#ffffff",
                             onValueChanged = function(value)
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                            end
+                            end,
+                            template = "IIOSettingsColorControlTemplate"
                         },
                     },
                 },
@@ -816,6 +817,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
+                            template = "IIOSettingsColorControlTemplate"
                         },
                         {
                             -- 英雄
@@ -829,6 +831,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
+                            template = "IIOSettingsColorControlTemplate"
                         },
                         {
                             -- 勇士
@@ -842,6 +845,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
+                            template = "IIOSettingsColorControlTemplate"
                         },
                         {
                             -- 老兵
@@ -854,6 +858,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
+                            template = "IIOSettingsColorControlTemplate"
                         },
                         {
                             -- 冒险者和探索者
@@ -866,6 +871,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
+                            template = "IIOSettingsColorControlTemplate"
                         },
                     },
                 },

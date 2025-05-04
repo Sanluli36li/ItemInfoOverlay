@@ -7,46 +7,35 @@ local LibBlzSettings = LibStub("LibBlzSettings-1.0")
 local CONTROL_TYPE = LibBlzSettings.CONTROL_TYPE
 
 ----------------------------------------
---- Editbox
---- Author: KeiraMetz88
-----------------------------------------
-
-LibBlzSettingsEditboxMixin = CreateFromMixins(CallbackRegistryMixin, DefaultTooltipMixin)
-
-LibBlzSettingsEditboxMixin:GenerateCallbackEvents(
-    {
-        "OnValueChanged",
-    }
-)
-
-function LibBlzSettingsEditboxMixin:OnLoad()
-    CallbackRegistryMixin.OnLoad(self)
-    DefaultTooltipMixin.OnLoad(self)
-    self.tooltipXOffset = 0
-end
-
-function LibBlzSettingsEditboxMixin:Init(value, initTooltip)
-    self:SetValue(value)
-    self:SetTooltipFunc(initTooltip)
-
-    self:SetScript("OnTextChanged", function(editbox, userInput)
-        if userInput and not IMECandidatesFrame:IsShown() then  -- 限制: 用户输入/输入法框体未显示
-            self:TriggerEvent(LibBlzSettingsEditboxMixin.Event.OnValueChanged, editbox:GetText())
-        end
-    end)
-end
-
-function LibBlzSettingsEditboxMixin:Release()
-    self:SetScript("OnTextChanged", nil)
-end
-
-function LibBlzSettingsEditboxMixin:SetValue(value)
-    self:SetText(value)
-end
-
-----------------------------------------
 --- Editbox Control
---- Author: KeiraMetz88
+--- Author: KeiraMetz88, Sanluli36li
+--- 
+--- To use this control, define an XML template in your addon that inherits from "SettingsListElementTemplate" and set the mixin to "LibBlzSettingsEditboxControlMixin", for example:
+--- "_____" should be changed to a unique prefix (such as your addon name) to prevent conflicts with other addons
+--[[
+
+<Frame name="_____EditboxControlTemplate" inherits="SettingsListElementTemplate" mixin="LibBlzSettingsEditboxControlMixin" virtual="true">
+    <Size x="280" y="26"/>
+    <Scripts>
+        <OnLoad method="OnLoad"/>
+    </Scripts>
+</Frame>
+
+]]
+--- Then define your settings in the settings table:
+--[[
+
+{
+    controlType = CONTROL_TYPE.EDITBOX,
+    settingType = SETTING_TYPE.ADDON_VARIABLE,
+    name = "This is a Editbox",
+    tooltip = "This is Editbox Tooltip",
+    key = "settingsKey",
+    default = "Default Value",
+    template = "_____EditboxControlTemplate"
+},
+
+]]
 ----------------------------------------
 CONTROL_TYPE.EDITBOX = 4
 
@@ -55,8 +44,30 @@ LibBlzSettingsEditboxControlMixin = CreateFromMixins(SettingsControlMixin)
 function LibBlzSettingsEditboxControlMixin:OnLoad()
     SettingsControlMixin.OnLoad(self)
 
-    self.Editbox = CreateFrame("EditBox", nil, self, "LibBlzSettingsEditboxTemplate")
+    self.Editbox = CreateFrame("EditBox", nil, self, "InputBoxTemplate")
+
+    Mixin(self.Editbox, DefaultTooltipMixin)
+    DefaultTooltipMixin.OnLoad(self.Editbox)
+    self.tooltipXOffset = 0
+
     self.Editbox:SetPoint("LEFT", self, "CENTER", -72, 0)
+    self.Editbox:SetSize(280, 26)
+    self.Editbox:SetAutoFocus(false)
+
+    self.Editbox.Left:SetHeight(26)
+    self.Editbox.Right:SetHeight(26)
+    self.Editbox.Middle:SetHeight(26)
+
+    self.Editbox:SetScript("OnEnable", function (editbox)
+        editbox:SetTextColor(1, 1, 1)
+    end)
+
+    self.Editbox:SetScript("OnDisable", function (editbox)
+        editbox:SetTextColor(0.5, 0.5, 0.5)
+    end)
+
+    self.Editbox:SetScript("OnEnterPressed", EditBox_ClearFocus)    -- 回车清楚焦点
+    self.Editbox:SetScript("OnEscapePressed", EditBox_ClearFocus)   -- ESC清除焦点
 end
 
 function LibBlzSettingsEditboxControlMixin:Init(initializer)
@@ -65,16 +76,21 @@ function LibBlzSettingsEditboxControlMixin:Init(initializer)
     local setting = self:GetSetting()
     local initTooltip = GenerateClosure(Settings.InitTooltip, initializer:GetName(), initializer:GetTooltip())
 
-    self.Editbox:Init(setting:GetValue(), initTooltip)
+    -- self.Editbox:Init(setting:GetValue(), initTooltip)
 
-    self.cbrHandles:RegisterCallback(self.Editbox, LibBlzSettingsEditboxMixin.Event.OnValueChanged, self.OnEditboxValueChanged, self)
+    self.Editbox:SetText(setting:GetValue())
+    self.Editbox:SetTooltipFunc(initTooltip)
+    self.Editbox:SetScript("OnTextChanged", function(editbox, userInput)
+        if userInput and not IMECandidatesFrame:IsShown() then  -- 限制: 用户输入/输入法框体未显示
+            self:OnEditboxValueChanged(editbox:GetText())
+        end
+    end)
 
     self:EvaluateState()
 end
 
 function LibBlzSettingsEditboxControlMixin:OnSettingValueChanged(setting, value)
     SettingsControlMixin.OnSettingValueChanged(self, setting, value)
-
     self.Editbox:SetText(value)
 end
 
@@ -90,34 +106,82 @@ function LibBlzSettingsEditboxControlMixin:EvaluateState()
 end
 
 function LibBlzSettingsEditboxControlMixin:Release()
-    self.Editbox:Release()
+    self.Editbox:SetScript("OnTextChanged", nil)
     SettingsControlMixin.Release(self)
 end
 
-LibBlzSettings.RegisterControl(CONTROL_TYPE.EDITBOX, function (addOnName, category, layout, dataTbl, database)
-    local setting = LibBlzSettings.RegisterSetting(addOnName, category, dataTbl, database, Settings.VarType.String)
+LibBlzSettings.RegisterControl(
+    CONTROL_TYPE.EDITBOX,
+    function (addOnName, category, layout, dataTbl, database)
+        local template
+        if dataTbl.template and C_XMLUtil.GetTemplateInfo(dataTbl.template) then
+            template = dataTbl.template
+        elseif C_XMLUtil.GetTemplateInfo("LibBlzSettingsEditboxControlTemplate") then
+            template = "LibBlzSettingsEditboxControlTemplate"
+        end
 
-    local data = {
-        name = dataTbl.name,
-        tooltip = dataTbl.tooltip,
-        setting = setting,
-        options = {},
-    }
+        if not template then
+            return
+        end
 
-    local initializer = Settings.CreateSettingInitializer(dataTbl.template or "LibBlzSettingsEditboxControlTemplate", data)
+        local setting = LibBlzSettings.RegisterSetting(addOnName, category, dataTbl, database, Settings.VarType.String)
 
-    if dataTbl.canSearch or dataTbl.canSearch == nil then
-        initializer:AddSearchTags(dataTbl.name)
-    end
+        local data = {
+            name = dataTbl.name,
+            tooltip = dataTbl.tooltip,
+            setting = setting,
+            options = {},
+        }
 
-    layout:AddInitializer(initializer)
+        local initializer = Settings.CreateSettingInitializer(template, data)
 
-    return setting, initializer
-end, {}, {})
+        if dataTbl.canSearch or dataTbl.canSearch == nil then
+            initializer:AddSearchTags(dataTbl.name)
+        end
+
+        layout:AddInitializer(initializer)
+
+        return setting, initializer
+    end,
+    {},
+    {}
+)
 
 ----------------------------------------
 --- Checkbox and Editbox Control
 --- Author: KeiraMetz88, Sanluli36li
+--- 
+--- To use this control, define an XML template in your addon that inherits from "SettingsListElementTemplate" and set the mixin to "LibBlzSettingsCheckboxEditboxControlMixin", for example:
+--- "_____" should be changed to a unique prefix (such as your addon name) to prevent conflicts with other addons
+--[[
+
+<Frame name="_____CheckboxEditboxControlTemplate" inherits="SettingsListElementTemplate" mixin="LibBlzSettingsCheckboxEditboxControlMixin" virtual="true">
+    <Size x="280" y="26"/>
+    <Scripts>
+        <OnLoad method="OnLoad"/>
+    </Scripts>
+</Frame>
+
+]]
+--- Then define your settings in the settings table:
+--[[
+
+{
+    controlType = CONTROL_TYPE.CHECKBOX_AND_EDITBOX,
+    settingType = SETTING_TYPE.ADDON_VARIABLE,
+    name = "Checkbox and Editbox",
+    tooltip = "Tooltip",
+    key = "checkboxSettingsKey",
+    default = true,
+    editbox = {
+        settingType = SETTING_TYPE.ADDON_VARIABLE,
+        key = "editboxSettingsKey",
+        default = "Default Value",
+    }
+    template = "_____CheckboxEditboxControlTemplate"
+},
+
+]]
 ----------------------------------------
 CONTROL_TYPE.CHECKBOX_AND_EDITBOX = 24
 
@@ -129,9 +193,30 @@ function LibBlzSettingsCheckboxEditboxControlMixin:OnLoad()
     self.Checkbox = CreateFrame("CheckButton", nil, self, "SettingsCheckboxTemplate")
     self.Checkbox:SetPoint("LEFT", self, "CENTER", -80, 0)
 
-    self.Editbox = CreateFrame("EditBox", nil, self, "LibBlzSettingsEditboxTemplate")
+    self.Editbox = CreateFrame("EditBox", nil, self, "InputBoxTemplate")
+
+    Mixin(self.Editbox, DefaultTooltipMixin)
+    DefaultTooltipMixin.OnLoad(self.Editbox)
+    self.tooltipXOffset = 0
+
     self.Editbox:SetPoint("LEFT", self.Checkbox, "RIGHT", 10, 0)
-    -- self.Editbox:SetWidth(200)
+    self.Editbox:SetSize(280, 26)
+    self.Editbox:SetAutoFocus(false)
+
+    self.Editbox.Left:SetHeight(26)
+    self.Editbox.Right:SetHeight(26)
+    self.Editbox.Middle:SetHeight(26)
+
+    self.Editbox:SetScript("OnEnable", function (editbox)
+        editbox:SetTextColor(1, 1, 1)
+    end)
+
+    self.Editbox:SetScript("OnDisable", function (editbox)
+        editbox:SetTextColor(0.5, 0.5, 0.5)
+    end)
+
+    self.Editbox:SetScript("OnEnterPressed", EditBox_ClearFocus)    -- 回车清楚焦点
+    self.Editbox:SetScript("OnEscapePressed", EditBox_ClearFocus)   -- ESC清除焦点
 
     Mixin(self.Editbox, DefaultTooltipMixin)
 
@@ -159,8 +244,14 @@ function LibBlzSettingsCheckboxEditboxControlMixin:Init(initializer)
     self.cbrHandles:RegisterCallback(self.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckboxValueChanged, self)
 
     local initEditboxTooltip = GenerateClosure(Settings.InitTooltip, editboxLabel, editboxTooltip)
-    self.Editbox:Init(editboxSetting:GetValue(), initEditboxTooltip)
-    self.cbrHandles:RegisterCallback(self.Editbox, LibBlzSettingsEditboxMixin.Event.OnValueChanged, self.OnEditboxValueChanged, self)
+    self.Editbox:SetTooltipFunc(initEditboxTooltip)
+    self.Editbox:SetText(editboxSetting:GetValue())
+    self.Editbox:SetScript("OnTextChanged", function(editbox, userInput)
+        if userInput and not IMECandidatesFrame:IsShown() then  -- 限制: 用户输入/输入法框体未显示
+            self:OnEditboxValueChanged(editbox:GetText())
+        end
+    end)
+
     self.Editbox:SetEnabled(cbSetting:GetValue())
 
     -- Defaults...
@@ -171,7 +262,7 @@ function LibBlzSettingsCheckboxEditboxControlMixin:Init(initializer)
 	self.cbrHandles:SetOnValueChangedCallback(cbSetting:GetVariable(), OnCheckboxSettingValueChanged)
 
 	local function OnEditboxSettingValueChanged(o, setting, value)
-		self.Editbox:SetValue(value)
+		self.Editbox:SetText(value)
 	end
 	self.cbrHandles:SetOnValueChangedCallback(editboxSetting:GetVariable(), OnEditboxSettingValueChanged)
 
@@ -207,13 +298,25 @@ end
 
 function LibBlzSettingsCheckboxEditboxControlMixin:Release()
 	self.Checkbox:Release()
-	self.Editbox:Release()
+	self.Editbox:SetScript("OnTextChanged", nil)
+
 	SettingsListElementMixin.Release(self)
 end
 
 LibBlzSettings.RegisterControl(
     CONTROL_TYPE.CHECKBOX_AND_EDITBOX,
     function (addOnName, category, layout, dataTbl, database)
+        local template
+        if dataTbl.template and C_XMLUtil.GetTemplateInfo(dataTbl.template) then
+            template = dataTbl.template
+        elseif C_XMLUtil.GetTemplateInfo("LibBlzSettingsCheckboxEditboxControlTemplate") then
+            template = "LibBlzSettingsCheckboxEditboxControlTemplate"
+        end
+
+        if not template then
+            return
+        end
+
         local checkboxSetting = LibBlzSettings.RegisterSetting(addOnName, category, dataTbl, database, Settings.VarType.Boolean)
         local editboxSetting = LibBlzSettings.RegisterSetting(addOnName, category, dataTbl.editbox, database, Settings.VarType.String)
 
@@ -229,7 +332,7 @@ LibBlzSettings.RegisterControl(
             editboxTooltip = dataTbl.editbox.tooltip or dataTbl.tooltip
         }
 
-        local initializer = Settings.CreateSettingInitializer(dataTbl.template or "LibBlzSettingsCheckboxEditboxControlTemplate", data)
+        local initializer = Settings.CreateSettingInitializer(template, data)
 
         if dataTbl.canSearch or dataTbl.canSearch == nil then
             initializer:AddSearchTags(dataTbl.name)
@@ -246,6 +349,34 @@ LibBlzSettings.RegisterControl(
 ----------------------------------------
 --- Color Control
 --- Author: Sanluli36li
+--- 
+--- To use this control, define an XML template in your addon that inherits from "SettingsListElementTemplate" and set the mixin to LibBlzSettingsColorControlMixin, for example:
+--- "_____" should be changed to a unique prefix (such as your addon name) to prevent conflicts with other addons
+--[[
+
+<Frame name="_____ColorControlTemplate" inherits="SettingsListElementTemplate" mixin=LibBlzSettingsColorControlMixin virtual="true">
+    <Size x="280" y="26"/>
+    <Scripts>
+        <OnLoad method="OnLoad"/>
+    </Scripts>
+</Frame>
+
+]]
+--- Then define your settings in the settings table:
+--[[
+
+{
+    controlType = 5,
+    settingType = SETTING_TYPE.ADDON_VARIABLE,
+    name = "Select your Color",
+    tooltip = "Tooltip",
+    key = "color",
+    default = "#7f7f7f",
+    hasOpacity = true,      -- If true, the color picker can select the transparent channel
+    template = "_____ColorControlTemplate"
+},
+
+]]
 ----------------------------------------
 CONTROL_TYPE.COLOR = 5
 
@@ -352,6 +483,17 @@ end
 LibBlzSettings.RegisterControl(
     CONTROL_TYPE.COLOR,
     function (addOnName, category, layout, dataTbl, database)
+        local template
+        if dataTbl.template and C_XMLUtil.GetTemplateInfo(dataTbl.template) then
+            template = dataTbl.template
+        elseif C_XMLUtil.GetTemplateInfo("LibBlzSettingsColorControlTemplate") then
+            template = "LibBlzSettingsColorControlTemplate"
+        end
+
+        if not template then
+            return
+        end
+
         local setting = LibBlzSettings.RegisterSetting(addOnName, category, dataTbl, database, Settings.VarType.String)
 
         local data = {
@@ -361,8 +503,7 @@ LibBlzSettings.RegisterControl(
             hasOpacity = dataTbl.hasOpacity,
             options = {},
         }
-
-        local initializer = Settings.CreateSettingInitializer(dataTbl.template or "LibBlzSettingsColorControlTemplate", data)
+        local initializer = Settings.CreateSettingInitializer(template, data)
 
         if dataTbl.canSearch or dataTbl.canSearch == nil then
             initializer:AddSearchTags(dataTbl.name)
