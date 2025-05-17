@@ -275,6 +275,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
         local totalStats = {}
         local numItemSets = 0
         local itemSets = {}
+        local itemUnique = {}
 
         local totalItemLevel = 0
         local totalPvpItemLevel = 0
@@ -304,6 +305,16 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                         itemSets[itemSet] = itemSets[itemSet] + 1
                     else
                         itemSets[itemSet] = 1
+                        numItemSets = numItemSets + 1
+                    end
+                end
+
+                local isUnique, limitCategoryName, limitCategoryCount, limitCategoryID = C_Item.GetItemUniquenessByID(link)
+                if isUnique and limitCategoryID then
+                    if itemUnique[limitCategoryID] then
+                        itemUnique[limitCategoryID][1] = itemUnique[limitCategoryID][1] + 1
+                    else
+                        itemUnique[limitCategoryID] = { 1, limitCategoryName, limitCategoryCount}
                         numItemSets = numItemSets + 1
                     end
                 end
@@ -340,13 +351,23 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
         if numItemSets > 0 then
             text = text..format("|cffffd200%s:|r\n", LOOT_JOURNAL_ITEM_SETS)
-            for setID, num in pairs(itemSets) do
-                local setName = C_Item.GetItemSetInfo(setID)
-                local maxNum = #C_LootJournal.GetItemSetItems(setID)
+            for id, num in pairs(itemSets) do
+                local setName = C_Item.GetItemSetInfo(id)
+                local maxNum = #C_LootJournal.GetItemSetItems(id)
                 if setName then
                     text = text..format("    %s (%s)\n", setName, (maxNum and num.."/"..maxNum) or num)
                 end
             end
+
+            for id, data in pairs(itemUnique) do
+                local num = data[1]
+                local setName = data[2]
+                local maxNum = data[3]
+                if setName then
+                    text = text..format("    %s (%s)\n", setName, (maxNum and num.."/"..maxNum) or num)
+                end
+            end
+
             text = text.."\n"
         end
         
