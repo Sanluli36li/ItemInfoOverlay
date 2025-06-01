@@ -82,7 +82,6 @@ local POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL = {
 local itemInfoOverlayPoor = {}
 
 local EQUIP_LOC_CAN_ENCHANT_TWW = {
-    INVTYPE_HEAD = C_SeasonInfo.GetCurrentDisplaySeasonID() == 25,   -- 头部 腐蚀附魔(仅限TWW第二赛季)
     INVTYPE_CHEST = true,       -- 胸部
     INVTYPE_ROBE = true,        -- 胸部 (搞不懂为啥胸甲会有两种装备位置)
     INVTYPE_LEGS = true,        -- 腿部
@@ -114,8 +113,21 @@ local function CanEnchant(itemLevel, itemEquipLoc)
     end
 end
 
+local EQUIP_LOC_MAX_SOCKETS = {
+    [LE_EXPANSION_DRAGONFLIGHT] = {
+        INVTYPE_NECK = { 3, 192994 }
+    },
+    [LE_EXPANSION_WAR_WITHIN] = {
+        INVTYPE_HEAD = { 1, 232386, 230425 },
+        INVTYPE_WAIST = { 1, 232386, 230425 },
+        INVTYPE_WRIST = { 1, 232386, 230425 },
+        INVTYPE_NECK = { 2, 213777, 230425 },
+        INVTYPE_FINGER = { 2, 213777, 230425 }
+    }
+}
+
 local function MaxSockets(itemLevel, itemLink, isPvpItem)
-    local itemEquipLoc, _, _, _, _, _, expansionID = select(9, C_Item.GetItemInfo(itemLink))
+    local itemMinLevel, _, _, _, itemEquipLoc, _, _, _, _, _, expansionID = select(5, C_Item.GetItemInfo(itemLink))
 
     if itemLevel > 535 or expansionID == LE_EXPANSION_WAR_WITHIN then
         local maxSocketInfo = EQUIP_LOC_MAX_SOCKETS_TWW[itemEquipLoc]
@@ -713,6 +725,10 @@ end)
 --------------------
 
 function Module:Startup()
+    if C_SeasonInfo.GetCurrentDisplaySeasonID() == 25 then
+        EQUIP_LOC_CAN_ENCHANT_TWW["INVTYPE_HEAD"] = true
+    end
+
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
         Module:CreateItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
     end
