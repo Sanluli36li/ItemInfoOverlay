@@ -360,9 +360,20 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
         self.ItemLevel:Hide()
     end
 
-    if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL) and pvpItemLevel and pvpItemLevel > itemLevel then
-        self.PvPItemLevel:SetText(Utils.GetColoredItemLevelText("("..pvpItemLevel..")", itemLink, true))
-        self.PvPItemLevel:Show()
+    if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL) then
+        if not Module:GetConfig(CONFIG_ITEM_LEVEL) then
+            if pvpItemLevel then
+                self.PvPItemLevel:SetText(Utils.GetColoredItemLevelText(pvpItemLevel, itemLink, true))
+            else
+                self.PvPItemLevel:SetText(Utils.GetColoredItemLevelText(itemLevel, itemLink))
+            end
+            self.PvPItemLevel:Show()
+        elseif pvpItemLevel and pvpItemLevel > itemLevel then
+            self.PvPItemLevel:SetText(Utils.GetColoredItemLevelText("("..pvpItemLevel..")", itemLink, true))
+            self.PvPItemLevel:Show()
+        else
+            self.PvPItemLevel:Hide()
+        end
     else
         self.PvPItemLevel:Hide()
     end

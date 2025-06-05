@@ -10,8 +10,6 @@ function Utils.GetItemInfoOverlay(frame)
     end
 end
 
-local ITEM_LEVEL_PATTERN = ITEM_LEVEL:gsub("%%d", "(%%d+)")
-local ITEM_LEVEL_ALT_PATTERN = ITEM_LEVEL_ALT:gsub("[%(%)]", "%%%1"):gsub("%%d", "(%%d+)")
 local PVP_ITEM_LEVEL_TOOLTIP_PATTERN = PVP_ITEM_LEVEL_TOOLTIP:gsub("%%d", "(%%d+)")
 
 function Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
@@ -19,14 +17,13 @@ function Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
         local itemLevel, currentItemLevel, pvpItemLevel
         for _, line in ipairs(tooltipInfo.lines) do
             if line.type == Enum.TooltipDataLineType.ItemLevel then
-                itemLevel = line.acturalItemLevel or line.itemLevel
+                itemLevel = line.actualItemLevel or line.itemLevel
                 currentItemLevel = line.itemLevel
             elseif not pvpItemLevel and line.leftText:match(PVP_ITEM_LEVEL_TOOLTIP_PATTERN) then
                 pvpItemLevel = line.leftText:match(PVP_ITEM_LEVEL_TOOLTIP_PATTERN)
             end
         end
 
-        -- print(tonumber(itemLevel), tonumber(currentItemLevel), tonumber(pvpItemLevel))
         return tonumber(itemLevel), tonumber(currentItemLevel), tonumber(pvpItemLevel)
     end
 end
