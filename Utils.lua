@@ -98,3 +98,46 @@ function Utils.GetRGBAFromHexColor(hex)
 
     return r, g, b, a
 end
+
+local COMBAT_STATS = {
+    ITEM_MOD_CRIT_RATING_SHORT = CR_CRIT_SPELL,
+    ITEM_MOD_HASTE_RATING_SHORT = CR_HASTE_SPELL,
+    ITEM_MOD_MASTERY_RATING_SHORT = CR_MASTERY,
+    ITEM_MOD_VERSATILITY = CR_VERSATILITY_DAMAGE_DONE,
+}
+
+local function UpdateCombatStatsRatings()
+    local statsRatings = ItemInfoOverlay:GetConfig("statsRatings")
+
+    if not statsRatings then
+        statsRatings = {}
+        ItemInfoOverlay:SetConfig("statsRatings", statsRatings)
+    end
+
+    statsRatings[UnitLevel("player")] = {}
+
+    for i, stat in pairs(COMBAT_STATS) do
+        statsRatings[UnitLevel("player")][i] = GetCombatRating(stat) / GetCombatRatingBonus(stat)
+        -- print(_G[i], statsRatings[UnitLevel("player")][i])
+    end
+end
+
+function Utils.GetCombatStatsRatings(stat, level)
+    local statsRatings = ItemInfoOverlay:GetConfig("statsRatings")
+    if not level then
+        level = UnitLevel("player")
+    end
+
+    if statsRatings and statsRatings[level] then
+        return statsRatings[level][stat]
+    end
+end
+
+function Utils:AfterLogin()
+    UpdateCombatStatsRatings()
+end
+
+function Utils:PLAYER_LEVEL_CHANGED()
+    UpdateCombatStatsRatings()
+end
+Utils:RegisterEvent("PLAYER_LEVEL_CHANGED")

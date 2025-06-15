@@ -12,6 +12,9 @@ local CONFIG_STAT_ICON = "statIcon.enable"
 local CONFIG_STAT_ICON_STYLE = "statIcon.style"
 local CONFIG_FONT_SIZE = "fontSize"
 local CONFIG_TITLE_FONT_SIZE = "title.fontSize"
+local CONFIG_ITEM_SETS = "itemSets.enable"
+local CONFIG_ITEM_SETS_UNIQUE = "itemSets.unique"
+local CONFIG_ITEM_STATS = "itemStats.enable"
 
 local ITEM_LEVEL_AND_SPEC_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d", "%%.1f").."|r %s%s%s|r\n "
 local ITEM_LEVEL_AND_SPEC_WITH_PVP_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d", "%%.1f").."|r %s%s%s|r\n|cffffd200"..ITEM_UPGRADE_PVP_ITEM_LEVEL_STAT_FORMAT:gsub("%%d", "%%.1f").."|r\n "
@@ -261,6 +264,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
     if not self:IsShown() then return end
     if self.unit then
         local name = UnitNameUnmodified(self.unit)
+        local level = UnitLevel(self.unit)
         local className, classFilename = UnitClass(self.unit)
         local classColor = C_ClassColor.GetClassColor(classFilename)
 
@@ -298,30 +302,29 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                     totalMainStat = totalMainStat + (stats.ITEM_MOD_STRENGTH_SHORT or stats.ITEM_MOD_AGILITY_SHORT or stats.ITEM_MOD_INTELLECT_SHORT or 0)
                 end
 
-                local itemSet = select(16, C_Item.GetItemInfo(link))
+                if Module:GetConfig(CONFIG_ITEM_SETS) then
+                    local itemSet = select(16, C_Item.GetItemInfo(link))
 
-                if itemSet then
-                    if itemSets[itemSet] then
-                        itemSets[itemSet] = itemSets[itemSet] + 1
-                    else
-                        itemSets[itemSet] = 1
-                        numItemSets = numItemSets + 1
+                    if itemSet then
+                        if itemSets[itemSet] then
+                            itemSets[itemSet] = itemSets[itemSet] + 1
+                        else
+                            itemSets[itemSet] = 1
+                            numItemSets = numItemSets + 1
+                        end
+                    end
+
+                    local isUnique, limitCategoryName, limitCategoryCount, limitCategoryID = C_Item.GetItemUniquenessByID(link)
+                    if Module:GetConfig(CONFIG_ITEM_SETS_UNIQUE) and isUnique and limitCategoryID then
+                        if itemUnique[limitCategoryID] then
+                            itemUnique[limitCategoryID][1] = itemUnique[limitCategoryID][1] + 1
+                        else
+                            itemUnique[limitCategoryID] = { 1, limitCategoryName, limitCategoryCount}
+                            numItemSets = numItemSets + 1
+                        end
                     end
                 end
 
-                local isUnique, limitCategoryName, limitCategoryCount, limitCategoryID = C_Item.GetItemUniquenessByID(link)
-                if isUnique and limitCategoryID then
-                    if itemUnique[limitCategoryID] then
-                        itemUnique[limitCategoryID][1] = itemUnique[limitCategoryID][1] + 1
-                    else
-                        itemUnique[limitCategoryID] = { 1, limitCategoryName, limitCategoryCount}
-                        numItemSets = numItemSets + 1
-                    end
-                end
-
-                
-
-                
                 entry:SetItemFromUnitInventory(self.unit, i, link, itemLevel, stats)
             else
                 if i == 17 then
@@ -367,25 +370,34 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                     text = text..format("    %s (%s)\n", setName, (maxNum and num.."/"..maxNum) or num)
                 end
             end
+        end
 
-            text = text.."\n"
-        end
-        
-        text = text..format("|cffffd200%s:|r\n", L["equipmentSummary.equipmentStats"])
-        text = text..format("    %s: %d\n", L["equipmentSummary.mainStat"], totalMainStat)         -- 主属性
-        text = text..format("    %s: %d\n", ITEM_MOD_STAMINA_SHORT, totalStats.ITEM_MOD_STAMINA_SHORT or 0)   -- 耐力
-        text = text..format("    %s: |cff00ff00%d|r\n", ITEM_MOD_CRIT_RATING_SHORT, totalStats.ITEM_MOD_CRIT_RATING_SHORT or 0)       -- 爆击
-        text = text..format("    %s: |cff00ff00%d|r\n", ITEM_MOD_HASTE_RATING_SHORT, totalStats.ITEM_MOD_HASTE_RATING_SHORT or 0)     -- 急速
-        text = text..format("    %s: |cff00ff00%d|r\n", ITEM_MOD_MASTERY_RATING_SHORT, totalStats.ITEM_MOD_MASTERY_RATING_SHORT or 0) -- 精通
-        text = text..format("    %s: |cff00ff00%d|r\n", ITEM_MOD_VERSATILITY, totalStats.ITEM_MOD_VERSATILITY or 0)                   -- 全能
-        if totalStats.ITEM_MOD_CR_SPEED_SHORT and totalStats.ITEM_MOD_CR_SPEED_SHORT > 0 then
-            text = text..format("    %s: |cff007fff%d|r\n", ITEM_MOD_CR_SPEED_SHORT, totalStats.ITEM_MOD_CR_SPEED_SHORT or 0)         -- 加速
-        end
-        if totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT and totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT > 0 then
-            text = text..format("    %s: |cff007fff%d|r\n", ITEM_MOD_CR_LIFESTEAL_SHORT, totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT or 0) -- 吸血
-        end
-        if totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT and totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT > 0 then
-            text = text..format("    %s: |cff007fff%d|r\n", ITEM_MOD_CR_AVOIDANCE_SHORT, totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT or 0) -- 闪避
+        if Module:GetConfig(CONFIG_ITEM_STATS) then
+            if numItemSets > 0 then
+                text = text.."\n"
+            end
+
+            local critRating = Utils.GetCombatStatsRatings("ITEM_MOD_CRIT_RATING_SHORT", level)
+            local hastRating = Utils.GetCombatStatsRatings("ITEM_MOD_HASTE_RATING_SHORT", level)
+            local mastRating = Utils.GetCombatStatsRatings("ITEM_MOD_MASTERY_RATING_SHORT", level)
+            local versRating = Utils.GetCombatStatsRatings("ITEM_MOD_VERSATILITY", level)
+
+            text = text..format("|cffffd200%s:|r\n", L["equipmentSummary.equipmentStats"])
+            text = text..format("    %s: %d\n", L["equipmentSummary.mainStat"], totalMainStat)         -- 主属性
+            text = text..format("    %s: %d\n", ITEM_MOD_STAMINA_SHORT, totalStats.ITEM_MOD_STAMINA_SHORT or 0)   -- 耐力
+            text = text..format("    %s: |cff00ff00%d%s|r\n", ITEM_MOD_CRIT_RATING_SHORT, totalStats.ITEM_MOD_CRIT_RATING_SHORT or 0, (critRating and totalStats.ITEM_MOD_CRIT_RATING_SHORT and format("|cff7f7f7f/|r%d%%", totalStats.ITEM_MOD_CRIT_RATING_SHORT / critRating)) or "")             -- 爆击
+            text = text..format("    %s: |cff00ff00%d%s|r\n", ITEM_MOD_HASTE_RATING_SHORT, totalStats.ITEM_MOD_HASTE_RATING_SHORT or 0, (hastRating and totalStats.ITEM_MOD_HASTE_RATING_SHORT and format("|cff7f7f7f/|r%d%%", totalStats.ITEM_MOD_HASTE_RATING_SHORT / hastRating)) or "")         -- 急速
+            text = text..format("    %s: |cff00ff00%d%s|r\n", ITEM_MOD_MASTERY_RATING_SHORT, totalStats.ITEM_MOD_MASTERY_RATING_SHORT or 0, (mastRating and totalStats.ITEM_MOD_MASTERY_RATING_SHORT and format("|cff7f7f7f/|r%d%%", totalStats.ITEM_MOD_MASTERY_RATING_SHORT / mastRating)) or "") -- 精通
+            text = text..format("    %s: |cff00ff00%d%s|r\n", ITEM_MOD_VERSATILITY, totalStats.ITEM_MOD_VERSATILITY or 0, (versRating and totalStats.ITEM_MOD_VERSATILITY and format("|cff7f7f7f/|r%d%%", totalStats.ITEM_MOD_VERSATILITY / versRating)) or "")                                     -- 全能
+            if totalStats.ITEM_MOD_CR_SPEED_SHORT and totalStats.ITEM_MOD_CR_SPEED_SHORT > 0 then
+                text = text..format("    %s: |cff007fff%d|r\n", ITEM_MOD_CR_SPEED_SHORT, totalStats.ITEM_MOD_CR_SPEED_SHORT or 0)         -- 加速
+            end
+            if totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT and totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT > 0 then
+                text = text..format("    %s: |cff007fff%d|r\n", ITEM_MOD_CR_LIFESTEAL_SHORT, totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT or 0) -- 吸血
+            end
+            if totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT and totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT > 0 then
+                text = text..format("    %s: |cff007fff%d|r\n", ITEM_MOD_CR_AVOIDANCE_SHORT, totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT or 0) -- 闪避
+            end
         end
 
         self.Text:SetText(text)

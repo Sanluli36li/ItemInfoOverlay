@@ -671,6 +671,36 @@ local settings = {
                     default = true
                 },
                 {
+                    -- 标题文本尺寸
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.title.fontSize"],
+                    key = "equipmentSummary.title.fontSize",
+                    minValue = 5,
+                    maxValue = 20,
+                    step = 1,
+                    default = 16,
+                    onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
+                    end,
+                },
+                {
+                    -- 内容文本尺寸
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.fontSize"],
+                    key = "equipmentSummary.fontSize",
+                    minValue = 5,
+                    maxValue = 20,
+                    step = 1,
+                    default = 13,
+                    onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
+                    end,
+                },
+                {
                     -- 显示部位名称
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -727,35 +757,37 @@ local settings = {
                     },
                 },
                 {
-                    -- 标题文本尺寸
-                    controlType = CONTROL_TYPE.SLIDER,
+                    -- 显示套装内容
+                    controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["equipmentSummary.title.fontSize"],
-                    key = "equipmentSummary.title.fontSize",
-                    minValue = 5,
-                    maxValue = 20,
-                    step = 1,
-                    default = 16,
+                    name = L["equipmentSummary.itemSets.title"],
+                    tooltip = L["equipmentSummary.itemSets.tooltip"],
+                    key = "equipmentSummary.itemSets.enable",
+                    default = true,
                     onValueChanged = function(value)
-                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
-                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                     end,
+                    subSettings = {
+                        {
+                            controlType = CONTROL_TYPE.CHECKBOX,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = "包含装备唯一物品",
+                            tooltip = "套装物品同时显示装备唯一的物品",
+                            key = "equipmentSummary.itemSets.unique",
+                            default = true
+                        }
+                    }
                 },
                 {
-                    -- 内容文本尺寸
-                    controlType = CONTROL_TYPE.SLIDER,
+                    -- 显示属性统计
+                    controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["equipmentSummary.fontSize"],
-                    key = "equipmentSummary.fontSize",
-                    minValue = 5,
-                    maxValue = 20,
-                    step = 1,
-                    default = 13,
+                    name = "显示属性统计",
+                    tooltip = L["equipmentSummary.itemStats.tooltip"],
+                    key = "equipmentSummary.itemStats.enable",
+                    default = true,
                     onValueChanged = function(value)
-                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
-                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                     end,
-                }
+                },
             }
         },
         {

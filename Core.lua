@@ -66,7 +66,11 @@ end
 -- 设置配置项
 function AddOn:SetConfig(module, key, value)
 	if self.Database then
-    	self.Database[module..'.'..key] = value
+		if value ~= nil then
+			self.Database[module..'.'..key] = value
+		else
+			self.Database[module] = key
+		end
 	end
 end
 
