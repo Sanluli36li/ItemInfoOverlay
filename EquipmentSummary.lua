@@ -234,6 +234,19 @@ function IIOEquipmentSummaryFrameMixin:OnLoad()
         self.slotNum = self.slotNum + 1
         lastRegion = self.slots[slotId]
     end
+
+    self.ItemSetsText:SetPoint("TOPLEFT", lastRegion, "BOTTOMLEFT", 0, -10)
+    self.ItemSetsText:SetPoint("TOPRIGHT", lastRegion, "BOTTOMRIGHT", 0, -10)
+
+    self.ItemStatsInfo:SetScript("OnEnter", function (self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText("说明")
+        GameTooltip:Show()
+    end)
+    self.ItemStatsInfo:SetScript("OnLeave", function (self)
+        GameTooltip:Hide()
+    end)
+
 end
 
 function IIOEquipmentSummaryFrameMixin:OnShow()
@@ -247,7 +260,11 @@ function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
 
     local font, size, style = GameTooltipText:GetFont()
     self.SubTitle:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
-    self.Text:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+
+    self.ItemSetsText:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemStatsText1:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemStatsText2:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemStatsText3:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
 
     font, size, style = GameTooltipHeaderText:GetFont()
     self.Title:SetFont(font, Module:GetConfig(CONFIG_TITLE_FONT_SIZE), style)
@@ -350,10 +367,9 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
         self:RefreshItemLevelAndSpec(totalItemLevel / 16, totalPvpItemLevel / 16)
 
-        local text = ""
-
         if numItemSets > 0 then
-            text = text..format("|cffffd200%s:|r\n", LOOT_JOURNAL_ITEM_SETS)
+            local text = format("|cffffd200%s:|r\n", LOOT_JOURNAL_ITEM_SETS)
+
             for id, num in pairs(itemSets) do
                 local setName = C_Item.GetItemSetInfo(id)
                 local maxNum = #C_LootJournal.GetItemSetItems(id)
@@ -370,46 +386,78 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                     text = text..format("    %s (%s)\n", setName, (maxNum and num.."/"..maxNum) or num)
                 end
             end
+
+            self.ItemSetsText:SetText(text.."\n")
+        else
+            self.ItemSetsText:SetText()
         end
 
         if Module:GetConfig(CONFIG_ITEM_STATS) then
-            if numItemSets > 0 then
-                text = text.."\n"
-            end
 
             local critRating = Utils.GetCombatStatsRatings("ITEM_MOD_CRIT_RATING_SHORT", level)
             local hastRating = Utils.GetCombatStatsRatings("ITEM_MOD_HASTE_RATING_SHORT", level)
             local mastRating = Utils.GetCombatStatsRatings("ITEM_MOD_MASTERY_RATING_SHORT", level)
             local versRating = Utils.GetCombatStatsRatings("ITEM_MOD_VERSATILITY", level)
 
-            text = text..format("|cffffd200%s:|r\n", L["equipmentSummary.equipmentStats"])
-            text = text..format("    %s: %d\n", L["equipmentSummary.mainStat"], totalMainStat)         -- 主属性
-            text = text..format("    %s: %d\n", ITEM_MOD_STAMINA_SHORT, totalStats.ITEM_MOD_STAMINA_SHORT or 0)   -- 耐力
-            text = text..format("    %s: |cff00ff00%d%s|r\n", ITEM_MOD_CRIT_RATING_SHORT, totalStats.ITEM_MOD_CRIT_RATING_SHORT or 0, (critRating and totalStats.ITEM_MOD_CRIT_RATING_SHORT and format("|cff7f7f7f/|r%d%%", totalStats.ITEM_MOD_CRIT_RATING_SHORT / critRating)) or "")             -- 爆击
-            text = text..format("    %s: |cff00ff00%d%s|r\n", ITEM_MOD_HASTE_RATING_SHORT, totalStats.ITEM_MOD_HASTE_RATING_SHORT or 0, (hastRating and totalStats.ITEM_MOD_HASTE_RATING_SHORT and format("|cff7f7f7f/|r%d%%", totalStats.ITEM_MOD_HASTE_RATING_SHORT / hastRating)) or "")         -- 急速
-            text = text..format("    %s: |cff00ff00%d%s|r\n", ITEM_MOD_MASTERY_RATING_SHORT, totalStats.ITEM_MOD_MASTERY_RATING_SHORT or 0, (mastRating and totalStats.ITEM_MOD_MASTERY_RATING_SHORT and format("|cff7f7f7f/|r%d%%", totalStats.ITEM_MOD_MASTERY_RATING_SHORT / mastRating)) or "") -- 精通
-            text = text..format("    %s: |cff00ff00%d%s|r\n", ITEM_MOD_VERSATILITY, totalStats.ITEM_MOD_VERSATILITY or 0, (versRating and totalStats.ITEM_MOD_VERSATILITY and format("|cff7f7f7f/|r%d%%", totalStats.ITEM_MOD_VERSATILITY / versRating)) or "")                                     -- 全能
+            local text1 = (
+                format("|cffffd200%s:|r\n", L["equipmentSummary.equipmentStats"])..
+                format("    %s: \n", L["equipmentSummary.mainStat"])..
+                format("    %s: \n", ITEM_MOD_STAMINA_SHORT.."")..
+                format("    %s: \n", ITEM_MOD_CRIT_RATING_SHORT.."")..
+                format("    %s: \n", ITEM_MOD_HASTE_RATING_SHORT)..
+                format("    %s: \n", ITEM_MOD_MASTERY_RATING_SHORT)..
+                format("    %s: \n", ITEM_MOD_VERSATILITY)
+            )
+            local text2 = ( -- 属性数值
+                "\n"..
+                format("|cffffffff%d|r\n", totalMainStat)..
+                format("|cffffffff%d|r\n", totalStats.ITEM_MOD_STAMINA_SHORT or 0)..
+                format("|cff00ff00%d|r\n", totalStats.ITEM_MOD_CRIT_RATING_SHORT or 0)..
+                format("|cff00ff00%d|r\n", totalStats.ITEM_MOD_HASTE_RATING_SHORT or 0)..
+                format("|cff00ff00%d|r\n", totalStats.ITEM_MOD_MASTERY_RATING_SHORT or 0)..
+                format("|cff00ff00%d|r\n", totalStats.ITEM_MOD_VERSATILITY or 0)
+            )
+            local text3 = ( -- 属性百分比
+                "\n\n\n"..
+                format(" |cff00ff00%s|r\n", (critRating and totalStats.ITEM_MOD_CRIT_RATING_SHORT and format("%d%%", totalStats.ITEM_MOD_CRIT_RATING_SHORT / critRating)) or "")..
+                format(" |cff00ff00%s|r\n", (hastRating and totalStats.ITEM_MOD_HASTE_RATING_SHORT and format("%d%%", totalStats.ITEM_MOD_HASTE_RATING_SHORT / hastRating)) or "")..
+                format(" |cff00ff00%s|r\n", (mastRating and totalStats.ITEM_MOD_MASTERY_RATING_SHORT and format("%d%%", totalStats.ITEM_MOD_MASTERY_RATING_SHORT / mastRating)) or "")..
+                format(" |cff00ff00%s|r\n", (versRating and totalStats.ITEM_MOD_VERSATILITY and format("%d%%", totalStats.ITEM_MOD_VERSATILITY / versRating)) or "")
+            )
+
+            -- 次要属性 (加速 吸血 闪避)
             if totalStats.ITEM_MOD_CR_SPEED_SHORT and totalStats.ITEM_MOD_CR_SPEED_SHORT > 0 then
-                text = text..format("    %s: |cff007fff%d|r\n", ITEM_MOD_CR_SPEED_SHORT, totalStats.ITEM_MOD_CR_SPEED_SHORT or 0)         -- 加速
+                text1 = text1..format("    %s: \n", ITEM_MOD_CR_SPEED_SHORT)
+                text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_SPEED_SHORT or 0)
+                text3 = text3.."\n"
             end
             if totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT and totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT > 0 then
-                text = text..format("    %s: |cff007fff%d|r\n", ITEM_MOD_CR_LIFESTEAL_SHORT, totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT or 0) -- 吸血
+                text1 = text1..format("    %s: \n", ITEM_MOD_CR_LIFESTEAL_SHORT)
+                text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT or 0)
+                text3 = text3.."\n"
             end
             if totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT and totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT > 0 then
-                text = text..format("    %s: |cff007fff%d|r\n", ITEM_MOD_CR_AVOIDANCE_SHORT, totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT or 0) -- 闪避
+                text1 = text1..format("    %s: \n", ITEM_MOD_CR_AVOIDANCE_SHORT)
+                text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT or 0)
+                text3 = text3.."\n"
             end
+
+            self.ItemStatsText1:SetText(text1.."\n")
+            self.ItemStatsText2:SetText(text2.."\n")
+            self.ItemStatsText3:SetText(text3.."\n")
+        else
+            self.ItemStatsText1:SetText()
+            self.ItemStatsText2:SetText()
+            self.ItemStatsText3:SetText()
         end
 
-        self.Text:SetText(text)
-
-        -- local width = math.max(self.Text:GetStringWidth() + self.Title:GetStringWidth())
         local height = 12
             + self.Title:GetStringHeight()
             + 10
             + self.SubTitle:GetStringHeight()
             + (self.slotNum * (Module:GetConfig(CONFIG_FONT_SIZE) + 2))
-            + 10
-            + self.Text:GetStringHeight()
+            + self.ItemSetsText:GetStringHeight()
+            + self.ItemStatsText1:GetStringHeight()
             + 12
         local width = 12
             + (Module:GetConfig(CONFIG_SLOT_NAME) and 42 or 0)

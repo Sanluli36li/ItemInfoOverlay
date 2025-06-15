@@ -72,10 +72,21 @@
                         <Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
                     </Anchors>
                 </FontString>
-                <FontString parentKey="Text" inherits="GameTooltipText">
+                <FontString parentKey="ItemSetsText" inherits="GameTooltipText">
+                </FontString>
+                <FontString parentKey="ItemStatsText1" inherits="GameTooltipText">
                     <Anchors>
-                        <Anchor point="BOTTOMLEFT" x="12" y="12"/>
-                        <Anchor point="BOTTOMRIGHT" x="-12" y="12"/>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.ItemSetsText" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="ItemStatsText2" inherits="GameTooltipText">
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeKey="$parent.ItemStatsText1" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="ItemStatsText3" inherits="GameTooltipText">
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeKey="$parent.ItemStatsText2" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
                     </Anchors>
                 </FontString>
                 <Texture parentKey="SpecIcon" mask="Interface\Minimap\UI-Minimap-Background" alpha="0.6">
@@ -87,6 +98,12 @@
 			</Layer>
         </Layers>
         <Frames>
+            <Frame parentKey="ItemStatsInfo">
+                <Size x="16" y="16"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeKey="$parent.ItemSetsText" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                </Anchors>
+            </Frame>
         </Frames>
         <Scripts>
 			<OnLoad method="OnLoad"/>
