@@ -98,10 +98,15 @@
 			</Layer>
         </Layers>
         <Frames>
-            <Frame parentKey="ItemStatsInfo">
-                <Size x="16" y="16"/>
+            <Frame parentKey="ItemStatsTips">
+                <Size x="24" y="24"/>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture parentKey="I" file="Interface\common\help-i"/>
+                    </Layer>
+                </Layers>
                 <Anchors>
-                    <Anchor point="TOPRIGHT" relativeKey="$parent.ItemSetsText" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    <Anchor point="TOPRIGHT" relativeKey="$parent.ItemSetsText" relativePoint="BOTTOMRIGHT" x="0" y="4"/>
                 </Anchors>
             </Frame>
         </Frames>

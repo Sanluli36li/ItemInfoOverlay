@@ -238,12 +238,27 @@ function IIOEquipmentSummaryFrameMixin:OnLoad()
     self.ItemSetsText:SetPoint("TOPLEFT", lastRegion, "BOTTOMLEFT", 0, -10)
     self.ItemSetsText:SetPoint("TOPRIGHT", lastRegion, "BOTTOMRIGHT", 0, -10)
 
-    self.ItemStatsInfo:SetScript("OnEnter", function (self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("说明")
+    self.ItemStatsTips:SetScript("OnEnter", function (button)
+        GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
+        GameTooltip:SetText(L["equipmentSummary.itemStats.tips.title"])
+        GameTooltip:AddLine(L["equipmentSummary.itemStats.tips.line1"], 1, 1, 1)
+        if self.level then
+            GameTooltip:AddLine(" ")
+            local critRating = Utils.GetCombatStatsRatings("ITEM_MOD_CRIT_RATING_SHORT", self.level)
+            local hasteRating = Utils.GetCombatStatsRatings("ITEM_MOD_HASTE_RATING_SHORT", self.level)
+            local masteryRating = Utils.GetCombatStatsRatings("ITEM_MOD_MASTERY_RATING_SHORT", self.level)
+            local versRating = Utils.GetCombatStatsRatings("ITEM_MOD_VERSATILITY", self.level)
+
+            GameTooltip:AddLine(format(L["equipmentSummary.itemStats.tips.line2"], self.level))
+            GameTooltip:AddDoubleLine(ITEM_MOD_CRIT_RATING_SHORT..": ", (critRating and format("%d", critRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
+            GameTooltip:AddDoubleLine(ITEM_MOD_HASTE_RATING_SHORT..": ", (hasteRating and format("%d", hasteRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
+            GameTooltip:AddDoubleLine(ITEM_MOD_MASTERY_RATING_SHORT..": ", (masteryRating and format("%d", masteryRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
+            GameTooltip:AddDoubleLine(ITEM_MOD_VERSATILITY..": ", (versRating and format("%d", versRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
+        end
+
         GameTooltip:Show()
     end)
-    self.ItemStatsInfo:SetScript("OnLeave", function (self)
+    self.ItemStatsTips:SetScript("OnLeave", function (button)
         GameTooltip:Hide()
     end)
 
@@ -282,6 +297,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
     if self.unit then
         local name = UnitNameUnmodified(self.unit)
         local level = UnitLevel(self.unit)
+        self.level = level
         local className, classFilename = UnitClass(self.unit)
         local classColor = C_ClassColor.GetClassColor(classFilename)
 
@@ -419,10 +435,10 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             )
             local text3 = ( -- 属性百分比
                 "\n\n\n"..
-                format(" |cff00ff00%s|r\n", (critRating and totalStats.ITEM_MOD_CRIT_RATING_SHORT and format("%d%%", totalStats.ITEM_MOD_CRIT_RATING_SHORT / critRating)) or "")..
-                format(" |cff00ff00%s|r\n", (hastRating and totalStats.ITEM_MOD_HASTE_RATING_SHORT and format("%d%%", totalStats.ITEM_MOD_HASTE_RATING_SHORT / hastRating)) or "")..
-                format(" |cff00ff00%s|r\n", (mastRating and totalStats.ITEM_MOD_MASTERY_RATING_SHORT and format("%d%%", totalStats.ITEM_MOD_MASTERY_RATING_SHORT / mastRating)) or "")..
-                format(" |cff00ff00%s|r\n", (versRating and totalStats.ITEM_MOD_VERSATILITY and format("%d%%", totalStats.ITEM_MOD_VERSATILITY / versRating)) or "")
+                format(" |cff00ff00%s|r\n", (critRating and totalStats.ITEM_MOD_CRIT_RATING_SHORT and format("%.1f%%", totalStats.ITEM_MOD_CRIT_RATING_SHORT / critRating)) or "")..
+                format(" |cff00ff00%s|r\n", (hastRating and totalStats.ITEM_MOD_HASTE_RATING_SHORT and format("%.1f%%", totalStats.ITEM_MOD_HASTE_RATING_SHORT / hastRating)) or "")..
+                format(" |cff00ff00%s|r\n", (mastRating and totalStats.ITEM_MOD_MASTERY_RATING_SHORT and format("%.1f%%", totalStats.ITEM_MOD_MASTERY_RATING_SHORT / mastRating)) or "")..
+                format(" |cff00ff00%s|r\n", (versRating and totalStats.ITEM_MOD_VERSATILITY and format("%.1f%%", totalStats.ITEM_MOD_VERSATILITY / versRating)) or "")
             )
 
             -- 次要属性 (加速 吸血 闪避)
@@ -445,10 +461,12 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             self.ItemStatsText1:SetText(text1.."\n")
             self.ItemStatsText2:SetText(text2.."\n")
             self.ItemStatsText3:SetText(text3.."\n")
+            self.ItemStatsTips:Show()
         else
             self.ItemStatsText1:SetText()
             self.ItemStatsText2:SetText()
             self.ItemStatsText3:SetText()
+            self.ItemStatsTips:Hide()
         end
 
         local height = 12
