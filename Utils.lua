@@ -117,8 +117,27 @@ local function UpdateCombatStatsRatings()
     statsRatings[UnitLevel("player")] = {}
 
     for i, stat in pairs(COMBAT_STATS) do
-        if GetCombatRating(stat) > 0 and GetCombatRatingBonus(stat) > 0 then
-            statsRatings[UnitLevel("player")][i] = GetCombatRating(stat) / GetCombatRatingBonus(stat)
+        local bonus = GetCombatRatingBonus(stat)
+        -- 计算递减前应有的数值
+        if bonus > 0 then   -- 绿字率应当大于0, 否则无法计算
+            if bonus >= 125 then
+                -- 当绿字大于125%时，因完全溢出无收益的绿字已经无法计算，故只能取递减前的最大值 200%
+                bonus = 200
+            elseif bonus > 60 then
+                bonus = ((bonus - 60) / 0.5) + 70
+            elseif bonus > 54 then
+                bonus = ((bonus - 54) / 0.6) + 60
+            elseif bonus > 47 then
+                bonus = ((bonus - 47) / 0.7) + 50
+            elseif bonus > 39 then
+                bonus = ((bonus - 39) / 0.8) + 40
+            elseif bonus > 30 then
+                bonus = ((bonus - 30) / 0.9) + 30
+            end
+
+            statsRatings[UnitLevel("player")][i] = GetCombatRating(stat) / bonus
+        else
+            -- 当完全没有此项绿字时，无法计算转化率，故忽略
         end
     end
 end
