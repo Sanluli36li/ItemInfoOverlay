@@ -117,8 +117,9 @@ local function UpdateCombatStatsRatings()
     statsRatings[UnitLevel("player")] = {}
 
     for i, stat in pairs(COMBAT_STATS) do
-        statsRatings[UnitLevel("player")][i] = GetCombatRating(stat) / GetCombatRatingBonus(stat)
-        -- print(_G[i], statsRatings[UnitLevel("player")][i])
+        if GetCombatRating(stat) > 0 and GetCombatRatingBonus(stat) > 0 then
+            statsRatings[UnitLevel("player")][i] = GetCombatRating(stat) / GetCombatRatingBonus(stat)
+        end
     end
 end
 
