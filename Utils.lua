@@ -104,8 +104,18 @@ local COMBAT_STATS = {
     ITEM_MOD_HASTE_RATING_SHORT = CR_HASTE_SPELL,
     ITEM_MOD_MASTERY_RATING_SHORT = CR_MASTERY,
     ITEM_MOD_VERSATILITY = CR_VERSATILITY_DAMAGE_DONE,
+    ITEM_MOD_CR_SPEED_SHORT = CR_SPEED,
+    ITEM_MOD_CR_LIFESTEAL_SHORT = CR_LIFESTEAL,
+    ITEM_MOD_CR_AVOIDANCE_SHORT = CR_AVOIDANCE
 }
-
+local STAT_DECREASING = {
+    { 200, 125, 0 },
+    { 70, 60, 0.5 },
+    { 60, 54, 0.6 },
+    { 50, 47, 0.7 },
+    { 40, 39, 0.8 },
+    { 30, 30, 0.9 },
+}
 local function UpdateCombatStatsRatings()
     local statsRatings = ItemInfoOverlay:GetConfig("statsRatings")
 
@@ -119,25 +129,23 @@ local function UpdateCombatStatsRatings()
     for i, stat in pairs(COMBAT_STATS) do
         local bonus = GetCombatRatingBonus(stat)
         -- 计算递减前应有的数值
-        if bonus > 0 then   -- 绿字率应当大于0, 否则无法计算
-            if bonus >= 125 then
-                -- 当绿字大于125%时，因完全溢出无收益的绿字已经无法计算，故只能取递减前的最大值 200%
-                bonus = 200
-            elseif bonus > 60 then
-                bonus = ((bonus - 60) / 0.5) + 70
-            elseif bonus > 54 then
-                bonus = ((bonus - 54) / 0.6) + 60
-            elseif bonus > 47 then
-                bonus = ((bonus - 47) / 0.7) + 50
-            elseif bonus > 39 then
-                bonus = ((bonus - 39) / 0.8) + 40
-            elseif bonus > 30 then
-                bonus = ((bonus - 30) / 0.9) + 30
+        if bonus > 0 then   -- 百分比应当大于0, 否则无法计算
+            for j, data in ipairs(STAT_DECREASING) do
+                if bonus > data[2] then
+                    if data[3] > 0 then
+                        bonus = data[1] + (bonus - data[2]) / data[3]
+                        break
+                    else
+                        -- 递减至0的绿字，因完全溢出无收益的绿字已经无法计算
+                        bonus = nil
+                        break
+                    end
+                end
             end
 
-            statsRatings[UnitLevel("player")][i] = GetCombatRating(stat) / bonus
-        else
-            -- 当完全没有此项绿字时，无法计算转化率，故忽略
+            if bonus then
+                statsRatings[UnitLevel("player")][i] = GetCombatRating(stat) / bonus
+            end
         end
     end
 end
@@ -150,6 +158,23 @@ function Utils.GetCombatStatsRatings(stat, level)
 
     if statsRatings and statsRatings[level] then
         return statsRatings[level][stat]
+    end
+end
+
+function Utils.CalculateStatsRatings(stat, statNum, level)
+    local statsRatings = ItemInfoOverlay:GetConfig("statsRatings")
+    if not level then
+        level = UnitLevel("player")
+    end
+
+    if statNum and statNum > 0 and statsRatings and statsRatings[level] and statsRatings[level][stat] then
+        local bonus = statNum / statsRatings[level][stat]
+        for i, data in ipairs(STAT_DECREASING) do
+            if bonus > data[1] then
+                return (bonus - data[1]) * data[3] + data[2], bonus
+            end
+        end
+        return bonus
     end
 end
 

@@ -409,11 +409,10 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
         end
 
         if Module:GetConfig(CONFIG_ITEM_STATS) then
-
-            local critRating = Utils.GetCombatStatsRatings("ITEM_MOD_CRIT_RATING_SHORT", level)
-            local hastRating = Utils.GetCombatStatsRatings("ITEM_MOD_HASTE_RATING_SHORT", level)
-            local mastRating = Utils.GetCombatStatsRatings("ITEM_MOD_MASTERY_RATING_SHORT", level)
-            local versRating = Utils.GetCombatStatsRatings("ITEM_MOD_VERSATILITY", level)
+            local critBonus, critBonus2 = Utils.CalculateStatsRatings("ITEM_MOD_CRIT_RATING_SHORT", totalStats.ITEM_MOD_CRIT_RATING_SHORT, level)
+            local hasteBonus, hasteBonus2 = Utils.CalculateStatsRatings("ITEM_MOD_HASTE_RATING_SHORT", totalStats.ITEM_MOD_HASTE_RATING_SHORT, level)
+            local masteryBonus, masteryBonus2 = Utils.CalculateStatsRatings("ITEM_MOD_MASTERY_RATING_SHORT", totalStats.ITEM_MOD_MASTERY_RATING_SHORT, level)
+            local versBonus, versBonus2 = Utils.CalculateStatsRatings("ITEM_MOD_VERSATILITY", totalStats.ITEM_MOD_VERSATILITY, level)
 
             local text1 = (
                 format("|cffffd200%s:|r\n", L["equipmentSummary.equipmentStats"])..
@@ -435,27 +434,30 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             )
             local text3 = ( -- 属性百分比
                 "\n\n\n"..
-                format(" |cff00ff00%s|r\n", (critRating and totalStats.ITEM_MOD_CRIT_RATING_SHORT and format("%.1f%%", totalStats.ITEM_MOD_CRIT_RATING_SHORT / critRating)) or "")..
-                format(" |cff00ff00%s|r\n", (hastRating and totalStats.ITEM_MOD_HASTE_RATING_SHORT and format("%.1f%%", totalStats.ITEM_MOD_HASTE_RATING_SHORT / hastRating)) or "")..
-                format(" |cff00ff00%s|r\n", (mastRating and totalStats.ITEM_MOD_MASTERY_RATING_SHORT and format("%.1f%%", totalStats.ITEM_MOD_MASTERY_RATING_SHORT / mastRating)) or "")..
-                format(" |cff00ff00%s|r\n", (versRating and totalStats.ITEM_MOD_VERSATILITY and format("%.1f%%|cff7f7f7f/|r%.1f%%", totalStats.ITEM_MOD_VERSATILITY / versRating, totalStats.ITEM_MOD_VERSATILITY / versRating / 2)) or "")
+                format(" |c%s%s|r\n", (critBonus2 and "ffffff00") or "ff00ff00", (critBonus and format("%.1f%%", critBonus)) or "")..
+                format(" |c%s%s|r\n", (hasteBonus2 and "ffffff00") or "ff00ff00", (hasteBonus and format("%.1f%%", hasteBonus)) or "")..
+                format(" |c%s%s|r\n", (masteryBonus2 and "ffffff00") or "ff00ff00", (masteryBonus and format("%.1f%%", masteryBonus)) or "")..
+                format(" |c%s%s|r\n", (versBonus2 and "ffffff00") or "ff00ff00", (versBonus and format("%.1f%%|cff7f7f7f/|r%.1f%%", versBonus, versBonus / 2)) or "")
             )
 
             -- 次要属性 (加速 吸血 闪避)
             if totalStats.ITEM_MOD_CR_SPEED_SHORT and totalStats.ITEM_MOD_CR_SPEED_SHORT > 0 then
+                local bonus = Utils.CalculateStatsRatings("ITEM_MOD_CR_SPEED_SHORT", totalStats.ITEM_MOD_CR_SPEED_SHORT, level)
                 text1 = text1..format("    %s: \n", ITEM_MOD_CR_SPEED_SHORT)
                 text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_SPEED_SHORT or 0)
-                text3 = text3.."\n"
+                text3 = text3..format(" |cff007fff%s|r\n", (bonus and format("%.1f%%", bonus)) or "")
             end
             if totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT and totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT > 0 then
+                local bonus = Utils.CalculateStatsRatings("ITEM_MOD_CR_LIFESTEAL_SHORT", totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT, level)
                 text1 = text1..format("    %s: \n", ITEM_MOD_CR_LIFESTEAL_SHORT)
                 text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT or 0)
-                text3 = text3.."\n"
+                text3 = text3..format(" |cff007fff%s|r\n", (bonus and format("%.1f%%", bonus)) or "")
             end
             if totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT and totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT > 0 then
+                local bonus = Utils.CalculateStatsRatings("ITEM_MOD_CR_AVOIDANCE_SHORT", totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT, level)
                 text1 = text1..format("    %s: \n", ITEM_MOD_CR_AVOIDANCE_SHORT)
                 text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT or 0)
-                text3 = text3.."\n"
+                text3 = text3..format(" |cff007fff%s|r\n", (bonus and format("%.1f%%", bonus)) or "")
             end
 
             self.ItemStatsText1:SetText(text1.."\n")
