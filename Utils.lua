@@ -99,23 +99,32 @@ function Utils.GetRGBAFromHexColor(hex)
     return r, g, b, a
 end
 
-local COMBAT_STATS = {
-    ITEM_MOD_CRIT_RATING_SHORT = CR_CRIT_SPELL,
-    ITEM_MOD_HASTE_RATING_SHORT = CR_HASTE_SPELL,
-    ITEM_MOD_MASTERY_RATING_SHORT = CR_MASTERY,
-    ITEM_MOD_VERSATILITY = CR_VERSATILITY_DAMAGE_DONE,
-    ITEM_MOD_CR_SPEED_SHORT = CR_SPEED,
-    ITEM_MOD_CR_LIFESTEAL_SHORT = CR_LIFESTEAL,
-    ITEM_MOD_CR_AVOIDANCE_SHORT = CR_AVOIDANCE
-}
-local STAT_DECREASING = {
-    { 200, 125, 0 },
-    { 70, 60, 0.5 },
+local COMBAT_RATING_DECREASING = {  -- 递减曲线: 爆击, 急速, 精通, 全能
+    { 200, 126, 0 },
+    { 80, 66, 0.5 },
     { 60, 54, 0.6 },
     { 50, 47, 0.7 },
     { 40, 39, 0.8 },
     { 30, 30, 0.9 },
 }
+
+local COMBAT_RATING_DECREASING2 = { -- 递减曲线: 加速, 吸血, 闪避
+    {100, 49, 0},
+    {20, 17, 0.4},
+    {15, 14, 0.6},
+    {10, 10, 0.8},
+}
+
+local COMBAT_RATINGS = {
+    ITEM_MOD_CRIT_RATING_SHORT = { CR_CRIT_SPELL, COMBAT_RATING_DECREASING },
+    ITEM_MOD_HASTE_RATING_SHORT = { CR_HASTE_SPELL, COMBAT_RATING_DECREASING },
+    ITEM_MOD_MASTERY_RATING_SHORT = { CR_MASTERY, COMBAT_RATING_DECREASING },
+    ITEM_MOD_VERSATILITY = { CR_VERSATILITY_DAMAGE_DONE, COMBAT_RATING_DECREASING },
+    ITEM_MOD_CR_SPEED_SHORT = { CR_SPEED, COMBAT_RATING_DECREASING2 },
+    ITEM_MOD_CR_LIFESTEAL_SHORT = { CR_LIFESTEAL, COMBAT_RATING_DECREASING2 },
+    ITEM_MOD_CR_AVOIDANCE_SHORT = { CR_AVOIDANCE, COMBAT_RATING_DECREASING2 }
+}
+
 local function UpdateCombatStatsRatings()
     local statsRatings = ItemInfoOverlay:GetConfig("statsRatings")
 
@@ -126,9 +135,9 @@ local function UpdateCombatStatsRatings()
 
     statsRatings[UnitLevel("player")] = {}
 
-    for i, stat in pairs(COMBAT_STATS) do
+    for i, stat in pairs(COMBAT_RATINGS) do
         -- 这好用多了
-        statsRatings[UnitLevel("player")][i] = 1 /  GetCombatRatingBonusForCombatRatingValue(stat, 1)
+        statsRatings[UnitLevel("player")][i] = 1 /  GetCombatRatingBonusForCombatRatingValue(stat[1], 1)
     end
 end
 
@@ -151,11 +160,16 @@ function Utils.CalculateStatsRatings(stat, statNum, level)
 
     if statNum and statNum > 0 and statsRatings and statsRatings[level] and statsRatings[level][stat] then
         local bonus = statNum / statsRatings[level][stat]
-        for i, data in ipairs(STAT_DECREASING) do
-            if bonus > data[1] then
-                return (bonus - data[1]) * data[3] + data[2], bonus
+        -- 递减计算
+        local decreasing = COMBAT_RATINGS[stat] and COMBAT_RATINGS[stat][2]
+        if decreasing then
+            for i, data in ipairs(decreasing) do
+                if bonus > data[1] then
+                    return (bonus - data[1]) * data[3] + data[2], bonus
+                end
             end
         end
+
         return bonus
     end
 end
