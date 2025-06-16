@@ -127,26 +127,8 @@ local function UpdateCombatStatsRatings()
     statsRatings[UnitLevel("player")] = {}
 
     for i, stat in pairs(COMBAT_STATS) do
-        local bonus = GetCombatRatingBonus(stat)
-        -- 计算递减前应有的数值
-        if bonus > 0 then   -- 百分比应当大于0, 否则无法计算
-            for j, data in ipairs(STAT_DECREASING) do
-                if bonus > data[2] then
-                    if data[3] > 0 then
-                        bonus = data[1] + (bonus - data[2]) / data[3]
-                        break
-                    else
-                        -- 递减至0的绿字，因完全溢出无收益的绿字已经无法计算
-                        bonus = nil
-                        break
-                    end
-                end
-            end
-
-            if bonus then
-                statsRatings[UnitLevel("player")][i] = GetCombatRating(stat) / bonus
-            end
-        end
+        -- 这好用多了
+        statsRatings[UnitLevel("player")][i] = 1 /  GetCombatRatingBonusForCombatRatingValue(stat, 1)
     end
 end
 
