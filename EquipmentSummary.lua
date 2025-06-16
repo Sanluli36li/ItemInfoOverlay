@@ -438,7 +438,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                 format(" |cff00ff00%s|r\n", (critRating and totalStats.ITEM_MOD_CRIT_RATING_SHORT and format("%.1f%%", totalStats.ITEM_MOD_CRIT_RATING_SHORT / critRating)) or "")..
                 format(" |cff00ff00%s|r\n", (hastRating and totalStats.ITEM_MOD_HASTE_RATING_SHORT and format("%.1f%%", totalStats.ITEM_MOD_HASTE_RATING_SHORT / hastRating)) or "")..
                 format(" |cff00ff00%s|r\n", (mastRating and totalStats.ITEM_MOD_MASTERY_RATING_SHORT and format("%.1f%%", totalStats.ITEM_MOD_MASTERY_RATING_SHORT / mastRating)) or "")..
-                format(" |cff00ff00%s|r\n", (versRating and totalStats.ITEM_MOD_VERSATILITY and format("%.1f%%", totalStats.ITEM_MOD_VERSATILITY / versRating)) or "")
+                format(" |cff00ff00%s|r\n", (versRating and totalStats.ITEM_MOD_VERSATILITY and format("%.1f%%|cff7f7f7f/|r%.1f%%", totalStats.ITEM_MOD_VERSATILITY / versRating, totalStats.ITEM_MOD_VERSATILITY / versRating / 2)) or "")
             )
 
             -- 次要属性 (加速 吸血 闪避)
