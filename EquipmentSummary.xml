@@ -106,7 +106,7 @@
                     </Layer>
                 </Layers>
                 <Anchors>
-                    <Anchor point="TOPRIGHT" relativeKey="$parent.ItemSetsText" relativePoint="BOTTOMRIGHT" x="0" y="4"/>
+                    <Anchor point="TOPRIGHT" relativeKey="$parent.ItemSetsText" relativePoint="BOTTOMRIGHT" x="8" y="4"/>
                 </Anchors>
             </Frame>
         </Frames>

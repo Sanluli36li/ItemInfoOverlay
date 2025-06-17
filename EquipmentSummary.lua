@@ -249,11 +249,19 @@ function IIOEquipmentSummaryFrameMixin:OnLoad()
             local masteryRating = Utils.GetCombatStatsRatings("ITEM_MOD_MASTERY_RATING_SHORT", self.level)
             local versRating = Utils.GetCombatStatsRatings("ITEM_MOD_VERSATILITY", self.level)
 
+            local speedRating = Utils.GetCombatStatsRatings("ITEM_MOD_CR_SPEED_SHORT", self.level)
+            local lifestealRating = Utils.GetCombatStatsRatings("ITEM_MOD_CR_LIFESTEAL_SHORT", self.level)
+            local avoidRating = Utils.GetCombatStatsRatings("ITEM_MOD_CR_AVOIDANCE_SHORT", self.level)
+
             GameTooltip:AddLine(format(L["equipmentSummary.itemStats.tips.line2"], self.level))
             GameTooltip:AddDoubleLine(ITEM_MOD_CRIT_RATING_SHORT..": ", (critRating and format("%d", critRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
             GameTooltip:AddDoubleLine(ITEM_MOD_HASTE_RATING_SHORT..": ", (hasteRating and format("%d", hasteRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
             GameTooltip:AddDoubleLine(ITEM_MOD_MASTERY_RATING_SHORT..": ", (masteryRating and format("%d", masteryRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
             GameTooltip:AddDoubleLine(ITEM_MOD_VERSATILITY..": ", (versRating and format("%d", versRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddDoubleLine(ITEM_MOD_CR_SPEED_SHORT..": ", (versRating and format("%d", speedRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
+            GameTooltip:AddDoubleLine(ITEM_MOD_CR_LIFESTEAL_SHORT..": ", (versRating and format("%d", lifestealRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
+            GameTooltip:AddDoubleLine(ITEM_MOD_CR_AVOIDANCE_SHORT..": ", (versRating and format("%d", avoidRating + 0.5)) or L["equipmentSummary.itemStats.tips.unknown"], nil, nil, nil, 1, 1, 1)
         end
 
         GameTooltip:Show()
@@ -413,6 +421,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             local hasteBonus, hasteBonus2 = Utils.CalculateStatsRatings("ITEM_MOD_HASTE_RATING_SHORT", totalStats.ITEM_MOD_HASTE_RATING_SHORT, level)
             local masteryBonus, masteryBonus2 = Utils.CalculateStatsRatings("ITEM_MOD_MASTERY_RATING_SHORT", totalStats.ITEM_MOD_MASTERY_RATING_SHORT, level)
             local versBonus, versBonus2 = Utils.CalculateStatsRatings("ITEM_MOD_VERSATILITY", totalStats.ITEM_MOD_VERSATILITY, level)
+            local masteryCoefficient = (self.unit == "player" and select(2, GetMasteryEffect()))
 
             local text1 = (
                 format("|cffffd200%s:|r\n", L["equipmentSummary.equipmentStats"])..
@@ -436,33 +445,33 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                 "\n\n\n"..
                 format(" |c%s%s|r\n", (critBonus2 and "ffffff00") or "ff00ff00", (critBonus and format("%.1f%%", critBonus)) or "")..
                 format(" |c%s%s|r\n", (hasteBonus2 and "ffffff00") or "ff00ff00", (hasteBonus and format("%.1f%%", hasteBonus)) or "")..
-                format(" |c%s%s|r\n", (masteryBonus2 and "ffffff00") or "ff00ff00", (masteryBonus and format("%.1f%%", masteryBonus)) or "")..
+                format(" |c%s%s|r%s\n", (masteryBonus2 and "ffffff00") or "ff00ff00", (masteryBonus and format("%.1f%%", masteryBonus)) or "", (masteryCoefficient and format(" (x%.2f)", masteryCoefficient) or ""))..
                 format(" |c%s%s|r\n", (versBonus2 and "ffffff00") or "ff00ff00", (versBonus and format("%.1f%%|cff7f7f7f/|r%.1f%%", versBonus, versBonus / 2)) or "")
             )
 
             -- 次要属性 (加速 吸血 闪避)
             if totalStats.ITEM_MOD_CR_SPEED_SHORT and totalStats.ITEM_MOD_CR_SPEED_SHORT > 0 then
-                local bonus = Utils.CalculateStatsRatings("ITEM_MOD_CR_SPEED_SHORT", totalStats.ITEM_MOD_CR_SPEED_SHORT, level)
+                local bonus, bonus2 = Utils.CalculateStatsRatings("ITEM_MOD_CR_SPEED_SHORT", totalStats.ITEM_MOD_CR_SPEED_SHORT, level)
                 text1 = text1..format("    %s: \n", ITEM_MOD_CR_SPEED_SHORT)
                 text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_SPEED_SHORT or 0)
-                text3 = text3..format(" |cff007fff%s|r\n", (bonus and format("%.1f%%", bonus)) or "")
+                text3 = text3..format(" |c%s%s|r\n", (bonus2 and "ffffff00") or "ff007fff", (bonus and format("%.1f%%", bonus)) or "")
             end
             if totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT and totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT > 0 then
                 local bonus = Utils.CalculateStatsRatings("ITEM_MOD_CR_LIFESTEAL_SHORT", totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT, level)
                 text1 = text1..format("    %s: \n", ITEM_MOD_CR_LIFESTEAL_SHORT)
                 text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT or 0)
-                text3 = text3..format(" |cff007fff%s|r\n", (bonus and format("%.1f%%", bonus)) or "")
+                text3 = text3..format(" |c%s%s|r\n", (bonus2 and "ffffff00") or "ff007fff", (bonus and format("%.1f%%", bonus)) or "")
             end
             if totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT and totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT > 0 then
                 local bonus = Utils.CalculateStatsRatings("ITEM_MOD_CR_AVOIDANCE_SHORT", totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT, level)
                 text1 = text1..format("    %s: \n", ITEM_MOD_CR_AVOIDANCE_SHORT)
                 text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT or 0)
-                text3 = text3..format(" |cff007fff%s|r\n", (bonus and format("%.1f%%", bonus)) or "")
+                text3 = text3..format(" |c%s%s|r\n", (bonus2 and "ffffff00") or "ff007fff", (bonus and format("%.1f%%", bonus)) or "")
             end
 
-            self.ItemStatsText1:SetText(text1.."\n")
-            self.ItemStatsText2:SetText(text2.."\n")
-            self.ItemStatsText3:SetText(text3.."\n")
+            self.ItemStatsText1:SetText(text1)
+            self.ItemStatsText2:SetText(text2)
+            self.ItemStatsText3:SetText(text3)
             self.ItemStatsTips:Show()
         else
             self.ItemStatsText1:SetText()
@@ -476,6 +485,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             + 10
             + self.SubTitle:GetStringHeight()
             + (self.slotNum * (Module:GetConfig(CONFIG_FONT_SIZE) + 2))
+            + 10
             + self.ItemSetsText:GetStringHeight()
             + self.ItemStatsText1:GetStringHeight()
             + 12
