@@ -457,13 +457,13 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                 text3 = text3..format(" |c%s%s|r\n", (bonus2 and "ffffff00") or "ff007fff", (bonus and format("%.1f%%", bonus)) or "")
             end
             if totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT and totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT > 0 then
-                local bonus = Utils.CalculateStatsRatings("ITEM_MOD_CR_LIFESTEAL_SHORT", totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT, level)
+                local bonus, bonus2 = Utils.CalculateStatsRatings("ITEM_MOD_CR_LIFESTEAL_SHORT", totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT, level)
                 text1 = text1..format("    %s: \n", ITEM_MOD_CR_LIFESTEAL_SHORT)
                 text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_LIFESTEAL_SHORT or 0)
                 text3 = text3..format(" |c%s%s|r\n", (bonus2 and "ffffff00") or "ff007fff", (bonus and format("%.1f%%", bonus)) or "")
             end
             if totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT and totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT > 0 then
-                local bonus = Utils.CalculateStatsRatings("ITEM_MOD_CR_AVOIDANCE_SHORT", totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT, level)
+                local bonus, bonus2 = Utils.CalculateStatsRatings("ITEM_MOD_CR_AVOIDANCE_SHORT", totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT, level)
                 text1 = text1..format("    %s: \n", ITEM_MOD_CR_AVOIDANCE_SHORT)
                 text2 = text2..format("|cff007fff%d|r\n", totalStats.ITEM_MOD_CR_AVOIDANCE_SHORT or 0)
                 text3 = text3..format(" |c%s%s|r\n", (bonus2 and "ffffff00") or "ff007fff", (bonus and format("%.1f%%", bonus)) or "")
