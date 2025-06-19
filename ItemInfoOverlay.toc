@@ -1,4 +1,4 @@
-## Interface: 110105
+## Interface: 110107
 ## Title: ItemInfoOverlay
 ## Notes: Sanluli36li's Item Info Overlay
 ## Notes-zhCN: 轻量化物品信息、角色面板增强插件
