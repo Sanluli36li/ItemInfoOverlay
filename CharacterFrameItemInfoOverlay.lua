@@ -426,7 +426,8 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
                     end
                     -- 等待到宝石物品载入
                     gemItem:ContinueOnItemLoad(function()
-                        local _, gemLink, _, _, _, _, _, _, _, gemIcon = C_Item.GetItemInfo(gemID)
+                        local _, gemLink = C_Item.GetItemGem(itemLink, i)
+                        local _, _, _, _, _, _, _, _, _, gemIcon = C_Item.GetItemInfo(gemLink)
                         local professionQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(gemID)
 
                         socketIcon:SetNormalTexture(gemIcon)
