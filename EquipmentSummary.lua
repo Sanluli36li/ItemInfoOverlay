@@ -340,14 +340,19 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                 end
 
                 -- 从鼠标提示中获取物品属性, 以获得正确的主属性及附魔、宝石提供的属性
-                local stats = Utils.GetItemStatsFromTooltipInfo(tooltipInfo)
                 -- C_Item.GetItemStats(link)
+                local stats, pstat = Utils.GetItemStatsFromTooltipInfo(tooltipInfo)
+
                 if stats then
                     for stat, value in pairs(stats) do
                         totalStats[stat] = (totalStats[stat] or 0) + value
                     end
                 end
-                
+                -- 主要属性
+                if not primaryStat and pstat then
+                    primaryStat = pstat
+                end
+
                 -- 宝石
                 for j = 1, 3 do
                     local gemID = C_Item.GetItemGemID(link, j)
@@ -411,8 +416,6 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                 entry:Clear()
             end
         end
-
-        primaryStat = (totalStats.ITEM_MOD_STRENGTH_SHORT and "ITEM_MOD_STRENGTH_SHORT") or (totalStats.ITEM_MOD_AGILITY_SHORT and "ITEM_MOD_AGILITY_SHORT") or (totalStats.ITEM_MOD_INTELLECT_SHORT and "ITEM_MOD_INTELLECT_SHORT")
 
         self:RefreshItemLevelAndSpec(totalItemLevel / 16, totalPvpItemLevel / 16, specName)
 

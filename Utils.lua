@@ -119,6 +119,7 @@ local ITEM_STATS = {
 
 function Utils.GetItemStatsFromTooltipInfo(tooltipInfo)
     if tooltipInfo and tooltipInfo.lines then
+        local primaryStat
         local stats = {}
 
         for _, line in ipairs(tooltipInfo.lines) do
@@ -128,26 +129,15 @@ function Utils.GetItemStatsFromTooltipInfo(tooltipInfo)
                 local color = line.leftColor:GenerateHexColorNoAlpha()
 
                 if value and color ~= "808080" then
+                    if not primaryStat and line.type == Enum.TooltipDataLineType.None and (stat == "ITEM_MOD_STRENGTH_SHORT" or stat == "ITEM_MOD_AGILITY_SHORT" or stat == "ITEM_MOD_INTELLECT_SHORT") then
+                        primaryStat = stat
+                    end
+
                     stats[stat] = (stats[stat] or 0) + value
                 end
             end
---[[
-            if line.leftText:match(STRENGTH_PATTERN) then
-                if line.leftColor.r == 1 then
-                    return "ITEM_MOD_STRENGTH_SHORT"
-                end
-            elseif line.leftText:match(AGILITY_PATTERN) then
-                if line.leftColor.r == 1 then
-                    return "ITEM_MOD_AGILITY_SHORT"
-                end
-            elseif line.leftText:match(INTELLECT_PATTERN) then
-                if line.leftColor.r == 1 then
-                    return "ITEM_MOD_INTELLECT_SHORT"
-                end
-            end
-]]
         end
-        return stats
+        return stats, primaryStat
     end
 end
 
