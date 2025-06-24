@@ -125,7 +125,7 @@ function Utils.GetItemStatsFromTooltipInfo(tooltipInfo)
         for _, line in ipairs(tooltipInfo.lines) do
             local lineText = line.leftText:gsub("[, ]", "")
             for i, stat in ipairs(ITEM_STATS) do
-                local value = tonumber(lineText:match("%+([0-9]+)".._G[stat]))
+                local value = tonumber(lineText:match("%+([0-9]+)".._G[stat]:gsub(" ", "")))
                 local color = line.leftColor:GenerateHexColorNoAlpha()
 
                 if value and color ~= "808080" then
