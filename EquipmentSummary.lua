@@ -126,7 +126,8 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
     if itemLink then
         itemLevel = itemLevel or Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(unit, slot))
 
-        stats = stats or C_Item.GetItemStats(itemLink)
+        -- 从API获取属性, 而非鼠标提示, 避免绿字分布被附魔/宝石污染
+        stats = C_Item.GetItemStats(itemLink)
         if Module:GetConfig(CONFIG_STAT_ICON) and stats then
             self:ToggleStats(
                 stats.ITEM_MOD_CRIT_RATING_SHORT and stats.ITEM_MOD_CRIT_RATING_SHORT > 0,
@@ -316,8 +317,9 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
         self.Title:SetText(name)
 
-        local totalMainStat = 0
+        local primaryStat
         local totalStats = {}
+
         local numItemSets = 0
         local itemSets = {}
         local itemUnique = {}
@@ -327,25 +329,44 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
         for i, entry in pairs(self.slots) do
             local link = GetInventoryItemLink(self.unit, i)
+
             if link then
-                local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(self.unit, i))
+                local tooltipInfo = C_TooltipInfo.GetInventoryItem(self.unit, i)
+                local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
                 if itemLevel then
                     totalItemLevel = totalItemLevel + itemLevel
                     totalPvpItemLevel = totalPvpItemLevel + (pvpItemLevel or itemLevel)
                 end
 
-                local stats = C_Item.GetItemStats(link)
+                -- 从鼠标提示中获取物品属性, 以获得正确的主属性及附魔、宝石提供的属性
+                local stats = Utils.GetItemStatsFromTooltipInfo(tooltipInfo)
+                -- C_Item.GetItemStats(link)
                 if stats then
                     for stat, value in pairs(stats) do
                         totalStats[stat] = (totalStats[stat] or 0) + value
                     end
-                    totalMainStat = totalMainStat + (stats.ITEM_MOD_STRENGTH_SHORT or stats.ITEM_MOD_AGILITY_SHORT or stats.ITEM_MOD_INTELLECT_SHORT or 0)
+                end
+                
+                -- 宝石
+                for j = 1, 3 do
+                    local gemID = C_Item.GetItemGemID(link, j)
+
+                    if gemID then
+                        local gemItem = Item:CreateFromItemID(gemID)
+
+                        if not gemItem:IsItemDataCached() then
+                            gemItem:ContinueOnItemLoad(function()
+                                self:Refresh()
+                            end)
+                        end
+                    end
                 end
 
+                -- 套装物品
                 if Module:GetConfig(CONFIG_ITEM_SETS) then
                     local itemSet = select(16, C_Item.GetItemInfo(link))
-
+                    -- 套装物品
                     if itemSet then
                         if itemSets[itemSet] then
                             itemSets[itemSet] = itemSets[itemSet] + 1
@@ -354,19 +375,21 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                             numItemSets = numItemSets + 1
                         end
                     end
-
+                    -- 装备唯一物品
                     local isUnique, limitCategoryName, limitCategoryCount, limitCategoryID = C_Item.GetItemUniquenessByID(link)
                     if Module:GetConfig(CONFIG_ITEM_SETS_UNIQUE) and isUnique and limitCategoryID then
-                        if itemUnique[limitCategoryID] then
-                            itemUnique[limitCategoryID][1] = itemUnique[limitCategoryID][1] + 1
-                        else
-                            itemUnique[limitCategoryID] = { 1, limitCategoryName, limitCategoryCount}
-                            numItemSets = numItemSets + 1
+                        if limitCategoryCount > 1 then  -- 忽略仅能装备一件的装备唯一分类
+                            if itemUnique[limitCategoryID] then
+                                itemUnique[limitCategoryID][1] = itemUnique[limitCategoryID][1] + 1
+                            else
+                                itemUnique[limitCategoryID] = { 1, limitCategoryName, limitCategoryCount}
+                                numItemSets = numItemSets + 1
+                            end
                         end
                     end
                 end
 
-                entry:SetItemFromUnitInventory(self.unit, i, link, itemLevel, stats)
+                entry:SetItemFromUnitInventory(self.unit, i, link, itemLevel)
             else
                 if i == 17 then
                     link = GetInventoryItemLink(self.unit, 16)
@@ -389,7 +412,9 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             end
         end
 
-        self:RefreshItemLevelAndSpec(totalItemLevel / 16, totalPvpItemLevel / 16)
+        primaryStat = (totalStats.ITEM_MOD_STRENGTH_SHORT and "ITEM_MOD_STRENGTH_SHORT") or (totalStats.ITEM_MOD_AGILITY_SHORT and "ITEM_MOD_AGILITY_SHORT") or (totalStats.ITEM_MOD_INTELLECT_SHORT and "ITEM_MOD_INTELLECT_SHORT")
+
+        self:RefreshItemLevelAndSpec(totalItemLevel / 16, totalPvpItemLevel / 16, specName)
 
         if numItemSets > 0 then
             local text = format("|cffffd200%s:|r\n", LOOT_JOURNAL_ITEM_SETS)
@@ -425,7 +450,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
             local text1 = (
                 format("|cffffd200%s:|r\n", L["equipmentSummary.equipmentStats"])..
-                format("    %s: \n", L["equipmentSummary.mainStat"])..
+                format("    %s: \n", _G[primaryStat] or L["equipmentSummary.mainStat"])..
                 format("    %s: \n", ITEM_MOD_STAMINA_SHORT.."")..
                 format("    %s: \n", ITEM_MOD_CRIT_RATING_SHORT.."")..
                 format("    %s: \n", ITEM_MOD_HASTE_RATING_SHORT)..
@@ -434,7 +459,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             )
             local text2 = ( -- 属性数值
                 "\n"..
-                format("|cffffffff%d|r\n", totalMainStat)..
+                format("|cffffffff%d|r\n", totalStats[primaryStat] or 0)..
                 format("|cffffffff%d|r\n", totalStats.ITEM_MOD_STAMINA_SHORT or 0)..
                 format("|cff00ff00%d|r\n", totalStats.ITEM_MOD_CRIT_RATING_SHORT or 0)..
                 format("|cff00ff00%d|r\n", totalStats.ITEM_MOD_HASTE_RATING_SHORT or 0)..

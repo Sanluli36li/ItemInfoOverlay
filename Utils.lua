@@ -2,6 +2,9 @@ local ADDON_NAME, ItemInfoOverlay = ...
 
 local Utils = ItemInfoOverlay:NewModule("utils")
 
+--------------------
+--- 框体
+--------------------
 function Utils.GetItemInfoOverlay(frame)
     if not frame.ItemInfoOverlay then
         return ItemInfoOverlay:GetModule("itemInfoOverlay"):CreateItemInfoOverlay(frame)
@@ -10,6 +13,78 @@ function Utils.GetItemInfoOverlay(frame)
     end
 end
 
+--------------------
+--- 链接解析
+--------------------
+function Utils.GetLinkTypeAndID(link)
+    -- 返回: 链接分类, 元数据, ID, 显示内容
+    return strmatch(link, "\124c[\\a-zA-Z0-9:]+\124H([A-Za-z]+):(([0-9]+):[^\124]+)\124h(%b[])\124h\124r")
+end
+
+local ITEM_LINK_FORMAT = {
+    "itemID",
+    "enchantID",
+    "gemID1",
+    "gemID2",
+    "gemID3",
+    "gemID4",
+    "suffixID",
+    "uniqueID",
+    "linkLevel",
+    "specializationID",
+    "modifierMask",
+    "itemContext",
+    { "bonusIDs", 1 },
+    { "modifiers", 2, true },
+    { "relic1BonuIDs", 1 },
+    { "relic2BonuIDs", 1 },
+    { "relic3BonuIDs", 1 },
+    { "crafterGUID", "string" },
+    "extraEnchantID"
+}
+
+function Utils.GetItemLinkDataTable(link)
+    local linkType, meta, id, name = Utils.GetLinkTypeAndID(link)
+    if linkType == "item" then
+        local splited = { strsplit(":", meta) }
+        local table = {}
+
+        local i = 1
+        for _, data in ipairs(ITEM_LINK_FORMAT) do
+            if type(data) == "string" then
+                table[data] = tonumber(splited[i])
+            elseif type(data) == "table" then
+                if type(data[2]) == "number" then
+                    local num = tonumber(splited[i])
+                    if num and num > 0 then
+                        table[data[1]] = {}
+                        for j = 1, num do
+                            local key = (data[3] and tonumber(splited[i + 1])) or j
+
+                            if data[2] == 1 then
+                                table[data[1]][key] = tonumber(splited[i + 1])
+                            else
+                                table[data[1]][key] = {}
+                                for k = 1, data[2] do
+                                    table[data[1]][key][k] = tonumber(splited[i + k])
+                                end
+                            end
+                            i = i + data[2]
+                        end
+                    end
+                elseif data[2] == "string" then
+                    table[data[1]] = splited[i]
+                end
+            end
+            i = i + 1
+        end
+        return table
+    end
+end
+
+--------------------
+--- 鼠标提示信息解析
+--------------------
 local PVP_ITEM_LEVEL_TOOLTIP_PATTERN = PVP_ITEM_LEVEL_TOOLTIP:gsub("%%d", "(%%d+)")
 
 function Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
@@ -26,6 +101,78 @@ function Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
         return tonumber(itemLevel), tonumber(currentItemLevel), tonumber(pvpItemLevel)
     end
+end
+
+local ITEM_STATS = {
+    "ITEM_MOD_STRENGTH_SHORT",          -- 力量
+    "ITEM_MOD_AGILITY_SHORT",           -- 敏捷
+    "ITEM_MOD_INTELLECT_SHORT",         -- 智力
+    "ITEM_MOD_STAMINA_SHORT",           -- 耐力
+    "ITEM_MOD_CRIT_RATING_SHORT",       -- 爆击
+    "ITEM_MOD_HASTE_RATING_SHORT",      -- 急速
+    "ITEM_MOD_MASTERY_RATING_SHORT",    -- 精通
+    "ITEM_MOD_VERSATILITY",             -- 全能
+    "ITEM_MOD_CR_SPEED_SHORT",          -- 加速
+    "ITEM_MOD_CR_LIFESTEAL_SHORT",      -- 吸血
+    "ITEM_MOD_CR_AVOIDANCE_SHORT",      -- 闪避
+}
+
+function Utils.GetItemStatsFromTooltipInfo(tooltipInfo)
+    if tooltipInfo and tooltipInfo.lines then
+        local stats = {}
+
+        for _, line in ipairs(tooltipInfo.lines) do
+            local lineText = line.leftText:gsub("[, ]", "")
+            for i, stat in ipairs(ITEM_STATS) do
+                local value = tonumber(lineText:match("%+([0-9]+)".._G[stat]))
+                local color = line.leftColor:GenerateHexColorNoAlpha()
+
+                if value and color ~= "808080" then
+                    stats[stat] = (stats[stat] or 0) + value
+                end
+            end
+--[[
+            if line.leftText:match(STRENGTH_PATTERN) then
+                if line.leftColor.r == 1 then
+                    return "ITEM_MOD_STRENGTH_SHORT"
+                end
+            elseif line.leftText:match(AGILITY_PATTERN) then
+                if line.leftColor.r == 1 then
+                    return "ITEM_MOD_AGILITY_SHORT"
+                end
+            elseif line.leftText:match(INTELLECT_PATTERN) then
+                if line.leftColor.r == 1 then
+                    return "ITEM_MOD_INTELLECT_SHORT"
+                end
+            end
+]]
+        end
+        return stats
+    end
+end
+
+--------------------
+--- RGB转换
+--------------------
+function Utils.GetRGBAFromHexColor(hex)
+    if strsub(hex, 1, 1) ~= "#" then
+        return 1, 1, 1, 1
+    end
+
+    local len = string.len(hex)
+    local r, g, b, a = 1, 1, 1, 1
+    if len == 7 then
+        r = (tonumber(strsub(hex, 2, 3), 16) or 255) / 255
+        g = (tonumber(strsub(hex, 4, 5), 16) or 255) / 255
+        b = (tonumber(strsub(hex, 6, 7), 16) or 255) / 255
+    elseif len == 9 then
+        r = (tonumber(strsub(hex, 2, 3), 16) or 255) / 255
+        g = (tonumber(strsub(hex, 4, 5), 16) or 255) / 255
+        b = (tonumber(strsub(hex, 6, 7), 16) or 255) / 255
+        a = (tonumber(strsub(hex, 8, 9), 16) or 255) / 255
+    end
+
+    return r, g, b, a
 end
 
 local TRACK_STRING_ID_MYTH = 978
@@ -74,30 +221,9 @@ function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
     return format("|cff%02x%02x%02x%s|r", r * 255, g * 255, b * 255, itemLevel)
 end
 
-function Utils.GetLinkTypeAndID(link)
-    return strmatch(link, "\124c[\\a-zA-Z0-9:]+\124H([A-Za-z]+):(([0-9]+):[^\124]+)\124h(%b[])\124h\124r")
-end
-
-function Utils.GetRGBAFromHexColor(hex)
-    if strsub(hex, 1, 1) ~= "#" then
-        return 1, 1, 1, 1
-    end
-
-    local len = string.len(hex)
-    local r, g, b, a = 1, 1, 1, 1
-    if len == 7 then
-        r = (tonumber(strsub(hex, 2, 3), 16) or 255) / 255
-        g = (tonumber(strsub(hex, 4, 5), 16) or 255) / 255
-        b = (tonumber(strsub(hex, 6, 7), 16) or 255) / 255
-    elseif len == 9 then
-        r = (tonumber(strsub(hex, 2, 3), 16) or 255) / 255
-        g = (tonumber(strsub(hex, 4, 5), 16) or 255) / 255
-        b = (tonumber(strsub(hex, 6, 7), 16) or 255) / 255
-        a = (tonumber(strsub(hex, 8, 9), 16) or 255) / 255
-    end
-
-    return r, g, b, a
-end
+--------------------
+--- 属性递减计算
+--------------------
 
 local COMBAT_RATING_DECREASING = {  -- 递减曲线: 爆击, 急速, 精通, 全能
     { 200, 126, 0 },
