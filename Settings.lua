@@ -770,8 +770,8 @@ local settings = {
                         {
                             controlType = CONTROL_TYPE.CHECKBOX,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
-                            name = "包含装备唯一物品",
-                            tooltip = "套装物品同时显示装备唯一的物品",
+                            name = L["equipmentSummary.itemSets.unique.title"],
+                            tooltip = L["equipmentSummary.itemSets.unique.tooltip"],
                             key = "equipmentSummary.itemSets.unique",
                             default = true
                         }
@@ -781,7 +781,7 @@ local settings = {
                     -- 显示属性统计
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = "显示属性统计",
+                    name = L["equipmentSummary.itemStats.title"],
                     tooltip = L["equipmentSummary.itemStats.tooltip"],
                     key = "equipmentSummary.itemStats.enable",
                     default = true,
