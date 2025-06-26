@@ -757,6 +757,17 @@ local settings = {
                     },
                 },
                 {
+                    -- 使用物品等级颜色
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["color.itemLevel.title"],
+                    -- tooltip = L["equipmentSummary.itemStats.tooltip"],
+                    key = "equipmentSummary.itemLevel.color",
+                    default = true,
+                    onValueChanged = function(value)
+                    end,
+                },
+                {
                     -- 显示套装内容
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,

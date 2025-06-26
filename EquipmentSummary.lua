@@ -15,6 +15,7 @@ local CONFIG_TITLE_FONT_SIZE = "title.fontSize"
 local CONFIG_ITEM_SETS = "itemSets.enable"
 local CONFIG_ITEM_SETS_UNIQUE = "itemSets.unique"
 local CONFIG_ITEM_STATS = "itemStats.enable"
+local CONFIG_ITEM_LEVEL_COLOR = "itemLevel.color"
 
 local ITEM_LEVEL_AND_SPEC_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d", "%%.1f").."|r %s%s%s|r\n "
 local ITEM_LEVEL_AND_SPEC_WITH_PVP_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d", "%%.1f").."|r %s%s%s|r\n|cffffd200"..ITEM_UPGRADE_PVP_ITEM_LEVEL_STAT_FORMAT:gsub("%%d", "%%.1f").."|r\n "
@@ -119,15 +120,19 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     self.ItemLink:SetWidth((Module:GetConfig(CONFIG_FONT_SIZE) * 14) - itemLevelWidth)
 end
 
-function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, itemLink, itemLevel, stats)
+function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, itemLink, itemLevel)
     self.unit = unit
     self.slot = slot
     itemLink = itemLink or GetInventoryItemLink(unit, slot)
     if itemLink then
         itemLevel = itemLevel or Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(unit, slot))
 
+        if Module:GetConfig(CONFIG_ITEM_LEVEL_COLOR) then
+            itemLevel = Utils.GetColoredItemLevelText(itemLevel, itemLink)
+        end
+        
         -- 从API获取属性, 而非鼠标提示, 避免绿字分布被附魔/宝石污染
-        stats = C_Item.GetItemStats(itemLink)
+        local stats = C_Item.GetItemStats(itemLink)
         if Module:GetConfig(CONFIG_STAT_ICON) and stats then
             self:ToggleStats(
                 stats.ITEM_MOD_CRIT_RATING_SHORT and stats.ITEM_MOD_CRIT_RATING_SHORT > 0,
