@@ -181,7 +181,11 @@ function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
     elseif ItemInfoOverlay:GetConfig("color.itemLevel") == 2 then
         -- 基于物品品质染色
         local itemQuality = C_Item.GetItemQualityByID(itemLink)
-        r, g, b = C_Item.GetItemQualityColor(itemQuality)
+        if itemQuality then
+            r, g, b = C_Item.GetItemQualityColor(itemQuality)
+        else
+            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.custom"))
+        end
     end
 
     if C_Item.IsEquippableItem(itemLink) and ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade") then
