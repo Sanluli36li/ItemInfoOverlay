@@ -127,7 +127,7 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
     if itemLink then
         itemLevel = itemLevel or Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(unit, slot))
 
-        if Module:GetConfig(CONFIG_ITEM_LEVEL_COLOR) then
+        if itemLevel and Module:GetConfig(CONFIG_ITEM_LEVEL_COLOR) then
             itemLevel = Utils.GetColoredItemLevelText(itemLevel, itemLink)
         end
         
