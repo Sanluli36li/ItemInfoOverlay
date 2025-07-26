@@ -215,7 +215,7 @@ function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
     -- 低等级物品染色
     if type(itemLevel) == "number" and ItemInfoOverlay:GetConfig("color.itemLevel.lowLevel") then
         local itemQuality = C_Item.GetItemQualityByID(itemLink)
-        if itemQuality < 5 and itemLevel < select(1, GetAverageItemLevel()) - ItemInfoOverlay:GetConfig("color.itemLevel.lowLevel.threshold") then
+        if itemQuality and itemQuality < 5 and itemLevel < select(1, GetAverageItemLevel()) - ItemInfoOverlay:GetConfig("color.itemLevel.lowLevel.threshold") then
             -- 传说品质以下 / 物品等级 < 最高平均物品等级 - 设置的等级差
             r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.lowLevel.color"))
         end 
