@@ -109,25 +109,19 @@ L["itemInfoOverlay.itemLevel.font"] = "Item Level Font"
 L["itemInfoOverlay.itemLevel.fontSize"] = "Item Level Font Size"
 L["itemInfoOverlay.itemLevel.title"] = "Show Item Levels"
 L["itemInfoOverlay.itemLevel.tooltip"] = "Display item level on equippable items and set tokens\n\nMythic+ Keystone levels will also be shown"
+L["itemInfoOverlay.itemType.alias"] = {
+    -- Do not translate this table directly. Please fill in the full names and abbreviations of item categories that cannot be fully displayed due to being too long in your language.
+    ["One-Handed Axes"] = "1H-Axe",
+    ["Two-Handed Axes"] = "2H-Axe",
+    ["One-Handed Maces"] = "1H-Mace",
+    ["Two-Handed Maces"] = "2H-Mace",
+    ["One-Handed Swords"] = "1H-Sword",
+    ["Two-Handed Swords"] = "2H-Sword",
+    ["Fist Weapons"] = "Fist",
+    ["Held In Off-hand"] = "Off-hand",
+}
 L["itemInfoOverlay.itemType.font"] = "Item Type Font"
 L["itemInfoOverlay.itemType.fontSize"] = "Item Type Font Size"
-L["itemInfoOverlay.itemType.replacer"] = function (text)
-    local table = {
-        ["One-Handed Axes"] = "1H-Axe",
-        ["Two-Handed Axes"] = "2H-Axe",
-        ["One-Handed Maces"] = "1H-Mace",
-        ["Two-Handed Maces"] = "2H-Mace",
-        ["One-Handed Swords"] = "1H-Sword",
-        ["Two-Handed Swords"] = "2H-Sword",
-        ["Fist Weapons"] = "Fist",
-        ["Held In Off-hand"] = "Off-hand",
-    }
-    if table[text] then
-        return table[text]
-    else
-        return text
-    end
-end
 L["itemInfoOverlay.itemType.title"] = "Show Item Types"
 L["itemInfoOverlay.itemType.tooltip"] = "Display equipment slot or profession type on items"
 L["itemInfoOverlay.title"] = "Item Info Overlay"

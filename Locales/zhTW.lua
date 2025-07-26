@@ -109,16 +109,11 @@ L["itemInfoOverlay.itemLevel.font"] = "物品等級字型"
 L["itemInfoOverlay.itemLevel.fontSize"] = "物品等級文字大小"
 L["itemInfoOverlay.itemLevel.title"] = "顯示物品等級"
 L["itemInfoOverlay.itemLevel.tooltip"] = "在物品圖示上顯示裝備類物品、套裝兌換物的物品等級\n\n傳奇鑰石的層數也會顯示在圖示上"
+L["itemInfoOverlay.itemType.alias"] = {
+    -- Do not translate this table directly. Please fill in the full names and abbreviations of item categories that cannot be fully displayed due to being too long in your language.
+}
 L["itemInfoOverlay.itemType.font"] = "物品分類字型"
 L["itemInfoOverlay.itemType.fontSize"] = "物品分類文字大小"
-L["itemInfoOverlay.itemType.replacer"] = function (text)
-    local table = { }
-    if table[text] then
-        return table[text]
-    else
-        return text
-    end
-end
 L["itemInfoOverlay.itemType.title"] = "顯示物品分類"
 L["itemInfoOverlay.itemType.tooltip"] = "在物品圖示上顯示裝備物品的部位、配方的專業類型"
 L["itemInfoOverlay.title"] = "物品圖示覆蓋"

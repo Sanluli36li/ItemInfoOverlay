@@ -112,25 +112,21 @@ L["itemInfoOverlay.itemLevel.font"] = "Шрифт уровня предмета"
 L["itemInfoOverlay.itemLevel.fontSize"] = "Размер шрифта уровня предмета"
 L["itemInfoOverlay.itemLevel.title"] = "Отображать уровень предмета"
 L["itemInfoOverlay.itemLevel.tooltip"] = "Отображать уровень предмета на иконках экипировки\n\nТакже отображает уровень ключа подземелья (M+)"
+L["itemInfoOverlay.itemType.alias"] = {
+    -- Do not translate this table directly. Please fill in the full names and abbreviations of item categories that cannot be fully displayed due to being too long in your language..
+    --[[
+    ["One-Handed Axes"] = "1H-Топор",
+    ["Two-Handed Axes"] = "2H-Топор",
+    ["One-Handed Maces"] = "1H-Дробящее",
+    ["Two-Handed Maces"] = "2H-Дробящее",
+    ["One-Handed Swords"] = "1H-Меч",
+    ["Two-Handed Swords"] = "2H-Меч",
+    ["Fist Weapons"] = "Кистевое",
+    ["Held In Off-hand"] = "Левая рука",
+    ]]
+}
 L["itemInfoOverlay.itemType.font"] = "Шрифт типа предмета"
 L["itemInfoOverlay.itemType.fontSize"] = "Размер шрифта типа предмета"
-L["itemInfoOverlay.itemType.replacer"] = function (text)
-    local table = {
-        ["One-Handed Axes"] = "1H-Топор",
-        ["Two-Handed Axes"] = "2H-Топор",
-        ["One-Handed Maces"] = "1H-Дробящее",
-        ["Two-Handed Maces"] = "2H-Дробящее",
-        ["One-Handed Swords"] = "1H-Меч",
-        ["Two-Handed Swords"] = "2H-Меч",
-        ["Fist Weapons"] = "Кистевое",
-        ["Held In Off-hand"] = "Левая рука",
-    }
-    if table[text] then
-        return table[text]
-    else
-        return text
-    end
-end
 L["itemInfoOverlay.itemType.title"] = "Отображать тип предмета"
 L["itemInfoOverlay.itemType.tooltip"] = "Отображать расположение предмета экипировки и профессию рецепта на иконке предмета"
 L["itemInfoOverlay.title"] = "Наложение на кнопку предмета"

@@ -251,11 +251,15 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, p
     end
 
     if Module:GetConfig(CONFIG_ITEM_TYPE) and itemTypeText then
+        if L["itemInfoOverlay.itemType.alias"] and L["itemInfoOverlay.itemType.alias"][itemTypeText] then
+            itemTypeText = L["itemInfoOverlay.itemType.alias"][itemTypeText]
+        end
+
         if IsCosmeticItem(itemLink) then
             itemTypeText = "|cffff80ff"..itemTypeText.."|r"
         end
 
-        self.ItemType:SetTextToFit(L["itemInfoOverlay.itemType.replacer"](itemTypeText))
+        self.ItemType:SetTextToFit(itemTypeText)
         self.ItemType:Show()
 
         if self.ItemType:GetUnboundedStringWidth() >= 50 then
