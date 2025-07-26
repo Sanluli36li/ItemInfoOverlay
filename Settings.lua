@@ -918,6 +918,49 @@ local settings = {
                         },
                     },
                 },
+                {
+                    -- 低等级物品颜色
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["color.itemLevel.lowLevel.title"],
+                    tooltip = L["color.itemLevel.lowLevel.tooltip"],
+                    key = "color.itemLevel.lowLevel",
+                    default = true,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                        ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                    end,
+                    subSettings = {
+                        {
+                            -- 低等级物品阈值
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["color.itemLevel.lowLevel.threshold.title"],
+                            tooltip = L["color.itemLevel.lowLevel.threshold.tooltip"],
+                            key = "color.itemLevel.lowLevel.threshold",
+                            minValue = 1,
+                            maxValue = 100,
+                            step = 1,
+                            default = 55,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            template = "IIOSettingsColorControlTemplate"
+                        },
+                        {
+                            -- 低等级物品颜色
+                            controlType = CONTROL_TYPE.COLOR,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["color.itemLevel.lowLevel.color.title"],
+                            key = "color.itemLevel.lowLevel.color",
+                            default = "#7f7f7f",
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            template = "IIOSettingsColorControlTemplate"
+                        },
+                    },
+                },
             }
         }
     }
