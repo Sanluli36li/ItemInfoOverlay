@@ -477,7 +477,7 @@ hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, qualit
     end
     Utils.GetItemInfoOverlay(button):Hide()
 end)
-
+--[[
 hooksecurefunc("BankFrameItemButton_Update", function(button)
     -- 银行/材料银行
     if button.isBag  then
@@ -488,7 +488,7 @@ hooksecurefunc("BankFrameItemButton_Update", function(button)
     local slot = button:GetID()
     Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
 end)
-
+]]
 hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound)
     -- 商人界面
     Utils.GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
