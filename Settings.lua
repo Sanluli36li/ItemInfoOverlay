@@ -765,7 +765,25 @@ local settings = {
                     key = "equipmentSummary.itemLevel.color",
                     default = true,
                     onValueChanged = function(value)
-                    end,
+                    end
+                },
+                {
+                    -- 显示玩家装备总览
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.itemUpgradeTrack.title"],
+                    tooltip = L["equipmentSummary.itemUpgradeTrack.tooltip"],
+                    key = "equipmentSummary.itemUpgradeTrack.enable",
+                    default = true,
+                    subSettings = {
+                        {
+                            controlType = CONTROL_TYPE.CHECKBOX,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["equipmentSummary.itemUpgradeTrack.level.title"],
+                            key = "equipmentSummary.itemUpgradeTrack.level",
+                            default = true
+                        }
+                    }
                 },
                 {
                     -- 显示套装内容
