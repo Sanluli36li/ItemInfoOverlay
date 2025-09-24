@@ -87,11 +87,27 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.Crit:ClearAllPoints()
         self.Crit:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 2, 0)
 
+        self.SlotName:SetTextColor(0, 0.9, 0.9)
+        self.SlotName:SetJustifyH("CENTER")
+        
+        self.SlotNameBackdrop:SetBackdrop({
+            bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
+            edgeFile = "Interface\\Buttons\\WHITE8X8",
+            tile     = true,
+            tileSize = 8,
+            edgeSize = 1,
+            insets   = {left = 1, right = 1, top = 1, bottom = 1}
+        })
+        self.SlotNameBackdrop:SetBackdropBorderColor(0, 0.9, 0.9, 0.2)
+        self.SlotNameBackdrop:SetBackdropColor(0, 0.9, 0.9, 0.2)
+        self.SlotNameBackdrop:Show()
+
         self.SlotName:Show()
     else
         self.Crit:ClearAllPoints()
         self.Crit:SetPoint("TOPLEFT", self)
         self.SlotName:Hide()
+        self.SlotNameBackdrop:Hide()
     end
 
     if Module:GetConfig(CONFIG_STAT_ICON) then
@@ -110,6 +126,8 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     end
 
     local temp = self.ItemLevel:GetText()
+
+    
 
     -- 重新计算宽度
     self.ItemLevel:SetText("1000")

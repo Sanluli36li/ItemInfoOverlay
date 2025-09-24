@@ -5,7 +5,7 @@
     <Frame name="IIOEquipmentSummaryEntryTemplate" mixin="IIOEquipmentSummaryEntryMixin" virtual="true">
         <Size y="14"/>
         <Layers>
-            <Layer level="BACKGROUND">
+            <Layer level="ARTWORK">
                 <Texture parentKey="Crit" file="Interface\AddOns\ItemInfoOverlay\Media\crit.png" alphaMode="BLEND">
                     <Size x="12" y="12"/>
                     <Anchors>
@@ -50,6 +50,16 @@
                 </FontString>
 			</Layer>
         </Layers>
+        <Frames>
+            <Frame parentKey="SlotNameBackdrop" inherits="BackdropTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.SlotName" relativePoint="LEFT" x="0"/>
+                    <Anchor point="RIGHT" relativeKey="$parent.SlotName" relativePoint="RIGHT" x="0"/>
+                    <Anchor point="TOP" relativeKey="$parent.SlotName" relativePoint="TOP" y="0"/>
+                    <Anchor point="BOTTOM" relativeKey="$parent.SlotName" relativePoint="BOTTOM" y="0"/>
+                </Anchors>
+            </Frame>
+        </Frames>
         <Scripts>
             <OnEnter method="OnEnter"/>
             <OnLeave method="OnLeave"/>
