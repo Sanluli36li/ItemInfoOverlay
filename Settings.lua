@@ -332,10 +332,7 @@ local settings = {
                     setValue = function (value)
                         characterFrameSelector = value
                     end,
-                    onValueChanged = function (value)
-                        -- 刷新面板
-                        SettingsPanel:DisplayLayout(SettingsPanel:GetCurrentLayout())
-                    end,
+                    canSearch = false,
                 },
                 {
                     -- 物品等级
@@ -349,7 +346,7 @@ local settings = {
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
                     isVisible = function ()
-                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
                     end,
                     subSettings = {
                         {
@@ -373,7 +370,7 @@ local settings = {
                                 end
                             },
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         },
                         {
@@ -388,7 +385,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         },
                         {
@@ -405,7 +402,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         }
                     }
@@ -422,7 +419,7 @@ local settings = {
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
                     isVisible = function ()
-                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
                     end,
                     subSettings = {
                         {
@@ -446,7 +443,7 @@ local settings = {
                                 end
                             },
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         },
                         {
@@ -461,7 +458,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         },
                         {
@@ -478,7 +475,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         }
                     }
@@ -495,7 +492,7 @@ local settings = {
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
                     isVisible = function ()
-                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets" or SettingsPanel.SearchBox:GetText() ~= ""
                     end,
                     subSettings = {
                         {
@@ -506,7 +503,7 @@ local settings = {
                             key = "characterFrame.enchant.displayMissing",
                             default = true,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         },
                         {
@@ -521,7 +518,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         },
                         {
@@ -538,7 +535,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         }
                     }
@@ -555,7 +552,7 @@ local settings = {
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
                     isVisible = function ()
-                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets" or SettingsPanel.SearchBox:GetText() ~= ""
                     end,
                     subSettings = {
                         {
@@ -566,7 +563,7 @@ local settings = {
                             key = "characterFrame.socket.displayMaxSockets",
                             default = false,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         },
                         {
@@ -583,7 +580,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         }
                     }
@@ -600,7 +597,7 @@ local settings = {
                         ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                     end,
                     isVisible = function ()
-                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other"
+                        return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
                     end,
                     dropdown = {
                         -- 耐久度锚点
@@ -625,7 +622,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         },
                         {
@@ -642,7 +639,7 @@ local settings = {
                                 ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other"
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
                         }
                     }
