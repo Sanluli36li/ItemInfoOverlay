@@ -646,7 +646,7 @@ local settings = {
                 },
             }
         },
-        {
+        {   -- 装备总览
             name = L["equipmentSummary.title"],
             settings = {
                 {
@@ -752,6 +752,20 @@ local settings = {
                             IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                         end
                     },
+                },
+                {
+                    -- 物品等级
+                    controlType = CONTROL_TYPE.DROPDOWN,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.itemLevel.style.title"],
+                    tooltip = L["equipmentSummary.itemLevel.style.tooltip"],
+                    key = "equipmentSummary.itemLevel.style",
+                    default = 1,
+                    options = {
+                        { L["equipmentSummary.itemLevel.style.dynamic"], L["equipmentSummary.itemLevel.style.dynamic.tooltip"] },
+                        { L["equipmentSummary.itemLevel.style.pvp"], L["equipmentSummary.itemLevel.style.pvp.tooltip"] },
+                        { L["equipmentSummary.itemLevel.style.normal"], L["equipmentSummary.itemLevel.style.normal.tooltip"] }
+                    }
                 },
                 {
                     -- 使用物品等级颜色

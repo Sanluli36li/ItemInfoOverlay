@@ -143,6 +143,7 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
     self.slot = slot
     itemLink = itemLink or GetInventoryItemLink(unit, slot)
     if itemLink then
+        
         itemLevel = itemLevel or Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(unit, slot))
 
         if itemLevel and Module:GetConfig(CONFIG_ITEM_LEVEL_COLOR) then
@@ -371,7 +372,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
             if link then
                 local tooltipInfo = C_TooltipInfo.GetInventoryItem(self.unit, i)
-                local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
+                local itemLevel, currentItemLevel, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
                 if itemLevel then
                     totalItemLevel = totalItemLevel + itemLevel
@@ -433,7 +434,16 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                     end
                 end
 
-                entry:SetItemFromUnitInventory(self.unit, i, link, itemLevel)
+                if Module:GetConfig("itemLevel.style") == 2 then
+                    -- 使用PvP物品等级
+                    entry:SetItemFromUnitInventory(self.unit, i, link, pvpItemLevel)
+                elseif Module:GetConfig("itemLevel.style") == 1 and currentItemLevel == pvpItemLevel then
+                    -- 随PvP状态动态调整
+                    entry:SetItemFromUnitInventory(self.unit, i, link, pvpItemLevel)
+                else
+                    entry:SetItemFromUnitInventory(self.unit, i, link, itemLevel)
+                end
+
             else
                 if i == 17 then
                     link = GetInventoryItemLink(self.unit, 16)
@@ -688,7 +698,7 @@ Module:RegisterEvent("UNIT_INVENTORY_CHANGED")
 
 -- 平均装等更新: 更新装等和专精
 function Module:PLAYER_AVG_ITEM_LEVEL_UPDATE()
-    -- IIOEquipmentSummaryPlayerFrame:RefreshItemLevelAndSpec()
+    IIOEquipmentSummaryPlayerFrame:Refresh()
 end
 Module:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE")
 
