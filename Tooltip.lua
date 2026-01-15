@@ -3,6 +3,10 @@ local ADDON_NAME, ItemInfoOverlay = ...
 local Module = ItemInfoOverlay:NewModule("tooltip")
 local L = ItemInfoOverlay.Locale
 
+local issecretvalue = issecretvalue or function(unit)
+    return false
+end
+
 local CONFIG_ITEM_LEVEL = "itemLevel.enable"
 
 local playerItemLevelCache = { }
@@ -84,6 +88,9 @@ hooksecurefunc(GameTooltip, "Show", function (self)
         itemLevelLine = nil
         if self:IsTooltipType(Enum.TooltipDataType.Unit) then
             local name, unit, guid = TooltipUtil.GetDisplayedUnit(self)
+            if issecretvalue(unit) then
+                return
+            end
             if UnitIsPlayer(unit) then
                 if not UnitIsUnit("player", unit) then
                     self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
