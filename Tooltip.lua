@@ -86,21 +86,22 @@ hooksecurefunc(GameTooltip, "Show", function (self)
     if Module:GetConfig(CONFIG_ITEM_LEVEL) then
         if added then return end
         itemLevelLine = nil
-        if self:IsTooltipType(Enum.TooltipDataType.Unit) then
-            local name, unit, guid = TooltipUtil.GetDisplayedUnit(self)
-            if issecretvalue(unit) then
-                return
-            end
-            if UnitIsPlayer(unit) then
-                if not UnitIsUnit("player", unit) then
-                    self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
-                    itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
-                    added = true
 
-                    RefreshItemLevelTooltip()
-                end
+        local name, unit, guid = TooltipUtil.GetDisplayedUnit(self)
+        if issecretvalue(unit) then
+            return
+        end
+
+        if unit and UnitIsPlayer(unit) then
+            if not UnitIsUnit("player", unit) then
+                self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
+                itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
+                added = true
+
+                RefreshItemLevelTooltip()
             end
         end
+        
         GameTooltip_CalculatePadding(self)
     end
 end)
