@@ -21,7 +21,7 @@ local CONFIG_EXTRA_INFO_FONT_SIZE = "extraInfo.fontSize"
 local CONFIG_EXTRA_INFO_BONDING_TYPE = "extraInfo.bondingType"
 local CONFIG_EXTRA_INFO_PVP_ITEM_LEVEL = "extraInfo.pvpItemLevel"
 
-local itemInfoOverlayPoor = {}
+local pool = CreateFramePool("Frame", UIParent, "IIOItemInfoOverlayTemplate")
 
 local POINTS = {
     "TOPLEFT",
@@ -390,11 +390,12 @@ end
 --------------------
 
 function Module:CreateItemInfoOverlay(frame)
-    frame.ItemInfoOverlay = CreateFrame("Frame", nil, frame, "IIOItemInfoOverlayTemplate")
+    frame.ItemInfoOverlay = pool:Acquire()
+    frame.ItemInfoOverlay:SetParent(frame)
+    -- frame.ItemInfoOverlay = CreateFrame("Frame", nil, frame, "IIOItemInfoOverlayTemplate")
 
     local overlay = frame.ItemInfoOverlay
-
-    tinsert(itemInfoOverlayPoor, overlay)
+    overlay.frame = frame
 
     if frame.IconOverlay then
         overlay:SetAllPoints(frame.IconOverlay)
@@ -407,8 +408,16 @@ function Module:CreateItemInfoOverlay(frame)
     return overlay
 end
 
+function Module:ReleaseItemInfoOverlay(frame)
+    if frame.ItemInfoOverlay and pool:IsActive(frame.ItemInfoOverlay) then
+        frame.ItemInfoOverlay.frame = nil
+        pool:Release(frame.ItemInfoOverlay)
+        frame.ItemInfoOverlay = nil
+    end
+end
+
 function Module:UpdateAllAppearance()
-    for i, overlay in ipairs(itemInfoOverlayPoor) do
+    for overlay in pool:EnumerateActive() do
         overlay:UpdateAppearance()
     end
 end
@@ -429,10 +438,10 @@ hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, s
             return
         end
     end
-    Utils.GetItemInfoOverlay(button):Hide()
+    Module:ReleaseItemInfoOverlay(button)
 end)
 
-hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, quality, itemIDOrLink, suppressOverlays, isBound)
+hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function(button, quality, itemIDOrLink, suppressOverlays, isBound)
     if button.location then
         -- EquipmentFlyoutButton 需要确认使用的是ItemLocation还是button.location
         if
@@ -475,8 +484,9 @@ hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function (button, qualit
             return
         end
     end
-    Utils.GetItemInfoOverlay(button):Hide()
+    Module:ReleaseItemInfoOverlay(button)
 end)
+
 --[[
 hooksecurefunc("BankFrameItemButton_Update", function(button)
     -- 银行/材料银行
@@ -489,6 +499,7 @@ hooksecurefunc("BankFrameItemButton_Update", function(button)
     Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
 end)
 ]]
+
 hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound)
     -- 商人界面
     Utils.GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
