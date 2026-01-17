@@ -19,6 +19,7 @@
 ## Author: Sanluli36li (Olddruid@CN-Galakrond)
 ## Version: @project-version@
 ## X-Curse-Project-ID: 1229101
+## X-Wago-ID: x618zWN1
 
 Libs\libs.xml
 
