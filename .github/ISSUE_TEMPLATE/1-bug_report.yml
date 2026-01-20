@@ -1,14 +1,7 @@
-name: "🐞Bug Report"
+name: 🐞Bug Report
 description: Create a report to help us improve
-labels: ['bug']
+labels: ['🐞Bug']
 body:
-- type: textarea
-  attributes:
-    label: Description
-    description: What did you expect to happen and what happened instead?
-  validations:
-    required: true
-
 - type: dropdown
   id: flavor
   attributes:
@@ -24,6 +17,25 @@ body:
     label: AddOn Version
     description: |
       You can open the AddOns window and hover your mouse over the ItemInfoOverlay item to check the version, or check the CurseForge app, or the ## Versions: field in ItemInfoOverlay.toc.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Description
+    description: A clear and concise description of what the bug is.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Reproduction Steps
+    description: Please list out the steps to reproduce your bug. Please verify that your reproduction steps are enough to reproduce the problem.
+    placeholder: |
+      1. Go to '...'
+      2. Click on '....'
+      3. Scroll down to '....'
+      4. See error
   validations:
     required: true
 
@@ -44,18 +56,6 @@ body:
     render: Text
   validations:
     required: false
-
-- type: textarea
-  attributes:
-    label: Reproduction Steps
-    description: Please list out the steps to reproduce your bug. Please verify that your reproduction steps are enough to reproduce the problem.
-    placeholder: |
-      1. Go to '...'
-      2. Click on '....'
-      3. Scroll down to '....'
-      4. See error
-  validations:
-    required: true
 
 - type: input
   attributes:
