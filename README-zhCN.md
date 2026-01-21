@@ -1,7 +1,5 @@
 # ItemInfoOverlay
-![](https://cf.way2muchnoise.eu/short_1229101_downloads.svg)
-  
-[Curseforge](https://www.curseforge.com/wow/addons/item-info-overlay)
+[![Curseforge](https://cf.way2muchnoise.eu/short_1229101_downloads.svg)](https://www.curseforge.com/wow/addons/item-info-overlay)
 
 # 功能介绍
 
