@@ -87,20 +87,30 @@ hooksecurefunc(GameTooltip, "Show", function (self)
         if added then return end
         itemLevelLine = nil
 
-        local name, unit, guid = TooltipUtil.GetDisplayedUnit(self)
-        if issecretvalue(unit) then
-            return
-        end
+        local info = self:GetPrimaryTooltipInfo()
+        
+        if info and info.tooltipData and info.tooltipData.type then
+            if issecretvalue(info.tooltipData.type) then
+                return
+            end
 
-        if unit and UnitIsPlayer(unit) then
-            if not UnitIsUnit("player", unit) then
-                self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
-                itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
-                added = true
+            local name, unit, guid = TooltipUtil.GetDisplayedUnit(self)
+            if issecretvalue(unit) then
+                return
+            end
 
-                RefreshItemLevelTooltip()
+            if unit and UnitIsPlayer(unit) then
+                if not UnitIsUnit("player", unit) then
+                    self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
+                    itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
+                    added = true
+
+                    RefreshItemLevelTooltip()
+                end
             end
         end
+
+        
         
         GameTooltip_CalculatePadding(self)
     end
@@ -136,7 +146,7 @@ function Module:INSPECT_READY(guid)
     lastInspectGuid = nil
 
     if Module:GetConfig(CONFIG_ITEM_LEVEL) then
-        local unit = SearchUnitFromGUID(guid)
+        local unit = UnitTokenFromGUID(guid)
         -- print("INSPECT_READY:", guid, unit)
         if unit then
             -- print(C_PaperDollInfo.GetInspectItemLevel(unit))
