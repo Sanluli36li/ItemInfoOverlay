@@ -444,6 +444,7 @@ end)
 hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function(button, quality, itemIDOrLink, suppressOverlays, isBound)
     if button.location then
         -- EquipmentFlyoutButton 需要确认使用的是ItemLocation还是button.location
+        Utils.GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
         if
             EquipmentFlyoutFrame and
             EquipmentFlyoutFrame.button and
@@ -452,19 +453,19 @@ hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function(button, quality
             EquipmentFlyoutFrame.button:GetParent().flyoutSettings.useItemLocation
         then
             -- 使用ItemLocation
-            Utils.GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
+            
             return
         else
             -- 使用button.location
-            local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(button.location)
-            if bags then
+            local data = EquipmentManager_GetLocationData(button.location)
+            if data.isBags then
                 -- 背包中的物品
-                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(data.bag, data.slot))
                 return
-            elseif player then
-                -- 玩家物品栏
-                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(slot))
+            elseif data.isPlayer then
+                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(data.slot))
                 return
+            else
             end
         end
         
