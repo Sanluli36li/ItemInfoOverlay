@@ -96,14 +96,6 @@ local EQUIP_LOC_CAN_ENCHANT_TWW = {
     INVTYPE_RANGEDRIGHT = true, -- 远程武器
 }
 
-local EQUIP_LOC_MAX_SOCKETS_TWW = {
-    INVTYPE_HEAD = {1, 232386, 230425},
-    INVTYPE_WAIST = {1, 232386, 230425},
-    INVTYPE_WRIST = {1, 232386, 230425},
-    INVTYPE_NECK = {2, 213777, 230425},
-    INVTYPE_FINGER = {2, 213777, 230425}
-}
-
 local function CanEnchant(itemLevel, itemEquipLoc)
     if itemLevel > 535 then
         -- TWW
@@ -118,9 +110,9 @@ local EQUIP_LOC_MAX_SOCKETS = {
         INVTYPE_NECK = { 3, 192994 }
     },
     [LE_EXPANSION_WAR_WITHIN] = {
-        INVTYPE_HEAD = { 1, 232386, 230425 },
-        INVTYPE_WAIST = { 1, 232386, 230425 },
-        INVTYPE_WRIST = { 1, 232386, 230425 },
+        -- INVTYPE_HEAD = { 1, 232386, 230425 },
+        -- INVTYPE_WAIST = { 1, 232386, 230425 },
+        -- INVTYPE_WRIST = { 1, 232386, 230425 },
         INVTYPE_NECK = { 2, 213777, 230425 },
         INVTYPE_FINGER = { 2, 213777, 230425 }
     }
@@ -129,17 +121,8 @@ local EQUIP_LOC_MAX_SOCKETS = {
 local function MaxSockets(itemLevel, itemLink, isPvpItem)
     local itemMinLevel, _, _, _, itemEquipLoc, _, _, _, _, _, expansionID = select(5, C_Item.GetItemInfo(itemLink))
 
-    if itemLevel > 535 or expansionID == LE_EXPANSION_WAR_WITHIN then
-        local maxSocketInfo = EQUIP_LOC_MAX_SOCKETS_TWW[itemEquipLoc]
-        if maxSocketInfo then
-            return maxSocketInfo[1], (isPvpItem and maxSocketInfo[3]) or maxSocketInfo[2]
-        else
-            return 0
-        end
-    elseif expansionID == LE_EXPANSION_DRAGONFLIGHT then
-        if itemEquipLoc == "INVTYPE_NECK" then
-            return 3, 192994
-        end
+    if EQUIP_LOC_MAX_SOCKETS[expansionID] and EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc] then
+        return EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][1], (isPvpItem and EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][3]) or EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][2]
     end
     return 0
 end
