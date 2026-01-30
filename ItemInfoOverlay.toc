@@ -30,7 +30,7 @@ Locales\locales.xml
 Settings.xml
 
 ItemInfoOverlay.xml
-CharacterFrameItemInfoOverlay.xml
+CharacterFrameOverlay.xml
 EquipmentSummary.xml
 
 ChatLink.lua
