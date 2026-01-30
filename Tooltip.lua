@@ -109,10 +109,11 @@ hooksecurefunc(GameTooltip, "Show", function (self)
                 end
             end
         end
+        
+        xpcall(GameTooltip_CalculatePadding, function ()
+            
+        end, self)
 
-        
-        
-        GameTooltip_CalculatePadding(self)
     end
 end)
 
