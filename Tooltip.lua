@@ -18,30 +18,6 @@ local lastInspectTime
 local lastInspectGuid
 local added
 
-local function SearchUnitFromGUID(guid)
-    if UnitGUID("player") == guid then
-        return "player"
-    elseif UnitGUID("target") == guid then
-        return "target"
-    elseif UnitGUID("focus") == guid then
-        return "focus"
-    elseif UnitGUID("mouseover") == guid then
-        return "mouseover"
-    elseif IsInGroup() and not IsInRaid() then
-        for i = 1, 4 do
-            if UnitGUID("party"..i) == guid then
-                return "party"..i
-            end
-        end
-    elseif IsInRaid() then
-        for i = 1, 40 do
-            if UnitGUID("raid"..i) == guid then
-                return "raid"..i
-            end
-        end
-    end
-end
-
 local function RefreshItemLevelTooltip()
     local _, unit, guid = TooltipUtil.GetDisplayedUnit(GameTooltip)
     if unit and guid and itemLevelLine then
