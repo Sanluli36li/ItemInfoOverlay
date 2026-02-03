@@ -81,25 +81,38 @@ local POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL = {
 
 local itemInfoOverlayPoor = {}
 
-local EQUIP_LOC_CAN_ENCHANT_TWW = {
-    INVTYPE_CHEST = true,       -- 胸部
-    INVTYPE_ROBE = true,        -- 胸部 (搞不懂为啥胸甲会有两种装备位置)
-    INVTYPE_LEGS = true,        -- 腿部
-    INVTYPE_FEET = true,        -- 脚部
-    INVTYPE_WRIST = true,       -- 腕部
-    INVTYPE_FINGER = true,      -- 手指
-    INVTYPE_CLOAK = true,       -- 背部
-    INVTYPE_WEAPON = true,      -- 武器
-    INVTYPE_RANGED = true,      -- 远程武器
-    INVTYPE_2HWEAPON = true,    -- 双手武器
+local EQUIP_LOC_CAN_ENCHANT = {
+    INVTYPE_HEAD = false,           -- 头部
+    INVTYPE_NECK = {0, 120},        -- 颈部
+    INVTYPE_SHOULDER = {0, 120},    -- 肩部
+    INVTYPE_CLOAK = true,           -- 背部
+    INVTYPE_CHEST = true,           -- 胸部
+    INVTYPE_ROBE = true,            -- 胸部 (搞不懂为啥胸甲会有两种装备位置)
+    INVTYPE_WRIST = {0, 120},       -- 手腕
+    INVTYPE_HAND = {0, 120},        -- 手部
+    INVTYPE_WAIST = {0, 120},       -- 腰部
+    INVTYPE_LEGS = true,            -- 腿部
+    INVTYPE_FEET = true,            -- 脚部
+    INVTYPE_FINGER = true,          -- 手指
+    INVTYPE_WEAPON = true,          -- 武器
+    INVTYPE_RANGED = true,          -- 远程武器
+    INVTYPE_2HWEAPON = true,        -- 双手武器
     INVTYPE_WEAPONMAINHAND = true,  -- 主手武器
-    INVTYPE_RANGEDRIGHT = true, -- 远程武器
+    INVTYPE_WEAPONOFFHAND = true,   -- 副手武器
+    INVTYPE_RANGEDRIGHT = true,     -- 远程武器
+    INVTYPE_SHIELD = {0, 120},      -- 盾牌
+    INVTYPE_HOLDABLE = {0, 120},    -- 副手
 }
 
 local function CanEnchant(itemLevel, itemEquipLoc)
-    if itemLevel > 535 then
-        -- TWW
-        return EQUIP_LOC_CAN_ENCHANT_TWW[itemEquipLoc]
+    if type(EQUIP_LOC_CAN_ENCHANT[itemEquipLoc]) == "table" then
+        local minLevel = EQUIP_LOC_CAN_ENCHANT[itemEquipLoc][1]
+        local maxLevel = EQUIP_LOC_CAN_ENCHANT[itemEquipLoc][2]
+        return itemLevel >= minLevel and itemLevel <= maxLevel
+    elseif type(EQUIP_LOC_CAN_ENCHANT[itemEquipLoc]) == "function" then
+        return EQUIP_LOC_CAN_ENCHANT[itemEquipLoc](itemLevel)
+    elseif EQUIP_LOC_CAN_ENCHANT[itemEquipLoc] then
+        return true
     else
         return false
     end
@@ -720,10 +733,6 @@ end)
 --------------------
 
 function Module:Startup()
-    if C_SeasonInfo.GetCurrentDisplaySeasonID() == 25 then
-        EQUIP_LOC_CAN_ENCHANT_TWW["INVTYPE_HEAD"] = true
-    end
-
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
         Module:CreateItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
     end
