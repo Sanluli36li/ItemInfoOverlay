@@ -209,6 +209,13 @@ function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
                 -- 探索者 / 冒险者
                 r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.explorer"))
             end
+        elseif ItemInfoOverlay:GetConfig("color.itemLevel") == 1 then
+            -- 传家宝/神器/传说物品 通常拥有其特殊的升级方式
+            -- 当默认使用固定颜色时，这些物品以品质染色以凸显其特殊的升级模式
+            local itemQuality = C_Item.GetItemQualityByID(itemLink)
+            if itemQuality and itemQuality >= 5 then
+                r, g, b = C_Item.GetItemQualityColor(itemQuality)
+            end
         end
     end
 
