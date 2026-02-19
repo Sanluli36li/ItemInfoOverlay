@@ -79,7 +79,6 @@ local POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL = {
     {"BOTTOMRIGHT", "TOPRIGHT", -1},
 }
 
-local itemInfoOverlayPoor = {}
 
 local EQUIP_LOC_CAN_ENCHANT = {
     INVTYPE_HEAD = {120, 999},      -- 头部 (至暗之夜 120+)
@@ -139,6 +138,7 @@ local function MaxSockets(itemLevel, itemLink, isPvpItem)
     end
     return 0
 end
+local itemInfoOverlayPool = {}
 
 --------------------
 -- Mixin
@@ -656,7 +656,7 @@ function Module:CreateItemInfoOverlay(frame, slot)
 
     local overlay = frame.ItemInfoOverlay
 
-    tinsert(itemInfoOverlayPoor, overlay)
+    tinsert(itemInfoOverlayPool, overlay)
 
     if slot then
         overlay.slot = slot
@@ -684,7 +684,7 @@ local function GetItemInfoOverlayFromSlotID(slotID, isInspect)
 end
 
 function Module:UpdateAllAppearance()
-    for _, overlay in ipairs(itemInfoOverlayPoor) do
+    for _, overlay in ipairs(itemInfoOverlayPool) do
         overlay:UpdateAppearance()
     end
 end
