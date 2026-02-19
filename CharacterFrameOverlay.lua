@@ -79,65 +79,6 @@ local POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL = {
     {"BOTTOMRIGHT", "TOPRIGHT", -1},
 }
 
-
-local EQUIP_LOC_CAN_ENCHANT = {
-    INVTYPE_HEAD = {120, 999},      -- 头部 (至暗之夜 120+)
-    INVTYPE_NECK = {0, 120},        -- 颈部
-    INVTYPE_SHOULDER = true,        -- 肩部 (至暗之夜 120+)
-    INVTYPE_CLOAK = {0, 170},       -- 背部
-    INVTYPE_CHEST = true,           -- 胸部
-    INVTYPE_ROBE = true,            -- 胸部 (搞不懂为啥胸甲会有两种装备位置)
-    INVTYPE_WRIST = {0, 120},       -- 手腕
-    INVTYPE_HAND = {0, 120},        -- 手部
-    INVTYPE_WAIST = false,          -- 腰部
-    INVTYPE_LEGS = true,            -- 腿部
-    INVTYPE_FEET = true,            -- 脚部
-    INVTYPE_FINGER = true,          -- 手指
-    INVTYPE_WEAPON = true,          -- 武器
-    INVTYPE_RANGED = true,          -- 远程武器
-    INVTYPE_2HWEAPON = true,        -- 双手武器
-    INVTYPE_WEAPONMAINHAND = true,  -- 主手武器
-    INVTYPE_WEAPONOFFHAND = true,   -- 副手武器
-    INVTYPE_RANGEDRIGHT = true,     -- 远程武器
-    INVTYPE_SHIELD = {0, 120},      -- 盾牌
-    INVTYPE_HOLDABLE = {0, 120},    -- 副手
-}
-
-local function CanEnchant(itemLevel, itemEquipLoc)
-    if type(EQUIP_LOC_CAN_ENCHANT[itemEquipLoc]) == "table" then
-        local minLevel = EQUIP_LOC_CAN_ENCHANT[itemEquipLoc][1]
-        local maxLevel = EQUIP_LOC_CAN_ENCHANT[itemEquipLoc][2]
-        return itemLevel >= minLevel and itemLevel <= maxLevel
-    elseif type(EQUIP_LOC_CAN_ENCHANT[itemEquipLoc]) == "function" then
-        return EQUIP_LOC_CAN_ENCHANT[itemEquipLoc](itemLevel)
-    elseif EQUIP_LOC_CAN_ENCHANT[itemEquipLoc] then
-        return true
-    else
-        return false
-    end
-end
-
-local EQUIP_LOC_MAX_SOCKETS = {
-    [LE_EXPANSION_DRAGONFLIGHT] = {
-        INVTYPE_NECK = { 3, 192994 }
-    },
-    [LE_EXPANSION_WAR_WITHIN] = {
-        -- INVTYPE_HEAD = { 1, 232386, 230425 },
-        -- INVTYPE_WAIST = { 1, 232386, 230425 },
-        -- INVTYPE_WRIST = { 1, 232386, 230425 },
-        INVTYPE_NECK = { 2, 213777, 230425 },
-        INVTYPE_FINGER = { 2, 213777, 230425 }
-    }
-}
-
-local function MaxSockets(itemLevel, itemLink, isPvpItem)
-    local itemMinLevel, _, _, _, itemEquipLoc, _, _, _, _, _, expansionID = select(5, C_Item.GetItemInfo(itemLink))
-
-    if EQUIP_LOC_MAX_SOCKETS[expansionID] and EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc] then
-        return EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][1], (isPvpItem and EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][3]) or EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][2]
-    end
-    return 0
-end
 local itemInfoOverlayPool = {}
 
 --------------------
@@ -388,7 +329,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
         else
             self.EnchantQuality:Hide()
         end
-    elseif Module:GetConfig(CONFIG_ENCHANT) and Module:GetConfig(CONFIG_ENCHANT_DISPLAY_MISSING) and CanEnchant(itemLevel, itemEquipLoc) then
+    elseif Module:GetConfig(CONFIG_ENCHANT) and Module:GetConfig(CONFIG_ENCHANT_DISPLAY_MISSING) and Utils.ItemCanEnchant(itemLevel, itemEquipLoc) then
         self.Enchant:SetTextToFit("|cffff0000"..L["characterFrame.enchant.displayMissing.noenchant"].."|r")
         self.Enchant:Show()
 
@@ -403,7 +344,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
     end
 
     if Module:GetConfig(CONFIG_SOCKET) then
-        local maxSocketsNum, addSocketItemID = MaxSockets(itemLevel, itemLink, pvpItemLevel)
+        local maxSocketsNum, addSocketItemID = Utils.ItemMaxSockets(itemLevel, itemLink, pvpItemLevel)
 
         for i = 1, 3 do
             if self["GemSocket"..i] then
