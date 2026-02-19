@@ -82,10 +82,10 @@ local POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL = {
 local itemInfoOverlayPoor = {}
 
 local EQUIP_LOC_CAN_ENCHANT = {
-    INVTYPE_HEAD = false,           -- 头部
+    INVTYPE_HEAD = {120, 999},      -- 头部 (至暗之夜 120+)
     INVTYPE_NECK = {0, 120},        -- 颈部
-    INVTYPE_SHOULDER = {0, 120},    -- 肩部
-    INVTYPE_CLOAK = true,           -- 背部
+    INVTYPE_SHOULDER = true,        -- 肩部 (至暗之夜 120+)
+    INVTYPE_CLOAK = {0, 170},       -- 背部
     INVTYPE_CHEST = true,           -- 胸部
     INVTYPE_ROBE = true,            -- 胸部 (搞不懂为啥胸甲会有两种装备位置)
     INVTYPE_WRIST = {0, 120},       -- 手腕
