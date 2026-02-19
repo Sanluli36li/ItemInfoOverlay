@@ -421,8 +421,9 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                         end
                     end
                     -- 装备唯一物品
-                    local isUnique, limitCategoryName, limitCategoryCount, limitCategoryID = C_Item.GetItemUniquenessByID(link)
+                    local isUnique, limitCategoryName, limitCategoryCount, limitCategoryID = Utils.GetItemUniquenessByID(link)
                     if Module:GetConfig(CONFIG_ITEM_SETS_UNIQUE) and isUnique and limitCategoryID then
+                        
                         if limitCategoryCount > 1 then  -- 忽略仅能装备一件的装备唯一分类
                             if itemUnique[limitCategoryID] then
                                 itemUnique[limitCategoryID][1] = itemUnique[limitCategoryID][1] + 1

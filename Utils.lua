@@ -310,8 +310,41 @@ function Utils.CalculateStatsRatings(stat, statNum, level)
     end
 end
 
+--------------------
+--- 装备信息数据
+--------------------
+local PRELOAD_UNIQUENESS_LINKS = {
+    "|cnIQ4:|Hitem:215134::::::::80:102::13:1:3524:2:40:1277:38:4:::::|h[这是个\"装备唯一: 美化\"物品]|h|r"
+}
+
+local UNIQUENESS_NAMES = {}
+
+local UNIQUENESS_INFO = {
+    [215133] = {2, 512},    -- 知己之矶
+    [241140] = {2, 512},    -- 艾泽拉斯的祝福印戒
+    [251513] = {2, 512},    -- 神灵崇拜者的指环
+}
+
+function Utils.GetItemUniquenessByID(itemInfo)
+    local id = C_Item.GetItemIDForItemInfo(itemInfo)
+    if UNIQUENESS_INFO[id] and UNIQUENESS_NAMES[UNIQUENESS_INFO[id][2]] then
+        return true, UNIQUENESS_NAMES[UNIQUENESS_INFO[id][2]], UNIQUENESS_INFO[id][1], UNIQUENESS_INFO[id][2]
+    else
+        return C_Item.GetItemUniquenessByID(itemInfo)
+    end
+end
+
+
 function Utils:AfterLogin()
     UpdateCombatStatsRatings()
+
+    -- 预载入装备唯一信息名称
+    for _, link in ipairs(PRELOAD_UNIQUENESS_LINKS) do
+        local isUnique, limitCategoryName, limitCategoryCount, limitCategoryID = C_Item.GetItemUniquenessByID(link)
+        if limitCategoryID and limitCategoryName then
+            UNIQUENESS_NAMES[limitCategoryID] = limitCategoryName
+        end
+    end
 end
 
 function Utils:PLAYER_LEVEL_CHANGED()
