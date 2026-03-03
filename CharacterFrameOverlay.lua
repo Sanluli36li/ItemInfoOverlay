@@ -426,8 +426,8 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
                         end
 
                         socketIcon:SetNormalTexture("Interface\\ItemSocketingFrame\\UI-EmptySocket-Prismatic")
-                        socketIcon:GetNormalTexture():SetVertexColor(1, 0.5, 0.5)
-                        socketIcon:SetAlpha(0.5)
+                        socketIcon:GetNormalTexture():SetVertexColor(1,0, 0)
+                        socketIcon:SetAlpha(0.75)
 
                         socketIcon:SetScript("OnEnter", function(self)
                             GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
