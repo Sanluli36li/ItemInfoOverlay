@@ -278,6 +278,8 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
                     else
                         itemEnchant = enchant
                     end
+
+                    itemEnchant = itemEnchant:gsub(".+ %- ", ""):gsub("[ \\+]", "") -- 移除附魔前缀、空格
                 end
             elseif line.type == Enum.TooltipDataLineType.GemSocket then
                 -- 宝石
@@ -316,7 +318,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
     end
 
     if Module:GetConfig(CONFIG_ENCHANT) and itemEnchant then
-        self.Enchant:SetTextToFit(string.gsub(itemEnchant, "[ \\+]", ""))
+        self.Enchant:SetTextToFit(itemEnchant, "")
         self.Enchant:Show()
 
         if self.Enchant:GetUnboundedStringWidth() >= 80 then
