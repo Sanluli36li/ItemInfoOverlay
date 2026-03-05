@@ -460,12 +460,12 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                 end
 
             else
-                if i == 17 then
-                    link = GetInventoryItemLink(self.unit, 16)
+                if i == 16 or i == 17 then
+                    link = GetInventoryItemLink(self.unit, i == 17 and 16 or 17)
                     if link then
                         local loc = select(9, C_Item.GetItemInfo(link))
                         if loc == "INVTYPE_2HWEAPON" or loc == "INVTYPE_RANGED" or loc == "INVTYPE_RANGEDRIGHT" then
-                            local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(self.unit, 16))
+                            local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(self.unit, i == 17 and 16 or 17))
 
                             if itemLevel then
                                 totalItemLevel = totalItemLevel + itemLevel
