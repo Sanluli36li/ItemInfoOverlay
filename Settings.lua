@@ -779,21 +779,30 @@ local settings = {
                     end
                 },
                 {
-                    -- 显示玩家装备总览
-                    controlType = CONTROL_TYPE.CHECKBOX,
+                    -- 显示物品升级路线
+                    controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
                     name = L["equipmentSummary.itemUpgradeTrack.title"],
                     tooltip = L["equipmentSummary.itemUpgradeTrack.tooltip"],
                     key = "equipmentSummary.itemUpgradeTrack.enable",
                     default = true,
-                    subSettings = {
-                        {
-                            controlType = CONTROL_TYPE.CHECKBOX,
-                            settingType = SETTING_TYPE.ADDON_VARIABLE,
-                            name = L["equipmentSummary.itemUpgradeTrack.level.title"],
-                            key = "equipmentSummary.itemUpgradeTrack.level",
-                            default = true
-                        }
+                    onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
+                    end,
+                    dropdown = {
+                        settingType = SETTING_TYPE.ADDON_VARIABLE,
+                        key = "equipmentSummary.itemUpgradeTrack.style",
+                        default = 1,
+                        options = {
+                            { L["color.itemLevel.itemUpgrade.myth"].." 1/6" },
+                            { L["color.itemLevel.itemUpgrade.myth"] },
+                            { "1/6" }
+                        },
+                        onValueChanged = function(value)
+                            IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                            IIOEquipmentSummaryInspectFrame:UpdateAppearance()
+                        end
                     }
                 },
                 {

@@ -48,6 +48,12 @@
                         <Anchor point="LEFT" relativeKey="$parent.ItemLevel" relativePoint="RIGHT" x="2"/>
                     </Anchors>
                 </FontString>
+                <FontString parentKey="ItemUpgrade" inherits="GameTooltipText" wordwrap="false" nonspacewrap="false">
+                    <Size x="100"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.ItemLink" relativePoint="RIGHT" x="2"/>
+                    </Anchors>
+                </FontString>
 			</Layer>
         </Layers>
         <Frames>

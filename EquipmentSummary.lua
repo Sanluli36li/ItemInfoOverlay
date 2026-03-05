@@ -35,6 +35,14 @@ local STAT_ICONS = {
     },
 }
 
+local WIDTH_BY_LOCALE = {
+    enUS = {20, 16, 9, 6.5, 3},
+    zhCN = {14, 11, 6.5, 4.5, 3},
+    zhTW = {14, 11, 6.5, 4.5, 3},
+}
+
+local WIDTH_RATE = WIDTH_BY_LOCALE[GetLocale()] or WIDTH_BY_LOCALE.enUS
+
 local EQUIPMENT_SLOTS = {
     {slotId = 1, name = HEADSLOT},
     {slotId = 2, name = NECKSLOT},
@@ -127,15 +135,14 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
 
     local temp = self.ItemLevel:GetText()
 
-    
-
     -- 重新计算宽度
     self.ItemLevel:SetText("1000")
     local itemLevelWidth = self.ItemLevel:GetUnboundedStringWidth()
     self.ItemLevel:SetWidth(itemLevelWidth)
     self.ItemLevel:SetText(temp)
 
-    self.ItemLink:SetWidth((Module:GetConfig(CONFIG_FONT_SIZE) * 14) - itemLevelWidth + (Module:GetConfig("itemUpgradeTrack.enable") and ((Module:GetConfig("itemUpgradeTrack.level") and 4 or 2)  * Module:GetConfig(CONFIG_FONT_SIZE)) or 0))
+    self.ItemLink:SetWidth((Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig("itemUpgradeTrack.enable") and WIDTH_RATE[2] or WIDTH_RATE[1])) - itemLevelWidth)
+    self.ItemUpgrade:SetWidth(Module:GetConfig("itemUpgradeTrack.enable") and (WIDTH_RATE[Module:GetConfig("itemUpgradeTrack.style") + 2] * Module:GetConfig(CONFIG_FONT_SIZE)) or 0)
 end
 
 function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, itemLink, itemLevel)
@@ -168,19 +175,26 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
         if Module:GetConfig("itemUpgradeTrack.enable") then
             local itemUpgradeInfo = C_Item.GetItemUpgradeInfo(itemLink)
             if itemUpgradeInfo and itemUpgradeInfo.trackString then
-                if Module:GetConfig("itemUpgradeTrack.level") then
-                    self.ItemLink:SetText(itemLink:gsub("[%[%]]", "")..Utils.GetColoredItemLevelText(" ["..itemUpgradeInfo.trackString..itemUpgradeInfo.currentLevel.."/"..itemUpgradeInfo.maxLevel.."]", itemLink))
-                else
-                    self.ItemLink:SetText(itemLink:gsub("[%[%]]", "")..Utils.GetColoredItemLevelText(" ["..itemUpgradeInfo.trackString.."]", itemLink))
+                if Module:GetConfig("itemUpgradeTrack.style") == 1 then
+                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText(" ["..itemUpgradeInfo.trackString.." "..itemUpgradeInfo.currentLevel.."/"..itemUpgradeInfo.maxLevel.."]", itemLink))
+                elseif Module:GetConfig("itemUpgradeTrack.style") == 2 then
+                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText(" ["..itemUpgradeInfo.trackString.."]", itemLink))
+                elseif Module:GetConfig("itemUpgradeTrack.style") == 3 then
+                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText(" ["..itemUpgradeInfo.currentLevel.."/"..itemUpgradeInfo.maxLevel.."]", itemLink))
                 end
-                
+            elseif string.find(itemLink, "|A:") then
+                -- 分离制造物品的品质图标
+                local level = string.match(itemLink, "|A:.+|a")
+                itemLink = itemLink:gsub("|A:.+|a", "")
+                self.ItemUpgrade:SetText(level)
             else
-                self.ItemLink:SetText(itemLink:gsub("[%[%]]", ""))
+                self.ItemUpgrade:SetText("")
             end
         else
-            self.ItemLink:SetText(itemLink:gsub("[%[%]]", ""))
+            self.ItemUpgrade:SetText("")
         end
-        
+
+        self.ItemLink:SetText(itemLink:gsub("[%[%]]", ""))
     else
         self:ToggleStats()
         self.ItemLevel:SetText("-")
@@ -570,9 +584,9 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
         local width = 12
             + (Module:GetConfig(CONFIG_SLOT_NAME) and 42 or 0)
             + (Module:GetConfig(CONFIG_STAT_ICON) and (Module:GetConfig(CONFIG_FONT_SIZE) * 4 + 8) or 0)
-            + (Module:GetConfig(CONFIG_FONT_SIZE) * 14)
+            + (Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig("itemUpgradeTrack.enable") and WIDTH_RATE[2] or WIDTH_RATE[1]))
             + 12
-            + (Module:GetConfig("itemUpgradeTrack.enable") and ((Module:GetConfig("itemUpgradeTrack.level") and 4 or 2) * Module:GetConfig(CONFIG_FONT_SIZE)) or 0)
+            + (Module:GetConfig("itemUpgradeTrack.enable") and (WIDTH_RATE[Module:GetConfig("itemUpgradeTrack.style") + 2] * Module:GetConfig(CONFIG_FONT_SIZE)) or 0)
         self:SetSize(width, height)
     else
 
