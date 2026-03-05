@@ -37,8 +37,8 @@ local STAT_ICONS = {
 
 local WIDTH_BY_LOCALE = {
     enUS = {20, 16, 9, 6.5, 3},
-    zhCN = {14, 11, 6.5, 4.5, 3},
-    zhTW = {14, 11, 6.5, 4.5, 3},
+    zhCN = {14, 12, 6.5, 4.5, 3},
+    zhTW = {14, 12, 6.5, 4.5, 3},
 }
 
 local WIDTH_RATE = WIDTH_BY_LOCALE[GetLocale()] or WIDTH_BY_LOCALE.enUS
