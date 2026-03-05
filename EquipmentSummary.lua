@@ -290,8 +290,8 @@ function IIOEquipmentSummaryFrameMixin:OnLoad()
         lastRegion = self.slots[slotId]
     end
 
-    self.ItemSetsText:SetPoint("TOPLEFT", lastRegion, "BOTTOMLEFT", 0, -10)
-    self.ItemSetsText:SetPoint("TOPRIGHT", lastRegion, "BOTTOMRIGHT", 0, -10)
+    self.InfoText:SetPoint("TOPLEFT", lastRegion, "BOTTOMLEFT", 0, -10)
+    self.InfoText:SetPoint("TOPRIGHT", lastRegion, "BOTTOMRIGHT", 0, -10)
 
     self.ItemStatsTips:SetScript("OnEnter", function (button)
         GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
@@ -339,7 +339,7 @@ function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
     local font, size, style = GameTooltipText:GetFont()
     self.SubTitle:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
 
-    self.ItemSetsText:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.InfoText:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemStatsText1:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemStatsText2:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemStatsText3:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
@@ -378,13 +378,18 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
         local itemSets = {}
         local itemUnique = {}
 
-        local totalItemLevel = 0
-        local totalPvpItemLevel = 0
+        local totalItemLevel, totalPvpItemLevel = 0, 0
+        local hasEnchantNum, maxEnchantNum = 0, 0
+        local gemNum, socketNum = 0, 0
 
         for i, entry in pairs(self.slots) do
             local link = GetInventoryItemLink(self.unit, i)
 
             if link then
+                local itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType, 
+                itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
+                expacID, setID, isCraftingReagent = C_Item.GetItemInfo(link)
+
                 local tooltipInfo = C_TooltipInfo.GetInventoryItem(self.unit, i)
                 local itemLevel, currentItemLevel, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
@@ -407,11 +412,34 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                     primaryStat = pstat
                 end
 
-                -- 宝石
+                -- 附魔和插槽数量检查
+                local canEnchant = Utils.ItemCanEnchant(itemLevel, itemEquipLoc)
+                local hasEnchant
+                if tooltipInfo then
+                    for i, line in pairs(tooltipInfo.lines) do
+                        if line.type == Enum.TooltipDataLineType.ItemEnchantmentPermanent then
+                            hasEnchant = true
+                        elseif line.type == Enum.TooltipDataLineType.GemSocket then
+                            socketNum = socketNum + 1
+                        end
+                    end
+                end
+
+                if canEnchant then
+                    maxEnchantNum = maxEnchantNum + 1
+                    if hasEnchant then
+                        hasEnchantNum = hasEnchantNum + 1
+                    end
+                end
+
+                -- 宝石检查
                 for j = 1, 3 do
                     local gemID = C_Item.GetItemGemID(link, j)
 
                     if gemID then
+                        gemNum = gemNum + 1
+
+                        -- 如果有未加载的宝石，则在加载后刷新
                         local gemItem = Item:CreateFromItemID(gemID)
 
                         if not gemItem:IsItemDataCached() then
@@ -424,13 +452,12 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
                 -- 套装物品
                 if Module:GetConfig(CONFIG_ITEM_SETS) then
-                    local itemSet = select(16, C_Item.GetItemInfo(link))
                     -- 套装物品
-                    if itemSet then
-                        if itemSets[itemSet] then
-                            itemSets[itemSet] = itemSets[itemSet] + 1
+                    if setID then
+                        if itemSets[setID] then
+                            itemSets[setID] = itemSets[setID] + 1
                         else
-                            itemSets[itemSet] = 1
+                            itemSets[setID] = 1
                             numItemSets = numItemSets + 1
                         end
                     end
@@ -461,7 +488,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
             else
                 if i == 16 or i == 17 then
-                    link = GetInventoryItemLink(self.unit, i == 17 and 16 or 17)
+                    link = GetInventoryItemLink(self.unit, i== 17 and 16 or 17)
                     if link then
                         local loc = select(9, C_Item.GetItemInfo(link))
                         if loc == "INVTYPE_2HWEAPON" or loc == "INVTYPE_RANGED" or loc == "INVTYPE_RANGEDRIGHT" then
@@ -483,8 +510,17 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
         self:RefreshItemLevelAndSpec(totalItemLevel / 16, totalPvpItemLevel / 16, specName)
 
+        local text = ""
+
+        if Module:GetConfig("enchantAndSockets.enable") then
+            text = text..format("|cffffd200%s: |r|c%s%d|r / %d    |cffffd200%s: |r|c%s%d|r / %d\n",
+            GetItemClassInfo(8), hasEnchantNum == maxEnchantNum and "ff00ff00" or "ffff0000", hasEnchantNum, maxEnchantNum,
+            GetItemClassInfo(3), gemNum == socketNum and "ff00ff00" or "ffff0000", gemNum, socketNum)
+            text = text.."\n"
+        end
+
         if numItemSets > 0 then
-            local text = format("|cffffd200%s:|r\n", LOOT_JOURNAL_ITEM_SETS)
+            text = text..format("|cffffd200%s:|r\n", LOOT_JOURNAL_ITEM_SETS)
 
             for id, num in pairs(itemSets) do
                 local setName = C_Item.GetItemSetInfo(id)
@@ -503,10 +539,10 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                 end
             end
 
-            self.ItemSetsText:SetText(text.."\n")
-        else
-            self.ItemSetsText:SetText()
+            text = text.."\n"
         end
+
+        self.InfoText:SetText(text)
 
         if Module:GetConfig(CONFIG_ITEM_STATS) then
             local critBonus, critBonus2 = Utils.CalculateStatsRatings("ITEM_MOD_CRIT_RATING_SHORT", totalStats.ITEM_MOD_CRIT_RATING_SHORT, level)
@@ -578,7 +614,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             + self.SubTitle:GetStringHeight()
             + (self.slotNum * (Module:GetConfig(CONFIG_FONT_SIZE) + 2))
             + 10
-            + self.ItemSetsText:GetStringHeight()
+            + self.InfoText:GetStringHeight()
             + self.ItemStatsText1:GetStringHeight()
             + 12
         local width = 12

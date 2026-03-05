@@ -806,6 +806,17 @@ local settings = {
                     }
                 },
                 {
+                    -- 检查附魔与插槽
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.enchantAndSockets.title"],
+                    tooltip = L["equipmentSummary.enchantAndSockets.tooltip"],
+                    key = "equipmentSummary.enchantAndSockets.enable",
+                    default = true,
+                    onValueChanged = function(value)
+                    end,
+                },
+                {
                     -- 显示套装内容
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,

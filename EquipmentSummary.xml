@@ -88,11 +88,11 @@
                         <Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
                     </Anchors>
                 </FontString>
-                <FontString parentKey="ItemSetsText" inherits="GameTooltipText">
+                <FontString parentKey="InfoText" inherits="GameTooltipText">
                 </FontString>
                 <FontString parentKey="ItemStatsText1" inherits="GameTooltipText">
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeKey="$parent.ItemSetsText" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.InfoText" relativePoint="BOTTOMLEFT" x="0" y="0"/>
                     </Anchors>
                 </FontString>
                 <FontString parentKey="ItemStatsText2" inherits="GameTooltipText">
@@ -122,7 +122,7 @@
                     </Layer>
                 </Layers>
                 <Anchors>
-                    <Anchor point="TOPRIGHT" relativeKey="$parent.ItemSetsText" relativePoint="BOTTOMRIGHT" x="8" y="4"/>
+                    <Anchor point="TOPRIGHT" relativeKey="$parent.InfoText" relativePoint="BOTTOMRIGHT" x="8" y="4"/>
                 </Anchors>
             </Frame>
         </Frames>
