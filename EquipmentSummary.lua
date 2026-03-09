@@ -195,17 +195,15 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
                 itemLink = itemLink:gsub("|A:.+|a", "")
                 self.ItemUpgrade:SetText(level)
             else
-                self.ItemUpgrade:SetText("")
+                self.ItemUpgrade:SetText()
             end
         else
-            self.ItemUpgrade:SetText("")
+            self.ItemUpgrade:SetText()
         end
 
         self.ItemLink:SetText(itemLink:gsub("[%[%]]", ""))
     else
-        self:ToggleStats()
-        self.ItemLevel:SetText("-")
-        self.ItemLink:SetText("-")
+        self:Clear()
     end
 end
 
@@ -213,6 +211,7 @@ function IIOEquipmentSummaryEntryMixin:Clear()
     self:ToggleStats()
     self.ItemLevel:SetText("|cff7f7f7f-|r")
     self.ItemLink:SetText("|cff7f7f7f"..(self.slotName or "-").."|r")
+    self.ItemUpgrade:SetText()
 end
 
 
