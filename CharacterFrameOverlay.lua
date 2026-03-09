@@ -367,7 +367,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
                     gemItem:ContinueOnItemLoad(function()
                         local _, gemLink = C_Item.GetItemGem(itemLink, i)
                         local _, _, _, _, _, _, _, _, _, gemIcon = C_Item.GetItemInfo(gemLink)
-                        local professionQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(gemID)
+                        local professionQuality = C_TradeSkillUI.GetItemReagentQualityInfo(gemID)
 
                         socketIcon:SetNormalTexture(gemIcon)
                         socketIcon:GetNormalTexture():SetVertexColor(1, 1, 1)
@@ -384,7 +384,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
                         end)
 
                         if professionQuality then
-                            socketIcon.Quality:SetText("|A:".."Professions-ChatIcon-Quality-Tier"..professionQuality..":12:12|a")
+                            socketIcon.Quality:SetText("|A:"..professionQuality.icon..":16:16|a")
                             socketIcon.Quality:Show()
                         else
                             socketIcon.Quality:Hide()
