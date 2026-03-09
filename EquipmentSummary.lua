@@ -175,12 +175,19 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
         if Module:GetConfig("itemUpgradeTrack.enable") then
             local itemUpgradeInfo = C_Item.GetItemUpgradeInfo(itemLink)
             if itemUpgradeInfo and itemUpgradeInfo.trackString then
+                local level = itemUpgradeInfo.currentLevel.."/"..itemUpgradeInfo.maxLevel
+
+                if itemUpgradeInfo.maxLevel == 0 then
+                    -- 过时, 已无法再升级的物品
+                    level = "-/-"
+                end
+
                 if Module:GetConfig("itemUpgradeTrack.style") == 1 then
-                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText(" ["..itemUpgradeInfo.trackString.." "..itemUpgradeInfo.currentLevel.."/"..itemUpgradeInfo.maxLevel.."]", itemLink))
+                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText(" ["..itemUpgradeInfo.trackString.." "..level.."]", itemLink))
                 elseif Module:GetConfig("itemUpgradeTrack.style") == 2 then
                     self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText(" ["..itemUpgradeInfo.trackString.."]", itemLink))
                 elseif Module:GetConfig("itemUpgradeTrack.style") == 3 then
-                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText(" ["..itemUpgradeInfo.currentLevel.."/"..itemUpgradeInfo.maxLevel.."]", itemLink))
+                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText(" ["..level.."]", itemLink))
                 end
             elseif string.find(itemLink, "|A:") then
                 -- 分离制造物品的品质图标
