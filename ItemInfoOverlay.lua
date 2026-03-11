@@ -95,7 +95,7 @@ function IIOItemInfoOverlayMixin:UpdateAppearance()
     end
 end
 
-function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
+function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, pvpItemLevel)
     local itemLevelText
     local itemTypeText
     local itemBondingText
@@ -133,7 +133,11 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, p
                     itemTypeText = itemSubType
                 else
                     -- 其他: 护甲类型和装备栏位
-                    itemTypeText = _G[itemEquipLoc]
+                    if Utils.IsPerferedArmorType(classID, subclassID, itemEquipLoc) then
+                        itemTypeText = _G[itemEquipLoc]
+                    else
+                        itemTypeText = "|cffff0000".._G[itemEquipLoc].."|r"
+                    end
                 end
             else
                 itemTypeText = itemSubType
@@ -308,7 +312,7 @@ function IIOItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
             itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
         end
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
+        self:SetItemData(itemLink, tooltipInfo, itemLevel, pvpItemLevel)
 
         return itemLevel, itemLink, tooltipInfo
     else
@@ -329,7 +333,7 @@ function IIOItemInfoOverlayMixin:SetItemFromLink(itemLink)
             itemLevel = GetDetailedItemLevelInfo(itemLink)
         end
 
-        self:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
+        self:SetItemData(itemLink, tooltipInfo, itemLevel, pvpItemLevel)
 
         return itemLevel, itemLink, tooltipInfo
     else
@@ -518,7 +522,7 @@ hooksecurefunc("GroupLootContainer_OpenNewFrame", function(rollID, rollTime)
 
             if itemLink then
                 local itemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
-                overlay:SetItemData(itemLevel, itemLink, tooltipInfo)
+                overlay:SetItemData(itemLink, tooltipInfo, itemLevel)
             end
         end
     end

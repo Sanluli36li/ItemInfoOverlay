@@ -390,6 +390,41 @@ function Utils.ItemMaxSockets(itemLevel, itemLink, isPvpItem)
     return 0
 end
 
+local PERFERRED_ARMOR_TYPE_BY_CLASS = {
+    WARRIOR = Enum.ItemArmorSubclass.Plate,
+    PALADIN = Enum.ItemArmorSubclass.Plate,
+    HUNTER = Enum.ItemArmorSubclass.Mail,
+    ROGUE = Enum.ItemArmorSubclass.Leather,
+    PRIEST = Enum.ItemArmorSubclass.Cloth,
+    DEATHKNIGHT = Enum.ItemArmorSubclass.Plate,
+    SHAMAN = Enum.ItemArmorSubclass.Mail,
+    MAGE = Enum.ItemArmorSubclass.Cloth,
+    WARLOCK = Enum.ItemArmorSubclass.Cloth,
+    MONK = Enum.ItemArmorSubclass.Leather,
+    DRUID = Enum.ItemArmorSubclass.Leather,
+    DEMONHUNTER = Enum.ItemArmorSubclass.Leather,
+    EVOKER = Enum.ItemArmorSubclass.Mail,
+}
+
+local PERFERRED_ARMOR_TYPE = PERFERRED_ARMOR_TYPE_BY_CLASS[select(2, UnitClass("player"))]
+
+function Utils.IsPerferedArmorType(classID, subclassID, itemEquipLoc)
+    if PERFERRED_ARMOR_TYPE then
+        if classID == 4 and subclassID >= 1 and subclassID <= 4 then
+            if itemEquipLoc == "INVTYPE_CLOAK" then
+                -- 披风总是布甲, 排除
+                return true
+            else
+                return PERFERRED_ARMOR_TYPE == subclassID
+            end
+        else
+            return true
+        end
+    else
+        -- 未知偏好类型
+        return true
+    end
+end
 
 function Utils:AfterLogin()
     UpdateCombatStatsRatings()
