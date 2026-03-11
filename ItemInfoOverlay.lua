@@ -307,10 +307,11 @@ function IIOItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
         end
 
         local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
-
+        --[[
         if not itemLevel then
             itemLevel = C_Item.GetCurrentItemLevel(itemLocation)
         end
+        ]]
 
         self:SetItemData(itemLink, tooltipInfo, itemLevel, pvpItemLevel)
 
@@ -328,11 +329,11 @@ function IIOItemInfoOverlayMixin:SetItemFromLink(itemLink)
         local tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
 
         local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
-
+        --[[
         if not itemLevel then
             itemLevel = GetDetailedItemLevelInfo(itemLink)
         end
-
+        ]]
         self:SetItemData(itemLink, tooltipInfo, itemLevel, pvpItemLevel)
 
         return itemLevel, itemLink, tooltipInfo
@@ -521,7 +522,7 @@ hooksecurefunc("GroupLootContainer_OpenNewFrame", function(rollID, rollTime)
             local tooltipInfo = C_TooltipInfo.GetLootRollItem(frame.rollID)
 
             if itemLink then
-                local itemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo) or GetDetailedItemLevelInfo(itemLink)
+                local itemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
                 overlay:SetItemData(itemLink, tooltipInfo, itemLevel)
             end
         end
