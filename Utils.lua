@@ -174,6 +174,9 @@ local TRACK_STRING_ID_EXPLORER = 970
 
 function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
     local r, g, b = 1, 1, 1
+    local itemName, _, itemQuality, _, _, itemType, itemSubType,
+        itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
+        expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
 
     if ItemInfoOverlay:GetConfig("color.itemLevel") == 1 then
         -- 固定颜色
@@ -188,33 +191,53 @@ function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
         end
     end
 
-    if C_Item.IsEquippableItem(itemLink) and ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade") then
-        local itemUpgradeInfo = C_Item.GetItemUpgradeInfo(itemLink)
+    if ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade") then
+        if C_Item.IsEquippableItem(itemLink) then
+            local itemUpgradeInfo = C_Item.GetItemUpgradeInfo(itemLink)
 
-        if itemUpgradeInfo and itemUpgradeInfo.trackStringID then
-            -- 基于物品升级等级染色
-            if itemUpgradeInfo.trackStringID == TRACK_STRING_ID_MYTH or (isPvP and itemUpgradeInfo.trackStringID == TRACK_STRING_ID_CHAMPION) then
-                -- 神话(662-678) / PvP勇士(678)
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.myth"))
-            elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_HERO or (isPvP and itemUpgradeInfo.trackStringID == TRACK_STRING_ID_VETERAN) then
-                -- 英雄(649-665) / PvP老兵(675)
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.hero"))
-            elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_CHAMPION or (isPvP and itemUpgradeInfo.trackStringID == TRACK_STRING_ID_EXPLORER) then
-                -- 勇士(636-658) / PvP探索者(665)
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.champion"))
-            elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_VETERAN then
-                -- 老兵(623-645)
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.veteran"))
-            elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_ADVENTURER or itemUpgradeInfo.trackStringID == TRACK_STRING_ID_EXPLORER then
-                -- 探索者 / 冒险者
-                r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.explorer"))
+            if itemUpgradeInfo and itemUpgradeInfo.trackStringID then
+                -- 基于物品升级等级染色
+                if itemUpgradeInfo.trackStringID == TRACK_STRING_ID_MYTH or (isPvP and itemUpgradeInfo.trackStringID == TRACK_STRING_ID_CHAMPION) then
+                    -- 神话(662-678) / PvP勇士(678)
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.myth"))
+                elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_HERO or (isPvP and itemUpgradeInfo.trackStringID == TRACK_STRING_ID_VETERAN) then
+                    -- 英雄(649-665) / PvP老兵(675)
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.hero"))
+                elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_CHAMPION or (isPvP and itemUpgradeInfo.trackStringID == TRACK_STRING_ID_EXPLORER) then
+                    -- 勇士(636-658) / PvP探索者(665)
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.champion"))
+                elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_VETERAN then
+                    -- 老兵(623-645)
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.veteran"))
+                elseif itemUpgradeInfo.trackStringID == TRACK_STRING_ID_ADVENTURER or itemUpgradeInfo.trackStringID == TRACK_STRING_ID_EXPLORER then
+                    -- 探索者 / 冒险者
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.explorer"))
+                end
+            elseif ItemInfoOverlay:GetConfig("color.itemLevel") == 1 then
+                -- 传家宝/神器/传说物品 通常拥有其特殊的升级方式
+                -- 当默认使用固定颜色时，这些物品以品质染色以凸显其特殊的升级模式
+                if itemQuality and itemQuality >= 5 then
+                    r, g, b = C_Item.GetItemQualityColor(itemQuality)
+                end
             end
-        elseif ItemInfoOverlay:GetConfig("color.itemLevel") == 1 then
-            -- 传家宝/神器/传说物品 通常拥有其特殊的升级方式
-            -- 当默认使用固定颜色时，这些物品以品质染色以凸显其特殊的升级模式
-            local itemQuality = C_Item.GetItemQualityByID(itemLink)
-            if itemQuality and itemQuality >= 5 then
-                r, g, b = C_Item.GetItemQualityColor(itemQuality)
+
+        elseif (classID == Enum.ItemClass.Reagent and subclassID == Enum.ItemReagentSubclass.ContextToken) or (classID == Enum.ItemClass.Miscellaneous and subclassID == Enum.ItemMiscellaneousSubclass.Junk and itemQuality >= Enum.ItemQuality.Epic) then
+            -- 珍玩 / 套装兑换物
+            local tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
+            if tooltipInfo and tooltipInfo.lines and tooltipInfo.lines[2] then
+                if tooltipInfo.lines[2].leftText:find(PLAYER_DIFFICULTY6) then
+                    -- 史诗难度 对应神话
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.myth"))
+                elseif tooltipInfo.lines[2].leftText:find(PLAYER_DIFFICULTY2) then
+                    -- 英雄难度 对应英雄
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.hero"))
+                elseif tooltipInfo.lines[2].leftText:find(PLAYER_DIFFICULTY3) then
+                    -- 随机团队 对应老兵
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.veteran"))
+                elseif tooltipInfo.lines[2].type == Enum.TooltipDataLineType.ItemLevel then
+                    -- 没有难度行, 直接进入物品等级: 普通难度 对应勇士
+                    r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.champion"))
+                end
             end
         end
     end
