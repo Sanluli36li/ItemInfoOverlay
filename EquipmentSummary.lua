@@ -76,6 +76,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     self.SlotName:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemLevel:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemLink:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemUpgrade:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
 
     self.Crit:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
     self.Crit:SetTexture(STAT_ICONS[Module:GetConfig(CONFIG_STAT_ICON_STYLE)][1])
