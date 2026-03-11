@@ -381,6 +381,10 @@ local EQUIP_LOC_CAN_ENCHANT = {
 }
 
 function Utils.ItemCanEnchant(itemLevel, itemEquipLoc)
+    if not itemLevel then
+        return false
+    end
+
     if type(EQUIP_LOC_CAN_ENCHANT[itemEquipLoc]) == "table" then
         local minLevel = EQUIP_LOC_CAN_ENCHANT[itemEquipLoc][1]
         local maxLevel = EQUIP_LOC_CAN_ENCHANT[itemEquipLoc][2]
