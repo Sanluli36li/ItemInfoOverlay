@@ -416,8 +416,21 @@ end
 function Module:ReleaseItemInfoOverlay(frame)
     if frame.ItemInfoOverlay and pool:IsActive(frame.ItemInfoOverlay) then
         frame.ItemInfoOverlay.frame = nil
+        frame.ItemInfoOverlay.type = nil
+
         pool:Release(frame.ItemInfoOverlay)
         frame.ItemInfoOverlay = nil
+    end
+end
+
+function Module:DisableItemInfoOverlayByType(type)
+    for overlay in pool:EnumerateActive() do
+        if overlay.type == type then
+            local frame = overlay.frame
+            self.ReleaseItemInfoOverlay(overlay.frame)
+
+            frame.ItemInfoOverlay = false
+        end
     end
 end
 
@@ -431,7 +444,17 @@ end
 -- 暴雪函数安全钩子
 --------------------
 
+-- 通用钩子
 hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, suppressOverlays, isBound)
+    if not Module:GetConfig("frames.other") then
+        if button and button.ItemInfoOverlay then
+            ItemInfoOverlay:GetModule("itemInfoOverlay"):ReleaseItemInfoOverlay(button)
+        end
+        return
+    elseif button.ItemInfoOverlay == false or (button.ItemInfoOverlay and button.ItemInfoOverlay.type) then
+        return
+    end
+
     if button and button.SetItemButtonQuality then
         -- 跳过带有ItemButtonMixin等带有此函数的类型 防止重复操作
         return
@@ -447,34 +470,16 @@ hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, s
 end)
 
 hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function(button, quality, itemIDOrLink, suppressOverlays, isBound)
-    if button.location then
-        -- EquipmentFlyoutButton 需要确认使用的是ItemLocation还是button.location
-        Utils.GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
-        if
-            EquipmentFlyoutFrame and
-            EquipmentFlyoutFrame.button and
-            EquipmentFlyoutFrame.button:GetParent() and
-            EquipmentFlyoutFrame.button:GetParent().flyoutSettings and
-            EquipmentFlyoutFrame.button:GetParent().flyoutSettings.useItemLocation
-        then
-            -- 使用ItemLocation
-            
-            return
-        else
-            -- 使用button.location
-            local data = EquipmentManager_GetLocationData(button.location)
-            if data.isBags then
-                -- 背包中的物品
-                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(data.bag, data.slot))
-                return
-            elseif data.isPlayer then
-                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(data.slot))
-                return
-            else
-            end
+    if not Module:GetConfig("frames.other") then
+        if button.ItemInfoOverlay then
+            ItemInfoOverlay:GetModule("itemInfoOverlay"):ReleaseItemInfoOverlay(button)
         end
-        
-    elseif button.GetItemLocation and button:GetItemLocation() and button:GetItemLocation():IsValid() then
+        return
+    elseif button.ItemInfoOverlay == false or (button.ItemInfoOverlay and button.ItemInfoOverlay.type) then
+        return
+    end
+
+    if button.GetItemLocation and button:GetItemLocation() and button:GetItemLocation():IsValid() then
         -- GetItemLocation (背包/战团银行)
         Utils.GetItemInfoOverlay(button):SetItemFromLocation(button:GetItemLocation())
         return
@@ -493,30 +498,99 @@ hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function(button, quality
     Module:ReleaseItemInfoOverlay(button)
 end)
 
---[[
-hooksecurefunc("BankFrameItemButton_Update", function(button)
-    -- 银行/材料银行
-    if button.isBag  then
-        -- 过滤银行背包栏
-        return
+-- 背包
+do
+    local function ContainerFrameUpdateItems(frame)
+        for _, button in frame:EnumerateValidItems() do
+            if not Module:GetConfig("frames.blizzard.container") then
+                Utils.GetItemInfoOverlay(button, false)
+            else
+                Utils.GetItemInfoOverlay(button, "Container"):SetItemFromLocation(button:GetItemLocation())
+            end
+        end
     end
-    local bag = button:GetParent():GetID()
-    local slot = button:GetID()
-    Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
-end)
-]]
 
+    -- 联合的大包
+    hooksecurefunc(ContainerFrameCombinedBags, "UpdateItems", ContainerFrameUpdateItems)
+
+    -- 分开的小包
+    for _, frame in ipairs(ContainerFrameContainer.ContainerFrames) do
+        hooksecurefunc(frame, "UpdateItems", ContainerFrameUpdateItems)
+    end
+end
+
+-- 银行
+do
+    --[[
+    -- 银行界面 已于11.2.0移除
+    -- 这段先留着，如果移植到怀旧服估计能用上
+    hooksecurefunc("BankFrameItemButton_Update", function(button)
+        -- 银行/材料银行
+        if button.isBag  then
+            -- 过滤银行背包栏
+            return
+        end
+        local bag = button:GetParent():GetID()
+        local slot = button:GetID()
+        Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+    end)
+    ]]
+
+    local function BankPanelUpdateItems(frame)
+        for button in frame:EnumerateValidItems() do
+            if not Module:GetConfig("frames.blizzard.bank") then
+                Utils.GetItemInfoOverlay(button, false)
+            else
+                Utils.GetItemInfoOverlay(button, "Bank"):SetItemFromLocation(button:GetItemLocation())
+            end
+        end
+    end
+
+    hooksecurefunc(BankPanel, "GenerateItemSlotsForSelectedTab", BankPanelUpdateItems)
+    hooksecurefunc(BankPanel, "RefreshAllItemsForSelectedTab", BankPanelUpdateItems)
+end
+
+-- 装备选择器
+hooksecurefunc("EquipmentFlyout_UpdateItems", function()
+    local flyoutSettings = EquipmentFlyoutFrame.button:GetParent().flyoutSettings
+    for _, button in ipairs(EquipmentFlyoutFrame.buttons) do
+        if not Module:GetConfig("frames.blizzard.equipmentFlyout") then
+            Utils.GetItemInfoOverlay(button, false)
+        elseif button:IsShown() then
+            local overlay = Utils.GetItemInfoOverlay(button, "EquipmentFlyout")
+
+            if flyoutSettings.useItemLocation then
+                overlay:SetItemFromLocation(button:GetItemLocation())
+            else
+                local data = EquipmentManager_GetLocationData(button.location)
+                if data.isBags then
+                    -- 背包中的物品
+                    overlay:SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(data.bag, data.slot))
+                elseif data.isPlayer then
+                    overlay:SetItemFromLocation(ItemLocation:CreateFromEquipmentSlot(data.slot))
+                end
+            end
+        else
+            Module:ReleaseItemInfoOverlay(button)
+        end
+    end
+end)
+
+-- 商人界面
 hooksecurefunc("MerchantFrameItem_UpdateQuality", function(button, link, isBound)
-    -- 商人界面
-    Utils.GetItemInfoOverlay(button.ItemButton):SetItemFromLink(link)
+    if not Module:GetConfig("frames.blizzard.merchant") then
+        Utils.GetItemInfoOverlay(button.ItemButton, false)
+    else
+        Utils.GetItemInfoOverlay(button.ItemButton, "Merchant"):SetItemFromLink(link)
+    end
 end)
 
+-- roll点框体
 hooksecurefunc("GroupLootContainer_OpenNewFrame", function(rollID, rollTime)
-    -- roll点框体
     for i = 1, 4 do
         local frame = _G["GroupLootFrame"..i]
         if frame and frame.rollID then
-            local overlay = Utils.GetItemInfoOverlay(frame.IconFrame)
+            local overlay = Utils.GetItemInfoOverlay(frame.IconFrame, "GroupLootFrame")
 
             local itemLink = GetLootRollItemLink(frame.rollID)
             local tooltipInfo = C_TooltipInfo.GetLootRollItem(frame.rollID)
@@ -535,9 +609,13 @@ function Module:AfterLogin()
         local NDuiBagpack = NDui.cargBags:GetImplementation("NDui_Backpack")
         if NDuiBagpack then
             hooksecurefunc(NDuiBagpack:GetItemButtonClass(), "OnUpdateButton", function(button, item)
-                local bag = item.bagId
-                local slot = item.slotId
-                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+                if not Module:GetConfig("frames.addons.ndui") then
+                    Utils.GetItemInfoOverlay(button, false)
+                else
+                    local bag = item.bagId
+                    local slot = item.slotId
+                    Utils.GetItemInfoOverlay(button, "NDui"):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+                end
             end)
         end
     end
@@ -547,9 +625,13 @@ function Module:AfterLogin()
         local NDuiBagpack = NDui_Bags.cargBags:GetImplementation("NDui_Backpack")
         if NDuiBagpack then
             hooksecurefunc(NDuiBagpack:GetItemButtonClass(), "OnUpdateButton", function(button, item)
-                local bag = item.bagId
-                local slot = item.slotId
-                Utils.GetItemInfoOverlay(button):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+                if not Module:GetConfig("frames.addons.ndui") then
+                    Utils.GetItemInfoOverlay(button, false)
+                else
+                    local bag = item.bagId
+                    local slot = item.slotId
+                    Utils.GetItemInfoOverlay(button, "NDui"):SetItemFromLocation(ItemLocation:CreateFromBagAndSlot(bag, slot))
+                end
             end)
         end
     end
