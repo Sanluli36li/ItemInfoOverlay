@@ -5,11 +5,37 @@ local Utils = ItemInfoOverlay:NewModule("utils")
 --------------------
 --- 框体
 --------------------
-function Utils.GetItemInfoOverlay(frame)
-    if not frame.ItemInfoOverlay then
-        return ItemInfoOverlay:GetModule("itemInfoOverlay"):CreateItemInfoOverlay(frame)
+local INVAILD_OVERLAY = {
+    SetItemFromLocation = function() end,
+    SetItemFromLink = function() end
+}
+
+function Utils.GetItemInfoOverlay(frame, type)
+    if type == false then
+        -- 禁止显示
+        if frame.ItemInfoOverlay then
+            ItemInfoOverlay:GetModule("itemInfoOverlay"):ReleaseItemInfoOverlay(frame)
+        end
+
+        frame.ItemInfoOverlay = false
+        return INVAILD_OVERLAY
+    elseif frame.ItemInfoOverlay then
+        if type and not frame.ItemInfoOverlay.type then
+            frame.ItemInfoOverlay.type = type
+        end
+
+        if frame.ItemInfoOverlay.type == type then
+            return frame.ItemInfoOverlay
+        else
+            return INVAILD_OVERLAY
+        end
+
+    elseif type == nil and frame.ItemInfoOverlay == false then
+        return INVAILD_OVERLAY
     else
-        return frame.ItemInfoOverlay
+        local overlay = ItemInfoOverlay:GetModule("itemInfoOverlay"):CreateItemInfoOverlay(frame)
+        overlay.type = type
+        return overlay
     end
 end
 
