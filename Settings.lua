@@ -307,7 +307,7 @@ local settings = {
         },
     },
     subCategorys = {
-        {
+        {   -- 角色与观察面板
             name = L["characterFrame.title"],
             settings = {
                 {
@@ -850,7 +850,7 @@ local settings = {
                 },
             }
         },
-        {
+        {   -- 颜色
             name = L["color.title"],
             settings = {
                 {
@@ -1011,6 +1011,108 @@ local settings = {
                     },
                 },
             }
+        },
+        {
+            name = L["itemInfoOverlay.frames.title"],
+            settings = {
+                {
+                    controlType = CONTROL_TYPE.SECTION_HEADER,
+                    name = L["itemInfoOverlay.frames.blizzard.title"]
+                },
+                {
+                    -- 背包
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.frames.blizzard.container.title"],
+                    tooltip = L["itemInfoOverlay.frames.blizzard.container.tooltip"],
+                    key = "itemInfoOverlay.frames.blizzard.container",
+                    default = true,
+                    onValueChanged = function(value)
+                        if not value then
+                            ItemInfoOverlay:GetModule("itemInfoOverlay"):DisableItemInfoOverlayByType("Container")
+                        end
+                    end,
+                },
+                {
+                    -- 银行
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.frames.blizzard.bank.title"],
+                    tooltip = L["itemInfoOverlay.frames.blizzard.bank.tooltip"],
+                    key = "itemInfoOverlay.frames.blizzard.bank",
+                    default = true,
+                    onValueChanged = function(value)
+                        if not value then
+                            ItemInfoOverlay:GetModule("itemInfoOverlay"):DisableItemInfoOverlayByType("Bank")
+                        end
+                    end,
+                },
+                {
+                    -- 装备选择器
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.frames.blizzard.equipmentFlyout.title"],
+                    tooltip = L["itemInfoOverlay.frames.blizzard.equipmentFlyout.tooltip"],
+                    key = "itemInfoOverlay.frames.blizzard.equipmentFlyout",
+                    default = true,
+                    onValueChanged = function(value)
+                        if not value then
+                            ItemInfoOverlay:GetModule("itemInfoOverlay"):DisableItemInfoOverlayByType("EquipmentFlyout")
+                        end
+                    end,
+                },
+                {
+                    -- 商人界面
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.frames.blizzard.merchant.title"],
+                    tooltip = L["itemInfoOverlay.frames.blizzard.merchant.tooltip"],
+                    key = "itemInfoOverlay.frames.blizzard.merchant",
+                    default = true,
+                    onValueChanged = function(value)
+                        if not value then
+                            ItemInfoOverlay:GetModule("itemInfoOverlay"):DisableItemInfoOverlayByType("Merchant")
+                        end
+                    end,
+                },
+                {
+                    controlType = CONTROL_TYPE.SECTION_HEADER,
+                    name = ADDONS,
+                    require = function()
+                        return (NDui or NDui_Bags)
+                    end
+                },
+                {
+                    -- NDui
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.frames.addons.ndui.title"],
+                    tooltip = L["itemInfoOverlay.frames.addons.ndui.tooltip"],
+                    key = "itemInfoOverlay.frames.addons.ndui",
+                    default = true,
+                    onValueChanged = function(value)
+                        if not value then
+                            ItemInfoOverlay:GetModule("itemInfoOverlay"):DisableItemInfoOverlayByType("NDui")
+                        end
+                    end,
+                    require = function()
+                        return NDui or NDui_Bags
+                    end
+                },
+                {
+                    controlType = CONTROL_TYPE.SECTION_HEADER,
+                    name = L["itemInfoOverlay.frames.other.title"]
+                },
+                {
+                    -- 其他
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.frames.other.title"],
+                    tooltip = L["itemInfoOverlay.frames.other.tooltip"],
+                    key = "itemInfoOverlay.frames.other",
+                    default = true,
+                },
+            }
         }
     }
 }
@@ -1020,6 +1122,6 @@ local function Register()
 end
 
 
-function Module:OnLoad()
+function Module:OnLogin()
     Register()
 end
