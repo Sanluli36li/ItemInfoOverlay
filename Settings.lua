@@ -29,7 +29,18 @@ local settings = {
     name = L["addon.name"],
     database = "ItemInfoOverlayDB",
     settings = {
-        
+        {
+            -- 预览
+            controlType = CONTROL_TYPE.CUSTOM_FRAME,
+            name = PREVIEW,
+            template = "IIOItemInfoOverlaySettingPriviewTemplate"
+        },
+        {
+            controlType = CONTROL_TYPE.BUTTON,
+            -- name = "编辑",
+            execute = function()
+            end
+        },
         {
             controlType = CONTROL_TYPE.SECTION_HEADER,
             name = L["other.title"]
@@ -139,10 +150,10 @@ local settings = {
                         { value = "other", name = L["selector.other"] },
                     },
                     getValue = function ()
-                        return characterFrameSelector or "itemLevel"
+                        return ItemInfoOverlaySelector or "itemLevel"
                     end,
                     setValue = function (value)
-                        characterFrameSelector = value
+                        ItemInfoOverlaySelector = value
                     end,
                     canSearch = false,
                 },
@@ -531,6 +542,38 @@ local settings = {
                             end,
                         },
                         {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetX"],
+                            key = "characterFrame.itemLevel.offsetX",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetY"],
+                            key = "characterFrame.itemLevel.offsetY",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
                             -- 物品等级字体
                             controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -604,6 +647,38 @@ local settings = {
                             end,
                         },
                         {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetX"],
+                            key = "characterFrame.pvpItemLevel.offsetX",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetY"],
+                            key = "characterFrame.pvpItemLevel.offsetY",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
                             -- PvP物品等级字体
                             controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -662,6 +737,22 @@ local settings = {
                             isVisible = function ()
                                 return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets" or SettingsPanel.SearchBox:GetText() ~= ""
                             end,
+                        },
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetX"],
+                            key = "characterFrame.enchant.offsetX",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
                         },
                         {
                             -- 附魔字体
@@ -724,6 +815,22 @@ local settings = {
                             end,
                         },
                         {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetX"],
+                            key = "characterFrame.socket.offsetX",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "enchantAndSockets" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
                             -- 插槽图标尺寸
                             controlType = CONTROL_TYPE.SLIDER,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -767,6 +874,38 @@ local settings = {
                         end
                     },
                     subSettings = {
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetX"],
+                            key = "characterFrame.durability.offsetX",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetY"],
+                            key = "characterFrame.durability.offsetY",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.characterFrame.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
                         {
                             -- 耐久度字体
                             controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,

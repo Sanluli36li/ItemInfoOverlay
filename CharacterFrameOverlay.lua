@@ -87,42 +87,35 @@ local itemInfoOverlayPool = {}
 IIOCharacterFrameItemInfoOverlayMixin = {}
 
 function IIOCharacterFrameItemInfoOverlayMixin:SetSide(isLeft)
-    self.side = (isLeft and "LEFT") or "RIGHT"
+    self.side = isLeft and "LEFT" or "RIGHT"
+    
+    self.ItemLevel:SetJustifyH(isLeft and "LEFT" or "RIGHT")
 
-    -- 附魔
-    self.Enchant:ClearAllPoints()
-    self.Enchant:SetPoint(
-        (isLeft and "LEFT") or "RIGHT",
-        self,
-        (isLeft and "RIGHT") or "LEFT",
-        (isLeft and 8) or -8,
-        0
-    )
-    -- 附魔品质
+    -- 附魔星级
     self.EnchantQuality:ClearAllPoints()
     self.EnchantQuality:SetPoint(
-        (isLeft and "LEFT") or "RIGHT",
+        isLeft and "LEFT" or "RIGHT",
         self.Enchant,
-        (isLeft and "RIGHT") or "LEFT",
-        (isLeft and 4) or -4,
+        isLeft and "RIGHT" or "LEFT",
+        isLeft and -4 or 4,
         0
     )
 
     -- 宝石插槽2
     self.GemSocket2:ClearAllPoints()
     self.GemSocket2:SetPoint(
-        (isLeft and "LEFT") or "RIGHT",
+        isLeft and "LEFT" or "RIGHT",
         self.GemSocket1,
-        (isLeft and "RIGHT") or "LEFT",
+        isLeft and "RIGHT" or "LEFT",
         0,
         0
     )
     -- 宝石插槽3
     self.GemSocket3:ClearAllPoints()
     self.GemSocket3:SetPoint(
-        (isLeft and "LEFT") or "RIGHT",
+        isLeft and "LEFT" or "RIGHT",
         self.GemSocket2,
-        (isLeft and "RIGHT") or "LEFT",
+        isLeft and "RIGHT" or "LEFT",
         0,
         0
     )
@@ -131,20 +124,27 @@ end
 function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
     -- 物品等级字体
     self.ItemLevel:SetFont(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
+    self.ItemLevel:SetWidth(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE) * 3)
     if Module:GetConfig(CONFIG_ITEM_LEVEL) and not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) then
         -- 默认位置
         self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint(
-            (self.side == "LEFT" and "LEFT") or "RIGHT",
+            self.side == "LEFT" and "LEFT"or "RIGHT",
             self,
-            (self.side == "LEFT" and "RIGHT") or "LEFT",
-            (self.side == "LEFT" and 8) or -8,
-            0
+            self.side == "LEFT" and "RIGHT" or "LEFT",
+            (self.side == "LEFT" and 1 or -1) * (8 + Module:GetConfig("itemLevel.offsetX")),
+            Module:GetConfig("itemLevel.offsetY")
         )
     else
         -- 显示在图标上
         self.ItemLevel:ClearAllPoints()
-        self.ItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)])
+        self.ItemLevel:SetPoint(
+            POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)],
+            self,
+            POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)],
+            (self.side == "LEFT" and 1 or -1) * (Module:GetConfig("itemLevel.offsetX")),
+            Module:GetConfig("itemLevel.offsetY")
+        )
     end
 
     -- PvP物品等级
@@ -152,7 +152,13 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
     if Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_ANCHOR_TO_ICON) then
         -- 自定义锚点
         self.PvPItemLevel:ClearAllPoints()
-        self.PvPItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_POINT)])
+        self.PvPItemLevel:SetPoint(
+            POINTS[Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_POINT)],
+            self,
+            POINTS[Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_POINT)],
+            (self.side == "LEFT" and 1 or -1) * (Module:GetConfig("pvpItemLevel.offsetX")),
+            Module:GetConfig("pvpItemLevel.offsetY")
+        )
     elseif Module:GetConfig(CONFIG_ITEM_LEVEL) and Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) then
         -- 有物品等级且显示在图标上
         self.PvPItemLevel:ClearAllPoints()
@@ -160,20 +166,32 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
             POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][1],
             self.ItemLevel,
             POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][2],
-            0,
-            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][3]
+            (self.side == "LEFT" and 1 or -1) * (Module:GetConfig("pvpItemLevel.offsetX")),
+            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][3] + Module:GetConfig("pvpItemLevel.offsetY")
         )
     else
         -- 默认锚点
         self.PvPItemLevel:ClearAllPoints()
-        self.PvPItemLevel:SetPoint("TOP")
+        self.PvPItemLevel:SetPoint(
+            "TOP",
+            self,
+            "TOP",
+            (self.side == "LEFT" and 1 or -1) * (Module:GetConfig("pvpItemLevel.offsetX")),
+            Module:GetConfig("pvpItemLevel.offsetY")
+        )
     end
 
     -- 附魔
     self.Enchant:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_ENCHANT_FONT_SIZE), "OUTLINE")
+    self.Enchant:ClearAllPoints()
+    self.Enchant:SetPoint(
+        self.side == "LEFT" and "LEFT" or "RIGHT",
+        self,
+        self.side == "LEFT" and "RIGHT" or "LEFT",
+        (self.side == "LEFT" and 1 or -1) * (8 + Module:GetConfig("enchant.offsetX")),
+        0
+    )
     self.EnchantQuality:SetFont(Module:GetConfig(CONFIG_ENCHANT_FONT), Module:GetConfig(CONFIG_ENCHANT_FONT_SIZE), "OUTLINE")
-    self.EnchantQuality:ClearAllPoints()
-    self.EnchantQuality:SetPoint(self.side, self.Enchant, (self.side == "LEFT" and "RIGHT" or "LEFT"), (self.side == "LEFT" and -4 or 4), 0)
 
     -- 宝石
     self.GemSocket1:SetSize(Module:GetConfig(CONFIG_SOCKET_ICON_SIZE), Module:GetConfig(CONFIG_SOCKET_ICON_SIZE))
@@ -186,10 +204,10 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
         -- 显示物品等级且不在图标上 (插槽移动给装等让位置)
         self.GemSocket1:ClearAllPoints()
         self.GemSocket1:SetPoint(
-            (self.side == "LEFT" and "LEFT") or "RIGHT",
-            self,
-            (self.side == "LEFT" and "RIGHT") or "LEFT",
-            (self.side == "LEFT" and Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE) * 3 + 2) or (- Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE) * 3 - 2),
+            self.side == "LEFT" and "LEFT" or "RIGHT",
+            self.ItemLevel,
+            self.side == "LEFT" and "RIGHT" or "LEFT",
+            (self.side == "LEFT" and 1 or -1) * (-2 + Module:GetConfig("socket.offsetX")),
             0
         )
     else
@@ -199,14 +217,21 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
             (self.side == "LEFT" and "LEFT") or "RIGHT",
             self,
             (self.side == "LEFT" and "RIGHT") or "LEFT",
-            (self.side == "LEFT" and 9) or -9,
-        0)
+            (self.side == "LEFT" and 1 or -1) * (9 + Module:GetConfig("socket.offsetX")),
+            0
+        )
     end
 
     -- 耐久度
     self.Durability:SetFont(Module:GetConfig(CONFIG_DURABILITY_FONT), Module:GetConfig(CONFIG_DURABILITY_FONT_SIZE), "OUTLINE")
     self.Durability:ClearAllPoints()
-    self.Durability:SetPoint(POINTS[Module:GetConfig(CONFIG_DURABILITY_POINT)])
+    self.Durability:SetPoint(
+        POINTS[Module:GetConfig(CONFIG_DURABILITY_POINT)],
+        self,
+        POINTS[Module:GetConfig(CONFIG_DURABILITY_POINT)],
+        (self.side == "LEFT" and 1 or -1) * Module:GetConfig("durability.offsetX"),
+        Module:GetConfig("durability.offsetY")
+    )
     self.Durability:SetShown(Module:GetConfig(CONFIG_DURABILITY))
 
     self:Refresh()
@@ -226,29 +251,29 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateLines()
 
     if line1 and line2 then
 
-        -- 物品等级
         if (not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) and self.ItemLevel:IsShown()) then
+            -- 物品等级
             point, relativeTo, relativePoint, offsetX, offsetY = self.ItemLevel:GetPointByName(self.side)
             self.ItemLevel:SetPoint(point, relativeTo, relativePoint, offsetX, (Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE) / 2) + 1 + (self.offsetY or 0))
+        else
+            -- 宝石插槽
+            point, relativeTo, relativePoint, offsetX, offsetY = self.GemSocket1:GetPointByName(self.side)
+            self.GemSocket1:SetPoint(point, relativeTo, relativePoint, offsetX, (Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) / 2) + (self.offsetY or 0))
         end
-
-        -- 宝石插槽
-        point, relativeTo, relativePoint, offsetX, offsetY = self.GemSocket1:GetPointByName(self.side)
-        self.GemSocket1:SetPoint(point, relativeTo, relativePoint, offsetX, (Module:GetConfig(CONFIG_SOCKET_ICON_SIZE) / 2) + (self.offsetY or 0))
 
         -- 附魔文字
         point, relativeTo, relativePoint, offsetX, offsetY = self.Enchant:GetPointByName(self.side)
         self.Enchant:SetPoint(point, relativeTo, relativePoint, offsetX, - (Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE) / 2) - 1 + (self.offsetY or 0))
     else
-        -- 物品等级
         if (not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) and self.ItemLevel:IsShown()) then
+            -- 物品等级
             point, relativeTo, relativePoint, offsetX, offsetY = self.ItemLevel:GetPointByName(self.side)
             self.ItemLevel:SetPoint(point, relativeTo, relativePoint, offsetX, self.offsetY or 0)
+        else
+            -- 宝石插槽
+            point, relativeTo, relativePoint, offsetX, offsetY = self.GemSocket1:GetPointByName(self.side)
+            self.GemSocket1:SetPoint(point, relativeTo, relativePoint, offsetX, self.offsetY or 0)
         end
-
-        -- 宝石插槽
-        point, relativeTo, relativePoint, offsetX, offsetY = self.GemSocket1:GetPointByName(self.side)
-        self.GemSocket1:SetPoint(point, relativeTo, relativePoint, offsetX, self.offsetY or 0)
 
         -- 附魔文字
         point, relativeTo, relativePoint, offsetX, offsetY = self.Enchant:GetPointByName(self.side)
@@ -618,10 +643,10 @@ local function GetItemInfoOverlayFromSlotID(slotID, isInspect)
     if slotID and EQUIPMENT_SLOTS[slotID] then
         if isInspect then
             if InspectFrame then
-                return Utils.GetItemInfoOverlay(_G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX])
+                return _G[INSPECT_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX].ItemInfoOverlay
             end
         else
-            return Utils.GetItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX])
+            return _G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX].ItemInfoOverlay
         end
     end
 end
@@ -648,7 +673,10 @@ end
 
 function Module:UpdateAllCharacterSlotDurability()
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
-        GetItemInfoOverlayFromSlotID(slotID):UpdateDurability()
+        local overlay = GetItemInfoOverlayFromSlotID(slotID)
+        if overlay and overlay.UpdateDurability then
+            overlay:UpdateDurability()
+        end
     end
 end
 
@@ -675,7 +703,7 @@ end)
 -- 事件处理
 --------------------
 
-function Module:Startup()
+function Module:AfterLogin()
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
         Module:CreateItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
     end
