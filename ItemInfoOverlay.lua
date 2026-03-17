@@ -9,10 +9,14 @@ local CONFIG_ITEM_LEVEL = "itemLevel.enable"
 local CONFIG_ITEM_LEVEL_POINT = "itemLevel.point"
 local CONFIG_ITEM_LEVEL_FONT = "itemLevel.font"
 local CONFIG_ITEM_LEVEL_FONT_SIZE = "itemLevel.fontSize"
+local CONFIG_ITEM_LEVEL_OFFSET_X = "itemLevel.offsetX"
+local CONFIG_ITEM_LEVEL_OFFSET_Y = "itemLevel.offsetY"
 local CONFIG_ITEM_TYPE = "itemType.enable"
 local CONFIG_ITEM_TYPE_POINT = "itemType.point"
 local CONFIG_ITEM_TYPE_FONT = "itemType.font"
 local CONFIG_ITEM_TYPE_FONT_SIZE = "itemType.fontSize"
+local CONFIG_ITEM_TYPE_OFFSET_X = "itemType.offsetX"
+local CONFIG_ITEM_TYPE_OFFSET_Y = "itemType.offsetY"
 local CONFIG_EXTRA_INFO = "extraInfo.enable"
 local CONFIG_EXTRA_INFO_ANCHOR_TO_ICON = "extraInfo.customAnchor"
 local CONFIG_EXTRA_INFO_POINT = "extraInfo.point"
@@ -20,6 +24,8 @@ local CONFIG_EXTRA_INFO_FONT = "extraInfo.font"
 local CONFIG_EXTRA_INFO_FONT_SIZE = "extraInfo.fontSize"
 local CONFIG_EXTRA_INFO_BONDING_TYPE = "extraInfo.bondingType"
 local CONFIG_EXTRA_INFO_PVP_ITEM_LEVEL = "extraInfo.pvpItemLevel"
+local CONFIG_EXTRA_INFO_OFFSET_X = "extraInfo.offsetX"
+local CONFIG_EXTRA_INFO_OFFSET_Y = "extraInfo.offsetY"
 
 local pool = CreateFramePool("Frame", UIParent, "IIOItemInfoOverlayTemplate")
 
@@ -67,27 +73,46 @@ IIOItemInfoOverlayMixin = {}
 function IIOItemInfoOverlayMixin:UpdateAppearance()
     self.ItemLevel:SetFont(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
     self.ItemLevel:ClearAllPoints()
-    self.ItemLevel:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)])
+    self.ItemLevel:SetPoint(
+        POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)],
+        self,
+        POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)],
+        Module:GetConfig(CONFIG_ITEM_LEVEL_OFFSET_X),
+        Module:GetConfig(CONFIG_ITEM_LEVEL_OFFSET_Y)
+    )
+
+    self.ItemType:SetFont(Module:GetConfig(CONFIG_ITEM_TYPE_FONT), Module:GetConfig(CONFIG_ITEM_TYPE_FONT_SIZE), "OUTLINE")
+    self.ItemType:SetJustifyH(POINTS_JUSTIFY_H[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)])
+    self.ItemType:ClearAllPoints()
+    self.ItemType:SetPoint(
+        POINTS[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)],
+        self,
+        POINTS[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)],
+        Module:GetConfig(CONFIG_ITEM_TYPE_OFFSET_X),
+        Module:GetConfig(CONFIG_ITEM_TYPE_OFFSET_Y)
+    )
 
     self.BondingType:SetFont(Module:GetConfig(CONFIG_EXTRA_INFO_FONT), Module:GetConfig(CONFIG_EXTRA_INFO_FONT_SIZE), "OUTLINE")
     if Module:GetConfig(CONFIG_EXTRA_INFO_ANCHOR_TO_ICON) then
         self.BondingType:ClearAllPoints()
-        self.BondingType:SetPoint(POINTS[Module:GetConfig(CONFIG_EXTRA_INFO_POINT)])
+        self.BondingType:SetPoint(
+            POINTS[Module:GetConfig(CONFIG_EXTRA_INFO_POINT)],
+            self,
+            POINTS[Module:GetConfig(CONFIG_EXTRA_INFO_POINT)],
+            Module:GetConfig(CONFIG_EXTRA_INFO_OFFSET_X),
+            Module:GetConfig(CONFIG_EXTRA_INFO_OFFSET_Y)
+        )
     else
         self.BondingType:ClearAllPoints()
         self.BondingType:SetPoint(
             POINTS_BONDING_TYPE_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][1],
             self.ItemLevel,
             POINTS_BONDING_TYPE_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][2],
-            0,
-            POINTS_BONDING_TYPE_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][3]
+            Module:GetConfig(CONFIG_EXTRA_INFO_OFFSET_X),
+            POINTS_BONDING_TYPE_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][3] + Module:GetConfig(CONFIG_EXTRA_INFO_OFFSET_Y)
         )
     end
 
-    self.ItemType:SetFont(Module:GetConfig(CONFIG_ITEM_TYPE_FONT), Module:GetConfig(CONFIG_ITEM_TYPE_FONT_SIZE), "OUTLINE")
-    self.ItemType:SetJustifyH(POINTS_JUSTIFY_H[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)])
-    self.ItemType:ClearAllPoints()
-    self.ItemType:SetPoint(POINTS[Module:GetConfig(CONFIG_ITEM_TYPE_POINT)])
 
     -- 由于数量庞大, 并且很多按钮在显示时会更新一次, 所以仅刷新显示中的图标, 防止修改设置时的卡顿
     if self.alwaysRefresh or self:IsVisible() then
@@ -136,6 +161,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, p
                     if Utils.IsPerferedArmorType(classID, subclassID, itemEquipLoc) then
                         itemTypeText = _G[itemEquipLoc]
                     else
+                        -- 非偏好护甲类型: 显示红色
                         itemTypeText = "|cffff0000".._G[itemEquipLoc].."|r"
                     end
                 end

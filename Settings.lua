@@ -57,6 +57,32 @@ local settings = {
             },
             subSettings = {
                 {
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["point.offsetX"],
+                    key = "itemInfoOverlay.itemLevel.offsetX",
+                    minValue = -20,
+                    maxValue = 20,
+                    step = 1,
+                    default = 0,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end
+                },
+                {
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["point.offsetY"],
+                    key = "itemInfoOverlay.itemLevel.offsetY",
+                    minValue = -20,
+                    maxValue = 20,
+                    step = 1,
+                    default = 0,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end
+                },
+                {
                     -- 物品等级字体
                     controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -106,6 +132,32 @@ local settings = {
                 end
             },
             subSettings = {
+                {
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["point.offsetX"],
+                    key = "itemInfoOverlay.itemType.offsetX",
+                    minValue = -20,
+                    maxValue = 20,
+                    step = 1,
+                    default = 0,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end
+                },
+                {
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["point.offsetY"],
+                    key = "itemInfoOverlay.itemType.offsetY",
+                    minValue = -20,
+                    maxValue = 20,
+                    step = 1,
+                    default = 0,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end
+                },
                 {
                     -- 物品分类字体
                     controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
@@ -189,6 +241,32 @@ local settings = {
                             ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
                         end
                     },
+                },
+                {
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["point.offsetX"],
+                    key = "itemInfoOverlay.extraInfo.offsetX",
+                    minValue = -20,
+                    maxValue = 20,
+                    step = 1,
+                    default = 0,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end
+                },
+                {
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["point.offsetY"],
+                    key = "itemInfoOverlay.extraInfo.offsetY",
+                    minValue = -20,
+                    maxValue = 20,
+                    step = 1,
+                    default = 0,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end
                 },
                 {
                     -- 额外信息字体
