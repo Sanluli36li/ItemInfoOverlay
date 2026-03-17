@@ -163,11 +163,11 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
         -- 有物品等级且显示在图标上
         self.PvPItemLevel:ClearAllPoints()
         self.PvPItemLevel:SetPoint(
-            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][1],
+            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_POINT)][1],
             self.ItemLevel,
-            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][2],
+            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_POINT)][2],
             (self.side == "LEFT" and 1 or -1) * (Module:GetConfig("pvpItemLevel.offsetX")),
-            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)][3] + Module:GetConfig("pvpItemLevel.offsetY")
+            POINTS_PVP_ITEM_LEVEL_ANCHOR_TO_ITEMLEVEL[Module:GetConfig(CONFIG_PVP_ITEM_LEVEL_POINT)][3] + Module:GetConfig("pvpItemLevel.offsetY")
         )
     else
         -- 默认锚点
@@ -682,10 +682,7 @@ end
 
 function Module:UpdateAllCharacterSlotDurability()
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
-        local overlay = GetItemInfoOverlayFromSlotID(slotID)
-        if overlay and overlay.UpdateDurability then
-            overlay:UpdateDurability()
-        end
+        GetItemInfoOverlayFromSlotID(slotID):UpdateDurability()
     end
 end
 
@@ -712,10 +709,13 @@ end)
 -- 事件处理
 --------------------
 
+local isLoaded = false
+
 function Module:AfterLogin()
     for slotID, _ in pairs(EQUIPMENT_SLOTS) do
         Module:CreateItemInfoOverlay(_G[CHARACTER_PREFIX..EQUIPMENT_SLOTS[slotID].name..SLOT_SUFFIX], slotID)
     end
+    isLoaded = true
 end
 
 function Module:ADDON_LOADED(AddOnName)
@@ -745,18 +745,25 @@ Module:RegisterEvent("ADDON_LOADED")
 
 -- 插槽更新: 更新所有栏位
 function Module:SOCKET_INFO_UPDATE()
-    self:UpdateAllCharacterSlot()
+    if isLoaded then
+        self:UpdateAllCharacterSlot()
+    end
 end
 Module:RegisterEvent("SOCKET_INFO_UPDATE")
 
 -- 耐久度更新
 function Module:UPDATE_INVENTORY_DURABILITY()
-    self:UpdateAllCharacterSlotDurability()
+    if isLoaded then
+        self:UpdateAllCharacterSlotDurability()
+    end
 end
 Module:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
 
 -- 装备变更: 更新所有栏位
 function Module:PLAYER_EQUIPMENT_CHANGED()
+    if isLoaded then
+        self:UpdateAllCharacterSlot()
+    end
     self:UpdateAllCharacterSlot()
 end
 Module:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -764,7 +771,9 @@ Module:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 -- 玩家物品栏更新: 更新所有栏位
 function Module:UNIT_INVENTORY_CHANGED(unit)
     if unit == "player" then
-        self:UpdateAllCharacterSlot()
+        if isLoaded then
+            self:UpdateAllCharacterSlot()
+        end
     end
 end
 Module:RegisterEvent("UNIT_INVENTORY_CHANGED")
