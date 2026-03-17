@@ -605,12 +605,21 @@ end
 IIOCharacterFrameItemInfoOverlaySettingPriviewMixin = {}
 
 function IIOCharacterFrameItemInfoOverlaySettingPriviewMixin:OnLoad()
-    self.itemButton:SetItemButtonTexture(6035288)
-    self.itemButton:SetItemButtonQuality(Enum.ItemQuality.Epic)
-    local overlay = Module:CreateItemInfoOverlay(self.itemButton, 1)
+    self.itemButton1:SetItemButtonTexture(6035288)
+    self.itemButton1:SetItemButtonQuality(Enum.ItemQuality.Epic)
+    local overlay = Module:CreateItemInfoOverlay(self.itemButton1, 1)
     overlay.Durability:SetText("|cff00ff00100%|r")
-    local testItem = Item:CreateFromItemID(220202)
-    testItem:ContinueOnItemLoad(function()
+    local testItem1 = Item:CreateFromItemID(220202)
+    testItem1:ContinueOnItemLoad(function()
+        overlay:SetItemFromLink("|cffa335ee|Hitem:220202:7346:213746:213482:::::80:102::6:7:12030:6652:10356:10299:1540:10255:11215:1:28:2462:::|h[间谍大师裹网]|h|r")
+    end)
+
+    self.itemButton2:SetItemButtonTexture(6035288)
+    self.itemButton2:SetItemButtonQuality(Enum.ItemQuality.Epic)
+    local overlay = Module:CreateItemInfoOverlay(self.itemButton2, 6)
+    overlay.Durability:SetText("|cff00ff00100%|r")
+    local testItem2 = Item:CreateFromItemID(220202)
+    testItem2:ContinueOnItemLoad(function()
         overlay:SetItemFromLink("|cffa335ee|Hitem:220202:7346:213746:213482:::::80:102::6:7:12030:6652:10356:10299:1540:10255:11215:1:28:2462:::|h[间谍大师裹网]|h|r")
     end)
 end

@@ -28,9 +28,14 @@
     <Frame name="IIOCharacterFrameItemInfoOverlaySettingPriviewTemplate" mixin="IIOCharacterFrameItemInfoOverlaySettingPriviewMixin" virtual="true">
 		<Size y="60"/>
 		<Frames>
-			<ItemButton parentKey="itemButton">
+			<ItemButton parentKey="itemButton1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="40" y="-20"/>
+				</Anchors>
+			</ItemButton>
+			<ItemButton parentKey="itemButton2">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-120" y="-20"/>
 				</Anchors>
 			</ItemButton>
 		</Frames>
