@@ -120,7 +120,7 @@ local settings = {
     },
     subCategorys = {
         {
-            name = "物品图标覆盖",
+            name = L["itemInfoOverlay.title"],
             settings = {
                 {
                     -- 预览
