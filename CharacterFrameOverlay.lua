@@ -88,8 +88,6 @@ IIOCharacterFrameItemInfoOverlayMixin = {}
 
 function IIOCharacterFrameItemInfoOverlayMixin:SetSide(isLeft)
     self.side = isLeft and "LEFT" or "RIGHT"
-    
-    self.ItemLevel:SetJustifyH(isLeft and "LEFT" or "RIGHT")
 
     -- 附魔星级
     self.EnchantQuality:ClearAllPoints()
@@ -124,9 +122,10 @@ end
 function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
     -- 物品等级字体
     self.ItemLevel:SetFont(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT), Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE), "OUTLINE")
-    self.ItemLevel:SetWidth(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE) * 3)
     if Module:GetConfig(CONFIG_ITEM_LEVEL) and not Module:GetConfig(CONFIG_ITEM_LEVEL_ANCHOR_TO_ICON) then
         -- 默认位置
+        self.ItemLevel:SetJustifyH(self.side == "LEFT" and "LEFT" or "RIGHT")
+        self.ItemLevel:SetWidth(Module:GetConfig(CONFIG_ITEM_LEVEL_FONT_SIZE) * 3)
         self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint(
             self.side == "LEFT" and "LEFT"or "RIGHT",
@@ -137,6 +136,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateAppearance()
         )
     else
         -- 显示在图标上
+        self.ItemLevel:SetWidth(0)
         self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint(
             POINTS[Module:GetConfig(CONFIG_ITEM_LEVEL_POINT)],
