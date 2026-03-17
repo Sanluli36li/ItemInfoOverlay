@@ -440,7 +440,7 @@ function Module:CreateItemInfoOverlay(frame)
 end
 
 function Module:ReleaseItemInfoOverlay(frame)
-    if frame.ItemInfoOverlay and pool:IsActive(frame.ItemInfoOverlay) then
+    if frame and frame.ItemInfoOverlay and pool:IsActive(frame.ItemInfoOverlay) then
         frame.ItemInfoOverlay.frame = nil
         frame.ItemInfoOverlay.type = nil
 
