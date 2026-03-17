@@ -35,7 +35,7 @@
 			</ItemButton>
 			<ItemButton parentKey="itemButton2">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-120" y="-20"/>
+					<Anchor point="TOPLEFT" x="400" y="-20"/>
 				</Anchors>
 			</ItemButton>
 		</Frames>

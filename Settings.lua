@@ -36,9 +36,25 @@ local settings = {
             template = "IIOItemInfoOverlaySettingPriviewTemplate"
         },
         {
+            -- 编辑按钮
             controlType = CONTROL_TYPE.BUTTON,
-            -- name = "编辑",
+            buttonText = L["itemInfoOverlay.editButton"],
             execute = function()
+                LibBlzSettings:OpenToCategory(ADDON_NAME, L["itemInfoOverlay.title"])
+            end
+        },
+        {
+            -- 预览
+            controlType = CONTROL_TYPE.CUSTOM_FRAME,
+            name = PREVIEW,
+            template = "IIOCharacterFrameItemInfoOverlaySettingPriviewTemplate"
+        },
+        {
+            -- 编辑角色面板按钮
+            controlType = CONTROL_TYPE.BUTTON,
+            buttonText = L["characterFrame.editButton"],
+            execute = function()
+                LibBlzSettings:OpenToCategory(ADDON_NAME, L["characterFrame.title"])
             end
         },
         {
