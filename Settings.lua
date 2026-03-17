@@ -23,279 +23,13 @@ local POINTS = {
 
 local category, layout
 local characterFrameSelector
+local ItemInfoOverlaySelector
 
 local settings = {
     name = L["addon.name"],
     database = "ItemInfoOverlayDB",
     settings = {
-        {
-            -- 预览
-            controlType = CONTROL_TYPE.CUSTOM_FRAME,
-            name = PREVIEW,
-            template = "IIOItemInfoOverlaySettingPriviewTemplate"
-        },
-        {
-            -- 物品等级
-            controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
-            settingType = SETTING_TYPE.ADDON_VARIABLE,
-            name = L["itemInfoOverlay.itemLevel.title"],
-            tooltip = L["itemInfoOverlay.itemLevel.tooltip"],
-            key = "itemInfoOverlay.itemLevel.enable",
-            default = true,
-            onValueChanged = function(value)
-                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-            end,
-            dropdown = {
-                -- 物品等级锚点
-                settingType = SETTING_TYPE.ADDON_VARIABLE,
-                key = "itemInfoOverlay.itemLevel.point",
-                default = 2,
-                options = POINTS,
-                onValueChanged = function(value)
-                    ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                end
-            },
-            subSettings = {
-                {
-                    controlType = CONTROL_TYPE.SLIDER,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["point.offsetX"],
-                    key = "itemInfoOverlay.itemLevel.offsetX",
-                    minValue = -20,
-                    maxValue = 20,
-                    step = 1,
-                    default = 0,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    controlType = CONTROL_TYPE.SLIDER,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["point.offsetY"],
-                    key = "itemInfoOverlay.itemLevel.offsetY",
-                    minValue = -20,
-                    maxValue = 20,
-                    step = 1,
-                    default = 0,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    -- 物品等级字体
-                    controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.itemLevel.font"],
-                    key = "itemInfoOverlay.itemLevel.font",
-                    mediaType = LibSharedMedia.MediaType.FONT,
-                    default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    -- 物品等级文字大小
-                    controlType = CONTROL_TYPE.SLIDER,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.itemLevel.fontSize"],
-                    key = "itemInfoOverlay.itemLevel.fontSize",
-                    minValue = 5,
-                    maxValue = 20,
-                    step = 1,
-                    default = 14,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                }
-            }
-        },
-        {
-            -- 物品分类
-            controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
-            settingType = SETTING_TYPE.ADDON_VARIABLE,
-            name = L["itemInfoOverlay.itemType.title"],
-            tooltip = L["itemInfoOverlay.itemType.tooltip"],
-            key = "itemInfoOverlay.itemType.enable",
-            default = true,
-            onValueChanged = function(value)
-                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-            end,
-            dropdown = {
-                -- 物品分类锚点
-                settingType = SETTING_TYPE.ADDON_VARIABLE,
-                key = "itemInfoOverlay.itemType.point",
-                default = 8,
-                options = POINTS,
-                onValueChanged = function(value)
-                    ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                end
-            },
-            subSettings = {
-                {
-                    controlType = CONTROL_TYPE.SLIDER,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["point.offsetX"],
-                    key = "itemInfoOverlay.itemType.offsetX",
-                    minValue = -20,
-                    maxValue = 20,
-                    step = 1,
-                    default = 0,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    controlType = CONTROL_TYPE.SLIDER,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["point.offsetY"],
-                    key = "itemInfoOverlay.itemType.offsetY",
-                    minValue = -20,
-                    maxValue = 20,
-                    step = 1,
-                    default = 0,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    -- 物品分类字体
-                    controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.itemType.font"],
-                    key = "itemInfoOverlay.itemType.font",
-                    mediaType = LibSharedMedia.MediaType.FONT,
-                    default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    -- 物品分类文字大小
-                    controlType = CONTROL_TYPE.SLIDER,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.itemType.fontSize"],
-                    key = "itemInfoOverlay.itemType.fontSize",
-                    minValue = 5,
-                    maxValue = 20,
-                    step = 1,
-                    default = 12,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                }
-            }
-        },
-        {
-            -- 绑定类型
-            controlType = CONTROL_TYPE.CHECKBOX,
-            settingType = SETTING_TYPE.ADDON_VARIABLE,
-            name = L["itemInfoOverlay.extraInfo.title"],
-            tooltip = L["itemInfoOverlay.extraInfo.tooltip"],
-            key = "itemInfoOverlay.extraInfo.enable",
-            default = true,
-            onValueChanged = function(value)
-                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-            end,
-            subSettings = {
-                {
-                    -- 显示绑定类型
-                    controlType = CONTROL_TYPE.CHECKBOX,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.extraInfo.bondingType"],
-                    tooltip = L["itemInfoOverlay.extraInfo.bondingType.tooltip"],
-                    key = "itemInfoOverlay.extraInfo.bondingType",
-                    default = true,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    -- 显示PvP物品等级
-                    controlType = CONTROL_TYPE.CHECKBOX,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.extraInfo.pvpItemLevel"],
-                    key = "itemInfoOverlay.extraInfo.pvpItemLevel",
-                    default = true,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    -- 额外信息独立锚点
-                    controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.customAnchor"],
-                    key = "itemInfoOverlay.extraInfo.customAnchor",
-                    default = false,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end,
-                    dropdown = {
-                        -- 绑定类型锚点
-                        settingType = SETTING_TYPE.ADDON_VARIABLE,
-                        key = "itemInfoOverlay.extraInfo.point",
-                        default = 2,
-                        options = POINTS,
-                        onValueChanged = function(value)
-                            ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                        end
-                    },
-                },
-                {
-                    controlType = CONTROL_TYPE.SLIDER,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["point.offsetX"],
-                    key = "itemInfoOverlay.extraInfo.offsetX",
-                    minValue = -20,
-                    maxValue = 20,
-                    step = 1,
-                    default = 0,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    controlType = CONTROL_TYPE.SLIDER,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["point.offsetY"],
-                    key = "itemInfoOverlay.extraInfo.offsetY",
-                    minValue = -20,
-                    maxValue = 20,
-                    step = 1,
-                    default = 0,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    -- 额外信息字体
-                    controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.extraInfo.font"],
-                    key = "itemInfoOverlay.extraInfo.font",
-                    mediaType = LibSharedMedia.MediaType.FONT,
-                    default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                },
-                {
-                    -- 额外信息字体大小
-                    controlType = CONTROL_TYPE.SLIDER,
-                    settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.extraInfo.fontSize"],
-                    key = "itemInfoOverlay.extraInfo.fontSize",
-                    minValue = 5,
-                    maxValue = 20,
-                    step = 1,
-                    default = 12,
-                    onValueChanged = function(value)
-                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
-                    end
-                }
-            }
-        },
+        
         {
             controlType = CONTROL_TYPE.SECTION_HEADER,
             name = L["other.title"]
@@ -385,6 +119,351 @@ local settings = {
         },
     },
     subCategorys = {
+        {
+            name = "物品图标覆盖",
+            settings = {
+                {
+                    -- 预览
+                    controlType = CONTROL_TYPE.CUSTOM_FRAME,
+                    name = PREVIEW,
+                    template = "IIOItemInfoOverlaySettingPriviewTemplate"
+                },
+                {
+                    controlType = CONTROL_TYPE.DROPDOWN,
+                    settingType = SETTING_TYPE.PROXY,
+                    name = "|cffffffff"..L["selector.title"].."|r",
+                    key = "itemInfoOverlay.selector",
+                    options = {
+                        { value = "itemLevel", name = L["selector.itemLevel"] },
+                        { value = "type", name = L["selector.type"] },
+                        { value = "other", name = L["selector.other"] },
+                    },
+                    getValue = function ()
+                        return characterFrameSelector or "itemLevel"
+                    end,
+                    setValue = function (value)
+                        characterFrameSelector = value
+                    end,
+                    canSearch = false,
+                },
+                {
+                    -- 物品等级
+                    controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.itemLevel.title"],
+                    tooltip = L["itemInfoOverlay.itemLevel.tooltip"],
+                    key = "itemInfoOverlay.itemLevel.enable",
+                    default = true,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end,
+                    dropdown = {
+                        -- 物品等级锚点
+                        settingType = SETTING_TYPE.ADDON_VARIABLE,
+                        key = "itemInfoOverlay.itemLevel.point",
+                        default = 2,
+                        options = POINTS,
+                        onValueChanged = function(value)
+                            ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                        end
+                    },
+                    isVisible = function ()
+                        return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
+                    end,
+                    subSettings = {
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetX"],
+                            key = "itemInfoOverlay.itemLevel.offsetX",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetY"],
+                            key = "itemInfoOverlay.itemLevel.offsetY",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            -- 物品等级字体
+                            controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["itemInfoOverlay.itemLevel.font"],
+                            key = "itemInfoOverlay.itemLevel.font",
+                            mediaType = LibSharedMedia.MediaType.FONT,
+                            default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            -- 物品等级文字大小
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["itemInfoOverlay.itemLevel.fontSize"],
+                            key = "itemInfoOverlay.itemLevel.fontSize",
+                            minValue = 5,
+                            maxValue = 20,
+                            step = 1,
+                            default = 14,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "itemLevel" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        }
+                    }
+                },
+                {
+                    -- 物品分类
+                    controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.itemType.title"],
+                    tooltip = L["itemInfoOverlay.itemType.tooltip"],
+                    key = "itemInfoOverlay.itemType.enable",
+                    default = true,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end,
+                    dropdown = {
+                        -- 物品分类锚点
+                        settingType = SETTING_TYPE.ADDON_VARIABLE,
+                        key = "itemInfoOverlay.itemType.point",
+                        default = 8,
+                        options = POINTS,
+                        onValueChanged = function(value)
+                            ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                        end
+                    },
+                    isVisible = function ()
+                        return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "type" or SettingsPanel.SearchBox:GetText() ~= ""
+                    end,
+                    subSettings = {
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetX"],
+                            key = "itemInfoOverlay.itemType.offsetX",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "type" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetY"],
+                            key = "itemInfoOverlay.itemType.offsetY",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "type" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            -- 物品分类字体
+                            controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["itemInfoOverlay.itemType.font"],
+                            key = "itemInfoOverlay.itemType.font",
+                            mediaType = LibSharedMedia.MediaType.FONT,
+                            default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "type" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            -- 物品分类文字大小
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["itemInfoOverlay.itemType.fontSize"],
+                            key = "itemInfoOverlay.itemType.fontSize",
+                            minValue = 5,
+                            maxValue = 20,
+                            step = 1,
+                            default = 12,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "type" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        }
+                    }
+                },
+                {
+                    -- 绑定类型
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["itemInfoOverlay.extraInfo.title"],
+                    tooltip = L["itemInfoOverlay.extraInfo.tooltip"],
+                    key = "itemInfoOverlay.extraInfo.enable",
+                    default = true,
+                    onValueChanged = function(value)
+                        ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                    end,
+                    isVisible = function ()
+                        return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
+                    end,
+                    subSettings = {
+                        {
+                            -- 显示绑定类型
+                            controlType = CONTROL_TYPE.CHECKBOX,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["itemInfoOverlay.extraInfo.bondingType"],
+                            tooltip = L["itemInfoOverlay.extraInfo.bondingType.tooltip"],
+                            key = "itemInfoOverlay.extraInfo.bondingType",
+                            default = true,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            -- 显示PvP物品等级
+                            controlType = CONTROL_TYPE.CHECKBOX,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["itemInfoOverlay.extraInfo.pvpItemLevel"],
+                            key = "itemInfoOverlay.extraInfo.pvpItemLevel",
+                            default = true,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            -- 额外信息独立锚点
+                            controlType = CONTROL_TYPE.CHECKBOX_AND_DROPDOWN,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["itemInfoOverlay.customAnchor"],
+                            key = "itemInfoOverlay.extraInfo.customAnchor",
+                            default = false,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end,
+                            dropdown = {
+                                -- 绑定类型锚点
+                                settingType = SETTING_TYPE.ADDON_VARIABLE,
+                                key = "itemInfoOverlay.extraInfo.point",
+                                default = 2,
+                                options = POINTS,
+                                onValueChanged = function(value)
+                                    ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                                end
+                            },
+                        },
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetX"],
+                            key = "itemInfoOverlay.extraInfo.offsetX",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["point.offsetY"],
+                            key = "itemInfoOverlay.extraInfo.offsetY",
+                            minValue = -20,
+                            maxValue = 20,
+                            step = 1,
+                            default = 0,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            -- 额外信息字体
+                            controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["itemInfoOverlay.extraInfo.font"],
+                            key = "itemInfoOverlay.extraInfo.font",
+                            mediaType = LibSharedMedia.MediaType.FONT,
+                            default = LibSharedMedia:Fetch(LibSharedMedia.MediaType.FONT, LibSharedMedia:GetDefault(LibSharedMedia.MediaType.FONT)),
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        },
+                        {
+                            -- 额外信息字体大小
+                            controlType = CONTROL_TYPE.SLIDER,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["itemInfoOverlay.extraInfo.fontSize"],
+                            key = "itemInfoOverlay.extraInfo.fontSize",
+                            minValue = 5,
+                            maxValue = 20,
+                            step = 1,
+                            default = 12,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                            end,
+                            isVisible = function ()
+                                return Settings.GetSetting("ItemInfoOverlay.itemInfoOverlay.selector"):GetValue() == "other" or SettingsPanel.SearchBox:GetText() ~= ""
+                            end
+                        }
+                    }
+                },
+            },
+        },
         {   -- 角色与观察面板
             name = L["characterFrame.title"],
             settings = {
@@ -397,12 +476,12 @@ local settings = {
                 {
                     controlType = CONTROL_TYPE.DROPDOWN,
                     settingType = SETTING_TYPE.PROXY,
-                    name = "|cffffffff"..L["characterFrame.selector"].."|r",
+                    name = "|cffffffff"..L["selector.title"].."|r",
                     key = "characterFrame.selector",
                     options = {
-                        { value = "itemLevel", name = L["characterFrame.selector.itemLevel"] },
-                        { value = "enchantAndSockets", name = L["characterFrame.selector.enchantAndSockets"] },
-                        { value = "other", name = L["characterFrame.selector.other"] },
+                        { value = "itemLevel", name = L["selector.itemLevel"] },
+                        { value = "enchantAndSockets", name = L["selector.enchantAndSockets"] },
+                        { value = "other", name = L["selector.other"] },
                     },
                     getValue = function ()
                         return characterFrameSelector or "itemLevel"
