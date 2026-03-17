@@ -454,7 +454,7 @@ function Module:DisableItemInfoOverlayByType(type)
         if overlay.type == type then
             local frame = overlay.frame
             if frame then
-                self.ReleaseItemInfoOverlay(frame)
+                self:ReleaseItemInfoOverlay(frame)
             end
 
             frame.ItemInfoOverlay = false
