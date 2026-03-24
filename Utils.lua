@@ -425,20 +425,59 @@ function Utils.ItemCanEnchant(itemLevel, itemEquipLoc)
 end
 
 local EQUIP_LOC_MAX_SOCKETS = {
-    [LE_EXPANSION_DRAGONFLIGHT] = {
-        INVTYPE_NECK = { 3, 192994 }
+    expansion = {
+        [LE_EXPANSION_DRAGONFLIGHT] = {
+            -- 多层勋章镶嵌底座 已被移除
+            -- INVTYPE_NECK = { 3, 192994 }
+        },
+        [LE_EXPANSION_WAR_WITHIN] = {
+            INVTYPE_NECK = { 2, 213777, 230425 },
+            INVTYPE_FINGER = { 2, 213777, 230425 }
+        },
     },
-    [LE_EXPANSION_WAR_WITHIN] = {
-        INVTYPE_NECK = { 2, 213777, 230425 },
-        INVTYPE_FINGER = { 2, 213777, 230425 }
+    season = {
+        [34] = {
+            minItemLevel = 220,
+            -- 至暗之夜S1 光耀珠宝镶嵌器(宏伟宝库)/星河珠宝师的底座(PvP)
+            INVTYPE_HEAD = {1, 263897, 257535},
+            INVTYPE_WAIST = {1, 263897, 257535},
+            INVTYPE_WRIST = {1, 263897, 257535}
+        }
     }
 }
 
-function Utils.ItemMaxSockets(itemLevel, itemLink, isPvpItem)
-    local itemMinLevel, _, _, _, itemEquipLoc, _, _, _, _, _, expansionID = select(5, C_Item.GetItemInfo(itemLink))
+local function isPvpItem(itemLink, pvpItemLevel)
+    if not pvpItemLevel then
+        -- 没有PvP物品等级
+        return false
+    end
+
+    local itemEquipLoc, _, _, _, _, _, _, setID= select(9, C_Item.GetItemInfo(itemLink))
+    
+    if setID and itemEquipLoc == "INVTYPE_HEAD"
+    or itemEquipLoc == "INVTYPE_SHOULDER"
+    or itemEquipLoc == "INVTYPE_CHEST" or itemEquipLoc == "INVTYPE_ROBE"
+    or itemEquipLoc == "INVTYPE_HAND"
+    or itemEquipLoc == "INVTYPE_LEGS" then
+        -- 是套装部位 且拥有套装ID
+        return false
+    end
+
+    return true
+end
+
+function Utils.ItemMaxSockets(itemLevel, itemLink, pvpItemLevel)
+    local itemEquipLoc, _, _, _, _, _, expansionID = select(9, C_Item.GetItemInfo(itemLink))
+    local seasonID = C_SeasonInfo.GetCurrentDisplaySeasonID()
+
+    if seasonID then
+        if EQUIP_LOC_MAX_SOCKETS.season[seasonID] and EQUIP_LOC_MAX_SOCKETS.season[seasonID][itemEquipLoc] and itemLevel >= EQUIP_LOC_MAX_SOCKETS.season[seasonID].minItemLevel then
+            return EQUIP_LOC_MAX_SOCKETS.season[seasonID][itemEquipLoc][1], (isPvpItem(itemLink, pvpItemLevel) and EQUIP_LOC_MAX_SOCKETS.season[seasonID][itemEquipLoc][3]) or EQUIP_LOC_MAX_SOCKETS.season[seasonID][itemEquipLoc][2]
+        end
+    end
 
     if EQUIP_LOC_MAX_SOCKETS[expansionID] and EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc] then
-        return EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][1], (isPvpItem and EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][3]) or EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][2]
+        return EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][1], (isPvpItem(itemLink, pvpItemLevel) and EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][3]) or EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][2]
     end
     return 0
 end
