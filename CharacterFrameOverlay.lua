@@ -371,7 +371,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
     end
 
     if Module:GetConfig(CONFIG_SOCKET) then
-        local maxSocketsNum, addSocketItemID = Utils.ItemMaxSockets(itemLevel, itemLink, pvpItemLevel)
+        local maxSocketsNum, addSocketItemInfo = Utils.ItemMaxSockets(itemLevel, itemLink, pvpItemLevel)
 
         for i = 1, 3 do
             if self["GemSocket"..i] then
@@ -442,11 +442,12 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
                             socketIcon.Quality:Hide()
                         end
                     elseif Module:GetConfig(CONFIG_SOCKET_DISPLAY_MAX_SOCKETS) and i <= maxSocketsNum then
-                        if addSocketItemID then
-                            local addSocketItem = Item:CreateFromItemID(addSocketItemID)
-                            socketIcon.addSocketItemLink = C_Item.GetItemInfo(addSocketItemID) or "[...]"
+                        if addSocketItemInfo then
+                            local addSocketItem = Item:CreateFromItemID(addSocketItemInfo[1])
+                            socketIcon.addSocketItemSource = addSocketItemInfo[2]
+                            socketIcon.addSocketItemLink = C_Item.GetItemInfo(addSocketItemInfo[1]) or "[...]"
                             addSocketItem:ContinueOnItemLoad(function()
-                                socketIcon.addSocketItemLink = select(2, C_Item.GetItemInfo(addSocketItemID))
+                                socketIcon.addSocketItemLink = select(2, C_Item.GetItemInfo(addSocketItemInfo[1]))
                             end)
                         else
                             socketIcon.addSocketItemLink = nil
@@ -459,6 +460,11 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
                         socketIcon:SetScript("OnEnter", function(self)
                             GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
                             GameTooltip:SetText(L["characterFrame.socket.displayMaxSockets.message"])
+
+                            if self.addSocketItemSource then
+                                GameTooltip:AddLine(L["characterFrame.socket.displayMaxSockets.itemSource."..self.addSocketItemSource])
+                            end
+
                             if self.addSocketItemLink then
                                 IIOTooltip:SetOwner(GameTooltip, "ANCHOR_NONE")
                                 IIOTooltip:SetPoint("TOPLEFT", GameTooltip, "BOTTOMLEFT", 0, -2)

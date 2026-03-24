@@ -424,6 +424,13 @@ function Utils.ItemCanEnchant(itemLevel, itemEquipLoc)
     end
 end
 
+local SOCKET_SETTING_ITEMS = {
+    [213777] = {213777, "professions"},  -- 卓越珠宝师的底座(珠宝加工)
+    -- 至暗之夜 S1
+    [263897] = {263897, "greatVault"},  -- 光耀珠宝镶嵌器(宏伟宝库)
+    [257535] = {257535, "pvp"},         -- 星河珠宝师的底座(PvP)
+}
+
 local EQUIP_LOC_MAX_SOCKETS = {
     expansion = {
         [LE_EXPANSION_DRAGONFLIGHT] = {
@@ -431,17 +438,17 @@ local EQUIP_LOC_MAX_SOCKETS = {
             -- INVTYPE_NECK = { 3, 192994 }
         },
         [LE_EXPANSION_WAR_WITHIN] = {
-            INVTYPE_NECK = { 2, 213777, 230425 },
-            INVTYPE_FINGER = { 2, 213777, 230425 }
+            INVTYPE_NECK = { 2, SOCKET_SETTING_ITEMS[213777], false },
+            INVTYPE_FINGER = { 2, SOCKET_SETTING_ITEMS[213777], false }
         },
     },
     season = {
         [34] = {
             minItemLevel = 220,
-            -- 至暗之夜S1 光耀珠宝镶嵌器(宏伟宝库)/星河珠宝师的底座(PvP)
-            INVTYPE_HEAD = {1, 263897, 257535},
-            INVTYPE_WAIST = {1, 263897, 257535},
-            INVTYPE_WRIST = {1, 263897, 257535}
+            -- 至暗之夜S1 /星河珠宝师的底座(PvP)
+            INVTYPE_HEAD = { 1, SOCKET_SETTING_ITEMS[263897], SOCKET_SETTING_ITEMS[257535] },
+            INVTYPE_WAIST = { 1, SOCKET_SETTING_ITEMS[263897], SOCKET_SETTING_ITEMS[257535] },
+            INVTYPE_WRIST = { 1, SOCKET_SETTING_ITEMS[263897], SOCKET_SETTING_ITEMS[257535] },
         }
     }
 }
@@ -469,17 +476,27 @@ end
 function Utils.ItemMaxSockets(itemLevel, itemLink, pvpItemLevel)
     local itemEquipLoc, _, _, _, _, _, expansionID = select(9, C_Item.GetItemInfo(itemLink))
     local seasonID = C_SeasonInfo.GetCurrentDisplaySeasonID()
+    local maxSocketInfo
 
-    if seasonID then
-        if EQUIP_LOC_MAX_SOCKETS.season[seasonID] and EQUIP_LOC_MAX_SOCKETS.season[seasonID][itemEquipLoc] and itemLevel >= EQUIP_LOC_MAX_SOCKETS.season[seasonID].minItemLevel then
-            return EQUIP_LOC_MAX_SOCKETS.season[seasonID][itemEquipLoc][1], (isPvpItem(itemLink, pvpItemLevel) and EQUIP_LOC_MAX_SOCKETS.season[seasonID][itemEquipLoc][3]) or EQUIP_LOC_MAX_SOCKETS.season[seasonID][itemEquipLoc][2]
+    if seasonID and EQUIP_LOC_MAX_SOCKETS.season[seasonID] and EQUIP_LOC_MAX_SOCKETS.season[seasonID][itemEquipLoc] and itemLevel >= EQUIP_LOC_MAX_SOCKETS.season[seasonID].minItemLevel then
+        maxSocketInfo = EQUIP_LOC_MAX_SOCKETS.season[seasonID][itemEquipLoc]
+    elseif EQUIP_LOC_MAX_SOCKETS.expansion[expansionID] and EQUIP_LOC_MAX_SOCKETS.expansion[expansionID][itemEquipLoc] then
+        maxSocketInfo = EQUIP_LOC_MAX_SOCKETS.expansion[expansionID][itemEquipLoc]
+    end
+
+    if maxSocketInfo then
+        if isPvpItem(itemLink, pvpItemLevel) then
+            if maxSocketInfo[3] == false then
+                return 0
+            else
+                return maxSocketInfo[1], maxSocketInfo[3] or maxSocketInfo[2]
+            end
+        else
+            return maxSocketInfo[1], maxSocketInfo[2]
         end
+    else
+        return 0
     end
-
-    if EQUIP_LOC_MAX_SOCKETS.expansion[expansionID] and EQUIP_LOC_MAX_SOCKETS.expansion[expansionID][itemEquipLoc] then
-        return EQUIP_LOC_MAX_SOCKETS.expansion[expansionID][itemEquipLoc][1], (isPvpItem(itemLink, pvpItemLevel) and EQUIP_LOC_MAX_SOCKETS.expansion[expansionID][itemEquipLoc][3]) or EQUIP_LOC_MAX_SOCKETS.expansion[expansionID][itemEquipLoc][2]
-    end
-    return 0
 end
 
 local PERFERRED_ARMOR_TYPE_BY_CLASS = {
