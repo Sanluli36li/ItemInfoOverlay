@@ -476,8 +476,8 @@ function Utils.ItemMaxSockets(itemLevel, itemLink, pvpItemLevel)
         end
     end
 
-    if EQUIP_LOC_MAX_SOCKETS[expansionID] and EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc] then
-        return EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][1], (isPvpItem(itemLink, pvpItemLevel) and EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][3]) or EQUIP_LOC_MAX_SOCKETS[expansionID][itemEquipLoc][2]
+    if EQUIP_LOC_MAX_SOCKETS.expansion[expansionID] and EQUIP_LOC_MAX_SOCKETS.expansion[expansionID][itemEquipLoc] then
+        return EQUIP_LOC_MAX_SOCKETS.expansion[expansionID][itemEquipLoc][1], (isPvpItem(itemLink, pvpItemLevel) and EQUIP_LOC_MAX_SOCKETS.expansion[expansionID][itemEquipLoc][3]) or EQUIP_LOC_MAX_SOCKETS.expansion[expansionID][itemEquipLoc][2]
     end
     return 0
 end
