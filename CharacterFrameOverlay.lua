@@ -461,14 +461,17 @@ function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, 
                             GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
                             GameTooltip:SetText(L["characterFrame.socket.displayMaxSockets.message"])
 
-                            if self.addSocketItemSource then
-                                GameTooltip:AddLine(L["characterFrame.socket.displayMaxSockets.itemSource."..self.addSocketItemSource])
-                            end
-
                             if self.addSocketItemLink then
                                 IIOTooltip:SetOwner(GameTooltip, "ANCHOR_NONE")
                                 IIOTooltip:SetPoint("TOPLEFT", GameTooltip, "BOTTOMLEFT", 0, -2)
                                 IIOTooltip:SetHyperlink(self.addSocketItemLink)
+
+                                if self.addSocketItemSource then
+                                    IIOTooltip:AddLine(" ")
+                                    IIOTooltip:AddLine(L["characterFrame.socket.displayMaxSockets.itemSource."..self.addSocketItemSource])
+                                end
+
+
                                 IIOTooltip:Show()
                                 --GameTooltip.shoppingTooltips[1]:SetOwner(GameTooltip, "ANCHOR_NONE")
                                 --GameTooltip.shoppingTooltips[1]:SetPoint("TOPLEFT", GameTooltip, "BOTTOMLEFT", 0, -2)
