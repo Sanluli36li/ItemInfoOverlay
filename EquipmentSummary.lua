@@ -19,6 +19,8 @@ local CONFIG_ITEM_LEVEL_COLOR = "itemLevel.color"
 
 local ITEM_LEVEL_AND_SPEC_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d", "%%.1f").."|r %s%s%s|r\n "
 local ITEM_LEVEL_AND_SPEC_WITH_PVP_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d", "%%.1f").."|r %s%s%s|r\n|cffffd200"..ITEM_UPGRADE_PVP_ITEM_LEVEL_STAT_FORMAT:gsub("%%d", "%%.1f").."|r\n "
+local ITEM_SET_BONUS_PATTERN = ITEM_SET_BONUS:gsub("%%s", "(.+)")
+local ITEM_SET_BONUS_GRAY_PATTERN = ITEM_SET_BONUS_GRAY:gsub("%(%%d%)", "%%(%%d+%%)"):gsub("%%s", "(.+)")
 
 local STAT_ICONS = {
     ["Armory"] = {
@@ -383,6 +385,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
         local numItemSets = 0
         local itemSets = {}
+        local itemSetsBonus = {}
         local itemUnique = {}
 
         local totalItemLevel, totalPvpItemLevel = 0, 0
@@ -422,12 +425,18 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                 -- 附魔和插槽数量检查
                 local canEnchant = Utils.ItemCanEnchant(itemLevel, itemEquipLoc)
                 local hasEnchant
+                local numItemSetBonus, maxItemSetBonus = 0, 0
                 if tooltipInfo then
                     for i, line in pairs(tooltipInfo.lines) do
                         if line.type == Enum.TooltipDataLineType.ItemEnchantmentPermanent then
                             hasEnchant = true
                         elseif line.type == Enum.TooltipDataLineType.GemSocket then
                             socketNum = socketNum + 1
+                        elseif line.leftText:match(ITEM_SET_BONUS_PATTERN) then
+                            if not line.leftText:match(ITEM_SET_BONUS_GRAY_PATTERN) then
+                                numItemSetBonus = numItemSetBonus + 1
+                            end
+                            maxItemSetBonus = maxItemSetBonus + 1
                         end
                     end
                 end
@@ -463,8 +472,10 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                     if setID then
                         if itemSets[setID] then
                             itemSets[setID] = itemSets[setID] + 1
+                            itemSetsBonus[setID] = {numItemSetBonus, maxItemSetBonus}
                         else
                             itemSets[setID] = 1
+                            itemSetsBonus[setID] = {numItemSetBonus, maxItemSetBonus}
                             numItemSets = numItemSets + 1
                         end
                     end
@@ -532,8 +543,19 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             for id, num in pairs(itemSets) do
                 local setName = C_Item.GetItemSetInfo(id)
                 local maxNum = #C_LootJournal.GetItemSetItems(id)
+                local color = "ffffffff"
+                if itemSetsBonus[id] then
+                    if itemSetsBonus[id][1] == 0 then
+                        color = "ffff0000"
+                    elseif itemSetsBonus[id][1] == itemSetsBonus[id][2] then
+                        color = "ff00ff00"
+                    else
+                        color = "ffffff00"
+                    end
+                end
+
                 if setName then
-                    text = text..format("    %s (%s)\n", setName, (maxNum and num.."/"..maxNum) or num)
+                    text = text..format("    %s (|c%s%d|r/%d)\n", setName, color, num, maxNum)
                 end
             end
 
