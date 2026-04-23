@@ -99,7 +99,7 @@ hooksecurefunc(GameTooltip, "Show", function (self)
                 added = true
 
                 RefreshItemLevelTooltip()
-                self:Show()
+                GameTooltip_CalculatePadding(self)
             end
         end
     end
