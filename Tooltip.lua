@@ -18,13 +18,32 @@ local lastInspectTime
 local lastInspectGuid
 local added
 
-local function RefreshItemLevelTooltip()
-    local unit = "mouseover"
-    local guid = UnitGUID(unit)
-    if issecretvalue(guid) then
-        return
+local function GetTooltipUnitInfo(self)
+    local info = self:GetPrimaryTooltipInfo()
+    if info and info.tooltipData and info.tooltipData.type then
+        if issecretvalue(info.tooltipData.type) then
+            return
+        end
+
+        if self:IsTooltipType(Enum.TooltipDataType.Unit) then
+            local guid = info.tooltipData.guid
+            if issecretvalue(guid) then
+                return
+            end
+
+            local unit = guid and UnitTokenFromGUID(guid)
+            if issecretvalue(unit) then
+                return
+            end
+
+            return unit, guid
+        end
     end
-    
+end
+
+local function RefreshItemLevelTooltip()
+    local unit, guid = GetTooltipUnitInfo(GameTooltip)
+
     if unit and guid and itemLevelLine then
         if playerItemLevelCache[guid] then
             itemLevelLine:SetText(playerItemLevelCache[guid][2])
@@ -71,26 +90,16 @@ hooksecurefunc(GameTooltip, "Show", function (self)
         if added then return end
         itemLevelLine = nil
 
-        local info = self:GetPrimaryTooltipInfo()
-        
-        if info and info.tooltipData and info.tooltipData.type then
-            if issecretvalue(info.tooltipData.type) then
-                return
-            end
+        local unit, guid = GetTooltipUnitInfo(self)
 
-            if self:IsTooltipType(Enum.TooltipDataType.Unit) then
-                local unit = "mouseover"
+        if unit and UnitIsPlayer(unit) then
+            if not UnitIsUnit("player", unit) then
+                self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
+                itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
+                added = true
 
-                if unit and UnitIsPlayer(unit) then
-                    if not UnitIsUnit("player", unit) then
-                        self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
-                        itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
-                        added = true
-
-                        RefreshItemLevelTooltip()
-                        self:Show()
-                    end
-                end
+                RefreshItemLevelTooltip()
+                self:Show()
             end
         end
     end
