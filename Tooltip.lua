@@ -19,7 +19,12 @@ local lastInspectGuid
 local added
 
 local function RefreshItemLevelTooltip()
-    local _, unit, guid = TooltipUtil.GetDisplayedUnit(GameTooltip)
+    local unit = "mouseover"
+    local guid = UnitGUID(unit)
+    if issecretvalue(guid) then
+        return
+    end
+    
     if unit and guid and itemLevelLine then
         if playerItemLevelCache[guid] then
             itemLevelLine:SetText(playerItemLevelCache[guid][2])
@@ -34,6 +39,9 @@ end
 local function TryNotifyInspect(unit)
     if not UnitIsUnit("player", unit) and CanInspect(unit) then
         local guid = UnitGUID(unit)
+        if issecretvalue(guid) then
+            return
+        end
 
         if lastInspectGuid == guid and lastInspectTime + 3 <= GetTime() then
             -- 3秒内已尝试观察的单位不再覆盖
