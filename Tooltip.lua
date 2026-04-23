@@ -70,19 +70,18 @@ hooksecurefunc(GameTooltip, "Show", function (self)
                 return
             end
 
-            local name, unit, guid = TooltipUtil.GetDisplayedUnit(self)
-            if issecretvalue(unit) then
-                return
-            end
+            if self:IsTooltipType(Enum.TooltipDataType.Unit) then
+                local unit = "mouseover"
 
-            if unit and UnitIsPlayer(unit) then
-                if not UnitIsUnit("player", unit) then
-                    self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
-                    itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
-                    added = true
+                if unit and UnitIsPlayer(unit) then
+                    if not UnitIsUnit("player", unit) then
+                        self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
+                        itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
+                        added = true
 
-                    RefreshItemLevelTooltip()
-                    self:Show()
+                        RefreshItemLevelTooltip()
+                        self:Show()
+                    end
                 end
             end
         end
