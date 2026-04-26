@@ -144,6 +144,15 @@ local settings = {
                 },
             }
         },
+        {
+            -- 低保栏位遮挡
+            controlType = CONTROL_TYPE.CHECKBOX,
+            settingType = SETTING_TYPE.ADDON_VARIABLE,
+            name = L["weekRewards.obstruction.title"],
+            tooltip = L["weekRewards.obstruction.tooltip"],
+            key = "weekRewards.obstruction.enable",
+            default = false,
+        },
     },
     subCategorys = {
         {

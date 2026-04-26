@@ -35,4 +35,4 @@ EquipmentSummary.xml
 
 ChatLink.lua
 Tooltip.lua
- 
+WeeklyRewards.lua 
