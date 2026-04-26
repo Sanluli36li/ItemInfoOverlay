@@ -16,7 +16,6 @@ local isBlzInspecting
 local isIIOInspecting
 local lastInspectTime
 local lastInspectGuid
-local added
 
 local function GetTooltipUnitInfo(self)
     local info = self:GetPrimaryTooltipInfo()
@@ -85,28 +84,19 @@ local function TryNotifyInspect(unit)
     end
 end
 
-hooksecurefunc(GameTooltip, "Show", function (self)
-    if Module:GetConfig(CONFIG_ITEM_LEVEL) then
-        if added then return end
-        itemLevelLine = nil
+TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(self, data)
+    itemLevelLine = nil
 
-        local unit, guid = GetTooltipUnitInfo(self)
+    local unit, guid = GetTooltipUnitInfo(self)
 
-        if unit and UnitIsPlayer(unit) then
-            if not UnitIsUnit("player", unit) then
-                self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
-                itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
-                added = true
+    if unit and UnitIsPlayer(unit) then
+        if not UnitIsUnit("player", unit) then
+            self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
+            itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
 
-                RefreshItemLevelTooltip()
-                self:Show()
-            end
+            RefreshItemLevelTooltip()
         end
     end
-end)
-
-hooksecurefunc(GameTooltip, "ClearLines", function (self)
-    added = false
 end)
 
 hooksecurefunc("InspectUnit", function (unit)
