@@ -10,6 +10,7 @@ local function CreateObstruction(frame)
     if not frame.obstruction then
         frame.obstruction = CreateFrame("Frame", nil, frame)
         frame.obstruction:SetAllPoints(frame)
+        frame.obstruction:SetFrameStrata("HIGH")
 
         frame.obstruction.texture = frame.obstruction:CreateTexture()
         frame.obstruction.texture:SetAllPoints(frame.obstruction)
@@ -27,7 +28,9 @@ local function CreateObstruction(frame)
         end)
     end
 
-    if frame.info and frame.hasRewards then
+    if frame.info and frame.hasRewards and frame.info.type ~= 5 then
+        frame.obstruction:Show()
+
         local dbid = nil
         for i, rewardInfo in ipairs(frame.info.rewards) do
             if rewardInfo.type == Enum.CachedRewardType.Item and not C_Item.IsItemKeystoneByID(rewardInfo.id) then
@@ -52,13 +55,11 @@ local function CreateObstruction(frame)
                     
                     frame.obstruction.text:SetText(Utils.GetColoredItemLevelText(progressText, hyperlink))
                 end
-                
-                frame.obstruction:Show()
-                return
             end
         end
+    else
+        frame.obstruction:Hide()
     end
-    frame.obstruction:Hide()
 end
 
 local function LoadObstruction()
