@@ -62,7 +62,7 @@ local function CreateObstruction(frame)
 end
 
 local function LoadObstruction()
-    if Module:GetConfig("weekRewards.obstruction.enable") then
+    if Module:GetConfig("obstruction.enable") then
         for _, frame in pairs(WeeklyRewardsFrame.Activities) do
             CreateObstruction(frame)
         end
