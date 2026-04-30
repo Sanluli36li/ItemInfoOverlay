@@ -63,7 +63,7 @@ local function CreateObstruction(frame)
 end
 
 function Module:ADDON_LOADED(addon)
-    if addon == "Blizzard_WeeklyRewards" then
+    if addon == "Blizzard_WeeklyRewards" and Module:GetConfig("obstruction.enable") then
         for _, frame in pairs(WeeklyRewardsFrame.Activities) do
             hooksecurefunc(frame, "Refresh", CreateObstruction)
         end
