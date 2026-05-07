@@ -85,16 +85,16 @@ local function TryNotifyInspect(unit)
 end
 
 TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(self, data)
-    itemLevelLine = nil
+    if Module:GetConfig(CONFIG_ITEM_LEVEL) then
+        local unit, guid = GetTooltipUnitInfo(self)
 
-    local unit, guid = GetTooltipUnitInfo(self)
+        if unit and UnitIsPlayer(unit) then
+            if not UnitIsUnit("player", unit) then
+                self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
+                itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
 
-    if unit and UnitIsPlayer(unit) then
-        if not UnitIsUnit("player", unit) then
-            self:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", "...", nil, nil, nil, 1, 1, 1)
-            itemLevelLine = _G[self:GetName() .. "TextRight"..self:NumLines()]
-
-            RefreshItemLevelTooltip()
+                RefreshItemLevelTooltip()
+            end
         end
     end
 end)
