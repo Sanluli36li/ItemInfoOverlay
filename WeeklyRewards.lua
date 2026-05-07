@@ -62,6 +62,17 @@ local function CreateObstruction(frame)
     end
 end
 
+function Module:WEEKLY_REWARDS_UPDATE()
+    if not loaded then
+        return
+    end
+
+    for _, frame in pairs(WeeklyRewardsFrame.Activities) do
+        CreateObstruction(frame)
+    end
+end
+Module:RegisterEvent("WEEKLY_REWARDS_UPDATE")
+
 function Module:ADDON_LOADED(addon)
     if addon == "Blizzard_WeeklyRewards" and Module:GetConfig("obstruction.enable") then
         for _, frame in pairs(WeeklyRewardsFrame.Activities) do
