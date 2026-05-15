@@ -239,11 +239,29 @@ function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
                     -- 探索者 / 冒险者
                     r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.explorer"))
                 end
-            elseif ItemInfoOverlay:GetConfig("color.itemLevel") == 1 then
-                -- 传家宝/神器/传说物品 通常拥有其特殊的升级方式
-                -- 当默认使用固定颜色时，这些物品以品质染色以凸显其特殊的升级模式
-                if itemQuality and itemQuality >= 5 then
-                    r, g, b = C_Item.GetItemQualityColor(itemQuality)
+            else
+                -- 12.0.5新增的晋升虚空锻造升级方式没有trackStringID, 只能通过bonusID判断
+                local itemLinkData = Utils.GetItemLinkDataTable(itemLink)
+                if itemLinkData and itemLinkData.bonusIDs then
+                    for _, bonusID in pairs(itemLinkData.bonusIDs) do
+                        if bonusID == 13654 then
+                            -- 晋升虚空锻造：史诗
+                            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.myth"))
+                            break
+                        elseif bonusID == 13653 then
+                            -- 晋升虚空锻造：英雄
+                            r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.hero"))
+                            break
+                        end
+                    end
+                end
+
+                if ItemInfoOverlay:GetConfig("color.itemLevel") == 1 then
+                    -- 传家宝/神器/传说物品 通常拥有其特殊的升级方式
+                    -- 当默认使用固定颜色时，这些物品以品质染色以凸显其特殊的升级模式
+                    if itemQuality and itemQuality >= 5 then
+                        r, g, b = C_Item.GetItemQualityColor(itemQuality)
+                    end
                 end
             end
 
