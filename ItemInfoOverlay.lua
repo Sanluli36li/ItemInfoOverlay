@@ -341,6 +341,8 @@ function IIOItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
 
         self:SetItemData(itemLink, tooltipInfo, itemLevel, pvpItemLevel)
 
+        Module:RefreshOnItemLoad(self, itemLink)
+
         return itemLevel, itemLink, tooltipInfo
     else
         self:Hide()
@@ -361,6 +363,8 @@ function IIOItemInfoOverlayMixin:SetItemFromLink(itemLink)
         end
         ]]
         self:SetItemData(itemLink, tooltipInfo, itemLevel, pvpItemLevel)
+
+        Module:RefreshOnItemLoad(self, itemLink)
 
         return itemLevel, itemLink, tooltipInfo
     else
@@ -468,12 +472,168 @@ function Module:UpdateAllAppearance()
     end
 end
 
+-- 物品数据未缓存时(如刚打开背包), 先按现有数据显示, 并在数据加载完成后自动刷新一次
+-- 部分按钮(如 Baganator)在物品加载完成后不会再调用 SetItemDetails, 需要自行补刷新
+function Module:RefreshOnItemLoad(overlay, itemLink)
+    local itemID = C_Item.GetItemIDForItemInfo(itemLink)
+    if not itemID or C_Item.IsItemDataCachedByID(itemID) then
+        return
+    end
+
+    local item = Item:CreateFromItemLink(itemLink)
+    item:ContinueOnItemLoad(function()
+        if pool:IsActive(overlay) and overlay.frame then
+            overlay:Refresh()
+        end
+    end)
+end
+
+--------------------
+-- Baganator
+--------------------
+
+-- Baganator 的物品按钮通过方法调用 SetItemButtonQuality, 且其 mixin 被 table.freeze 冻结,
+-- 无法钩住 mixin 方法, 因此改为逐按钮钩住 SetItemDetails
+local BaganatorButtons
+
+do
+    local hooked = {}
+
+    -- Baganator 按钮特征: 同时拥有 SetItemDetails 和 SetItemFiltered
+    local function IsBaganatorItemButton(button)
+        return button ~= nil and button.SetItemDetails ~= nil and button.SetItemFiltered ~= nil
+    end
+
+    local function UpdateOverlay(button, itemLink)
+        if not Module:GetConfig("frames.other") then
+            Utils.GetItemInfoOverlay(button, false)
+            return
+        end
+
+        itemLink = itemLink or (button.BGR and button.BGR.itemLink)
+
+        if itemLink then
+            local overlay = Utils.GetItemInfoOverlay(button, "Baganator")
+
+            local itemLocation
+            if button.GetBagID and button.GetID and button.BGR and button.BGR.guid then
+                -- 实时背包/银行按钮: 通过物品GUID确认位置有效后, 使用位置获取更准确的绑定信息
+                -- (缓存的其他角色银行按钮没有guid, 不会走到这里)
+                itemLocation = ItemLocation:CreateFromBagAndSlot(button:GetBagID(), button:GetID())
+                if not (itemLocation:IsValid() and C_Item.DoesItemExist(itemLocation) and C_Item.GetItemGUID(itemLocation) == button.BGR.guid) then
+                    itemLocation = nil
+                end
+            end
+
+            if itemLocation then
+                overlay:SetItemFromLocation(itemLocation)
+            else
+                overlay:SetItemFromLink(itemLink)
+            end
+        else
+            -- 空槽位或物品链接尚未就绪
+            Module:ReleaseItemInfoOverlay(button)
+        end
+    end
+
+    local function HookButton(button)
+        if hooked[button] or not button.SetItemDetails then
+            return false
+        end
+        hooked[button] = true
+        hooksecurefunc(button, "SetItemDetails", function(self, details)
+            UpdateOverlay(self, details and details.itemLink)
+        end)
+        return true
+    end
+
+    BaganatorButtons = {}
+
+    -- 由通用钩子调用: 识别并接管 Baganator 按钮
+    -- 返回 true 表示已处理, 通用钩子应跳过后续逻辑
+    function BaganatorButtons.Handle(button, itemIDOrLink)
+        if not IsBaganatorItemButton(button) then
+            return false
+        end
+
+        HookButton(button)
+
+        -- 逐按钮钩子对进行中的 SetItemDetails 调用不会触发, 当前这次更新在这里直接处理
+        if itemIDOrLink and not tonumber(itemIDOrLink) then
+            UpdateOverlay(button, itemIDOrLink)
+        else
+            UpdateOverlay(button)
+        end
+
+        return true
+    end
+
+    -- 通过 Baganator 的公开接口在每个物品按钮创建时挂钩
+    function BaganatorButtons.Register()
+        if not (Baganator and Baganator.API and Baganator.API.Skins and Baganator.API.Skins.RegisterListener) then
+            return false
+        end
+
+        Baganator.API.Skins.RegisterListener(function(details)
+            if details.regionType == "ItemButton" then
+                HookButton(details.region)
+            end
+        end)
+
+        -- 监听器只对注册后创建的按钮生效, 补挂监听注册前已创建的按钮
+        -- (例如带着打开的背包/reload时, Baganator 在登录后立即恢复背包视图)
+        if Baganator.API.Skins.GetAllFrames then
+            for _, details in ipairs(Baganator.API.Skins.GetAllFrames()) do
+                if details.regionType == "ItemButton" then
+                    -- 新挂钩的按钮立即按当前物品刷新一次 (钩子对已完成的调用不生效)
+                    if HookButton(details.region) then
+                        UpdateOverlay(details.region)
+                    end
+                end
+            end
+        end
+
+        return true
+    end
+
+    -- 诊断命令: /iiobgn 输出 Baganator 按钮的挂钩与浮层状态
+    SLASH_IIOBGN1 = "/iiobgn"
+    SlashCmdList["IIOBGN"] = function()
+        local hookedCount, visible = 0, {}
+        for button in pairs(hooked) do
+            hookedCount = hookedCount + 1
+            if button:IsVisible() and #visible < 6 then
+                table.insert(visible, button)
+            end
+        end
+        print("|cffff8000[IIO-BGN]|r hooked buttons:", hookedCount, " visible samples:", #visible)
+        for i, button in ipairs(visible) do
+            local bgr = button.BGR
+            local overlay = button.ItemInfoOverlay
+            print(("|cffff8000[IIO-BGN]|r #%d link=%s guid=%s bag=%s slot=%s overlay=%s type=%s shown=%s"):format(
+                i,
+                (bgr and bgr.itemLink) and "Y" or "N",
+                (bgr and bgr.guid) and "Y" or "N",
+                tostring(button.GetBagID and button:GetBagID()),
+                tostring(button:GetID()),
+                tostring(overlay),
+                (type(overlay) == "table" and tostring(overlay.type)) or "-",
+                (type(overlay) == "table" and tostring(overlay:IsShown())) or "-"
+            ))
+        end
+    end
+end
+
 --------------------
 -- 暴雪函数安全钩子
 --------------------
 
 -- 通用钩子
 hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, suppressOverlays, isBound)
+    if BaganatorButtons.Handle(button, itemIDOrLink) then
+        return
+    end
+
     if not Module:GetConfig("frames.other") then
         if button and button.ItemInfoOverlay then
             ItemInfoOverlay:GetModule("itemInfoOverlay"):ReleaseItemInfoOverlay(button)
@@ -498,6 +658,10 @@ hooksecurefunc("SetItemButtonQuality", function(button, quality, itemIDOrLink, s
 end)
 
 hooksecurefunc(ItemButtonMixin, "SetItemButtonQuality", function(button, quality, itemIDOrLink, suppressOverlays, isBound)
+    if BaganatorButtons.Handle(button, itemIDOrLink) then
+        return
+    end
+
     if not Module:GetConfig("frames.other") then
         if button.ItemInfoOverlay then
             ItemInfoOverlay:GetModule("itemInfoOverlay"):ReleaseItemInfoOverlay(button)
@@ -632,6 +796,11 @@ hooksecurefunc("GroupLootContainer_OpenNewFrame", function(rollID, rollTime)
 end)
 
 function Module:AfterLogin()
+    if Baganator then
+        -- Baganator 背包/银行
+        BaganatorButtons.Register()
+    end
+
     if NDui then
         -- NDui整合背包 https://ngabbs.com/read.php?tid=5483616
         local NDuiBagpack = NDui.cargBags:GetImplementation("NDui_Backpack")
