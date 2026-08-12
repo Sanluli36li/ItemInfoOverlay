@@ -444,6 +444,8 @@ end
 
 local SOCKET_SETTING_ITEMS = {
     [213777] = {213777, "professions"},  -- 卓越珠宝师的底座(珠宝加工)
+    -- 至暗之夜 S2
+    [275707] = {275707, "greatVault"},  -- 毒瘴珠宝镶嵌器(宏伟宝库)
     -- 至暗之夜 S1
     [263897] = {263897, "greatVault"},  -- 光耀珠宝镶嵌器(宏伟宝库)
     [257535] = {257535, "pvp"},         -- 星河珠宝师的底座(PvP)
@@ -461,6 +463,13 @@ local EQUIP_LOC_MAX_SOCKETS = {
         },
     },
     season = {
+        [37] = {
+            minItemLevel = 266,
+            -- 至暗之夜S2 /星河珠宝师的底座(PvP)
+            INVTYPE_HEAD = { 1, SOCKET_SETTING_ITEMS[275707], SOCKET_SETTING_ITEMS[257535] },
+            INVTYPE_WAIST = { 1, SOCKET_SETTING_ITEMS[275707], SOCKET_SETTING_ITEMS[257535] },
+            INVTYPE_WRIST = { 1, SOCKET_SETTING_ITEMS[275707], SOCKET_SETTING_ITEMS[257535] },
+        },
         [34] = {
             minItemLevel = 220,
             -- 至暗之夜S1 /星河珠宝师的底座(PvP)
