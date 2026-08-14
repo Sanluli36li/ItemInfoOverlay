@@ -14,6 +14,79 @@ local BONUS_ID_DATABASE = {
     [13654] = { trackStringID = TRACK_STRING_ID_MYTH, season = 34 },    -- 晋升虚空锻造: 史诗
 }
 
+-- 双唯一物品
+-- (除了"装备唯一"外, 还有其他"装备唯一: XXX"限制的物品
+-- 由于暴雪API的限制, 此类物品在 C_Item.GetItemUniquenessByID 中无法获取第二个装备唯一条目)
+local DOUBLE_UNIQUENESS_DATABASE = {
+    [215133] = {2, 512},    -- 知己之矶
+    [241140] = {2, 512},    -- 艾泽拉斯的祝福印戒
+    [251513] = {2, 512},    -- 神灵崇拜者的指环
+}
+
+-- 物品附魔部位
+local EQUIP_LOC_CAN_ENCHANT = {
+    INVTYPE_HEAD = {120, 999},      -- 头部 (至暗之夜 120+)
+    INVTYPE_NECK = {0, 120},        -- 颈部
+    INVTYPE_SHOULDER = true,        -- 肩部 (至暗之夜 120+)
+    INVTYPE_CLOAK = {0, 170},       -- 背部
+    INVTYPE_CHEST = true,           -- 胸部
+    INVTYPE_ROBE = true,            -- 胸部 (搞不懂为啥胸甲会有两种装备位置)
+    INVTYPE_WRIST = {0, 170},       -- 手腕
+    INVTYPE_HAND = {0, 120},        -- 手部
+    INVTYPE_WAIST = false,          -- 腰部
+    INVTYPE_LEGS = true,            -- 腿部
+    INVTYPE_FEET = true,            -- 脚部
+    INVTYPE_FINGER = true,          -- 手指
+    INVTYPE_WEAPON = true,          -- 武器
+    INVTYPE_RANGED = true,          -- 远程武器
+    INVTYPE_2HWEAPON = true,        -- 双手武器
+    INVTYPE_WEAPONMAINHAND = true,  -- 主手武器
+    INVTYPE_WEAPONOFFHAND = true,   -- 副手武器
+    INVTYPE_RANGEDRIGHT = true,     -- 远程武器
+    INVTYPE_SHIELD = {0, 120},      -- 盾牌
+    INVTYPE_HOLDABLE = {0, 120},    -- 副手
+}
+
+-- 添加插槽用的物品
+local SOCKET_SETTING_ITEMS = {
+    [213777] = {213777, "professions"},  -- 卓越珠宝师的底座(珠宝加工)
+    -- 至暗之夜 S2
+    [275707] = {275707, "greatVault"},  -- 毒瘴珠宝镶嵌器(宏伟宝库)
+    -- 至暗之夜 S1
+    [263897] = {263897, "greatVault"},  -- 光耀珠宝镶嵌器(宏伟宝库)
+    [257535] = {257535, "pvp"},         -- 星河珠宝师的底座(PvP)
+}
+
+-- 物品插槽最大数量
+local EQUIP_LOC_MAX_SOCKETS = {
+    expansion = {   -- 资料片中添加插槽的物品
+        [LE_EXPANSION_DRAGONFLIGHT] = {
+            -- 多层勋章镶嵌底座 已被移除
+            -- INVTYPE_NECK = { 3, 192994 }
+        },
+        [LE_EXPANSION_WAR_WITHIN] = {
+            INVTYPE_NECK = { 2, SOCKET_SETTING_ITEMS[213777], false },
+            INVTYPE_FINGER = { 2, SOCKET_SETTING_ITEMS[213777], false }
+        },
+    },
+    season = {      -- 赛季内有效的添加插槽的物品
+        [37] = {
+            minItemLevel = 266,
+            -- 至暗之夜S2
+            INVTYPE_HEAD = { 1, SOCKET_SETTING_ITEMS[275707], SOCKET_SETTING_ITEMS[257535] },
+            INVTYPE_WAIST = { 1, SOCKET_SETTING_ITEMS[275707], SOCKET_SETTING_ITEMS[257535] },
+            INVTYPE_WRIST = { 1, SOCKET_SETTING_ITEMS[275707], SOCKET_SETTING_ITEMS[257535] },
+        },
+        [34] = {
+            minItemLevel = 220,
+            -- 至暗之夜S1 /星河珠宝师的底座(PvP)
+            INVTYPE_HEAD = { 1, SOCKET_SETTING_ITEMS[263897], SOCKET_SETTING_ITEMS[257535] },
+            INVTYPE_WAIST = { 1, SOCKET_SETTING_ITEMS[263897], SOCKET_SETTING_ITEMS[257535] },
+            INVTYPE_WRIST = { 1, SOCKET_SETTING_ITEMS[263897], SOCKET_SETTING_ITEMS[257535] },
+        }
+    }
+}
+
 --------------------
 --- 框体
 --------------------
@@ -398,43 +471,16 @@ local PRELOAD_UNIQUENESS_LINKS = {
 
 local UNIQUENESS_NAMES = {}
 
-local UNIQUENESS_INFO = {
-    [215133] = {2, 512},    -- 知己之矶
-    [241140] = {2, 512},    -- 艾泽拉斯的祝福印戒
-    [251513] = {2, 512},    -- 神灵崇拜者的指环
-}
-
 function Utils.GetItemUniquenessByID(itemInfo)
     local id = C_Item.GetItemIDForItemInfo(itemInfo)
-    if UNIQUENESS_INFO[id] and UNIQUENESS_NAMES[UNIQUENESS_INFO[id][2]] then
-        return true, UNIQUENESS_NAMES[UNIQUENESS_INFO[id][2]], UNIQUENESS_INFO[id][1], UNIQUENESS_INFO[id][2]
+    if DOUBLE_UNIQUENESS_DATABASE[id] and UNIQUENESS_NAMES[DOUBLE_UNIQUENESS_DATABASE[id][2]] then
+        return true, UNIQUENESS_NAMES[DOUBLE_UNIQUENESS_DATABASE[id][2]], DOUBLE_UNIQUENESS_DATABASE[id][1], DOUBLE_UNIQUENESS_DATABASE[id][2]
     else
         return C_Item.GetItemUniquenessByID(itemInfo)
     end
 end
 
-local EQUIP_LOC_CAN_ENCHANT = {
-    INVTYPE_HEAD = {120, 999},      -- 头部 (至暗之夜 120+)
-    INVTYPE_NECK = {0, 120},        -- 颈部
-    INVTYPE_SHOULDER = true,        -- 肩部 (至暗之夜 120+)
-    INVTYPE_CLOAK = {0, 170},       -- 背部
-    INVTYPE_CHEST = true,           -- 胸部
-    INVTYPE_ROBE = true,            -- 胸部 (搞不懂为啥胸甲会有两种装备位置)
-    INVTYPE_WRIST = {0, 170},       -- 手腕
-    INVTYPE_HAND = {0, 120},        -- 手部
-    INVTYPE_WAIST = false,          -- 腰部
-    INVTYPE_LEGS = true,            -- 腿部
-    INVTYPE_FEET = true,            -- 脚部
-    INVTYPE_FINGER = true,          -- 手指
-    INVTYPE_WEAPON = true,          -- 武器
-    INVTYPE_RANGED = true,          -- 远程武器
-    INVTYPE_2HWEAPON = true,        -- 双手武器
-    INVTYPE_WEAPONMAINHAND = true,  -- 主手武器
-    INVTYPE_WEAPONOFFHAND = true,   -- 副手武器
-    INVTYPE_RANGEDRIGHT = true,     -- 远程武器
-    INVTYPE_SHIELD = {0, 120},      -- 盾牌
-    INVTYPE_HOLDABLE = {0, 120},    -- 副手
-}
+
 
 function Utils.ItemCanEnchant(itemLevel, itemEquipLoc)
     if not itemLevel then
@@ -454,43 +500,7 @@ function Utils.ItemCanEnchant(itemLevel, itemEquipLoc)
     end
 end
 
-local SOCKET_SETTING_ITEMS = {
-    [213777] = {213777, "professions"},  -- 卓越珠宝师的底座(珠宝加工)
-    -- 至暗之夜 S2
-    [275707] = {275707, "greatVault"},  -- 毒瘴珠宝镶嵌器(宏伟宝库)
-    -- 至暗之夜 S1
-    [263897] = {263897, "greatVault"},  -- 光耀珠宝镶嵌器(宏伟宝库)
-    [257535] = {257535, "pvp"},         -- 星河珠宝师的底座(PvP)
-}
 
-local EQUIP_LOC_MAX_SOCKETS = {
-    expansion = {
-        [LE_EXPANSION_DRAGONFLIGHT] = {
-            -- 多层勋章镶嵌底座 已被移除
-            -- INVTYPE_NECK = { 3, 192994 }
-        },
-        [LE_EXPANSION_WAR_WITHIN] = {
-            INVTYPE_NECK = { 2, SOCKET_SETTING_ITEMS[213777], false },
-            INVTYPE_FINGER = { 2, SOCKET_SETTING_ITEMS[213777], false }
-        },
-    },
-    season = {
-        [37] = {
-            minItemLevel = 266,
-            -- 至暗之夜S2 /星河珠宝师的底座(PvP)
-            INVTYPE_HEAD = { 1, SOCKET_SETTING_ITEMS[275707], SOCKET_SETTING_ITEMS[257535] },
-            INVTYPE_WAIST = { 1, SOCKET_SETTING_ITEMS[275707], SOCKET_SETTING_ITEMS[257535] },
-            INVTYPE_WRIST = { 1, SOCKET_SETTING_ITEMS[275707], SOCKET_SETTING_ITEMS[257535] },
-        },
-        [34] = {
-            minItemLevel = 220,
-            -- 至暗之夜S1 /星河珠宝师的底座(PvP)
-            INVTYPE_HEAD = { 1, SOCKET_SETTING_ITEMS[263897], SOCKET_SETTING_ITEMS[257535] },
-            INVTYPE_WAIST = { 1, SOCKET_SETTING_ITEMS[263897], SOCKET_SETTING_ITEMS[257535] },
-            INVTYPE_WRIST = { 1, SOCKET_SETTING_ITEMS[263897], SOCKET_SETTING_ITEMS[257535] },
-        }
-    }
-}
 
 local function isPvpItem(itemLink, pvpItemLevel)
     if not pvpItemLevel then
