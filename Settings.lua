@@ -1219,6 +1219,19 @@ local settings = {
                     end,
                     subSettings = {
                         {
+                            -- 忽略过时的物品
+                            controlType = CONTROL_TYPE.CHECKBOX,
+                            settingType = SETTING_TYPE.ADDON_VARIABLE,
+                            name = L["color.itemLevel.itemUpgrade.ignoreLegacy.title"],
+                            tooltip = L["color.itemLevel.itemUpgrade.ignoreLegacy.tooltip"],
+                            key = "color.itemLevel.itemUpgrade.ignoreLegacy",
+                            default = true,
+                            onValueChanged = function(value)
+                                ItemInfoOverlay.Modules.itemInfoOverlay:UpdateAllAppearance()
+                                ItemInfoOverlay.Modules.characterFrame:UpdateAllAppearance()
+                            end
+                        },
+                        {
                             -- 神话
                             controlType = CONTROL_TYPE.COLOR,
                             settingType = SETTING_TYPE.ADDON_VARIABLE,
