@@ -1118,6 +1118,8 @@ local settings = {
                     key = "equipmentSummary.itemLevel.color",
                     default = true,
                     onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                     end
                 },
                 {
