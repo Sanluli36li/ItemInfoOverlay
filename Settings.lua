@@ -995,6 +995,21 @@ local settings = {
                     default = true
                 },
                 {
+                    -- 低等级物品阈值
+                    controlType = CONTROL_TYPE.SLIDER,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.backdrop.alpha"],
+                    key = "equipmentSummary.backdrop.alpha",
+                    minValue = 1,
+                    maxValue = 100,
+                    step = 1,
+                    default = 80,
+                    onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
+                    end
+                },
+                {
                     -- 标题文本尺寸
                     controlType = CONTROL_TYPE.SLIDER,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,

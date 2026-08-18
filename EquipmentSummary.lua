@@ -358,6 +358,8 @@ function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
     font, size, style = GameTooltipHeaderText:GetFont()
     self.Title:SetFont(font, Module:GetConfig(CONFIG_TITLE_FONT_SIZE), style)
 
+    self:SetBackdropColor(0, 0, 0, Module:GetConfig("backdrop.alpha") * 0.01)
+
     self:Refresh()
 end
 

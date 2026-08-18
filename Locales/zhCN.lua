@@ -75,6 +75,7 @@ L["color.itemLevel.lowLevel.tooltip"] = "对于物品等级大幅低于你最高
 L["color.itemLevel.title"] = "物品等级颜色"
 L["color.itemLevel.tooltip"] = "指定物品等级文本(包含PvP物品等级、钥石等级、战斗宠物等级等)的颜色"
 L["color.title"] = "颜色"
+L["equipmentSummary.backdrop.alpha"] = "背景透明度"
 L["equipmentSummary.enchantAndSockets.title"] = "检查附魔和插槽"
 L["equipmentSummary.enchantAndSockets.tooltip"] = "在装备总览中检查已附魔物品与宝石/插槽的数量"
 L["equipmentSummary.equipmentStats"] = "装备属性"
