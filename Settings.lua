@@ -971,12 +971,6 @@ local settings = {
             name = L["equipmentSummary.title"],
             settings = {
                 {
-                    -- 预览
-                    controlType = CONTROL_TYPE.CUSTOM_FRAME,
-                    name = PREVIEW,
-                    template = "IIOEquipmentSummarySettingPreviewTemplate"
-                },
-                {
                     -- 显示玩家装备总览
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -1186,6 +1180,12 @@ local settings = {
                     onValueChanged = function(value)
                         IIOEquipmentSummaryPlayerFrame:Refresh()
                     end,
+                },
+                {
+                    -- 预览
+                    controlType = CONTROL_TYPE.CUSTOM_FRAME,
+                    name = PREVIEW,
+                    template = "IIOEquipmentSummarySettingPreviewTemplate"
                 },
                 {
                     -- 显示套装内容
