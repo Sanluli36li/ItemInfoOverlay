@@ -1010,6 +1010,19 @@ local settings = {
                     end
                 },
                 {
+                    -- 标题字体
+                    controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.title.font"],
+                    key = "equipmentSummary.title.font",
+                    mediaType = LibSharedMedia.MediaType.FONT,
+                    default = select(1, GameTooltipHeaderText:GetFont()),
+                    onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
+                    end
+                },
+                {
                     -- 标题文本尺寸
                     controlType = CONTROL_TYPE.SLIDER,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -1022,7 +1035,20 @@ local settings = {
                     onValueChanged = function(value)
                         IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
                         IIOEquipmentSummaryInspectFrame:UpdateAppearance()
-                    end,
+                    end
+                },
+                {
+                    -- 内容字体
+                    controlType = CONTROL_TYPE.LIB_SHARED_MEDIA_DROPDOWN,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.font"],
+                    key = "equipmentSummary.font",
+                    mediaType = LibSharedMedia.MediaType.FONT,
+                    default = select(1, GameTooltipText:GetFont()),
+                    onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
+                    end
                 },
                 {
                     -- 内容文本尺寸
