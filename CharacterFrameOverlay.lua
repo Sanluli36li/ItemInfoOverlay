@@ -611,9 +611,9 @@ function IIOCharacterFrameItemInfoOverlayMixin:Refresh()
     end
 end
 
-IIOCharacterFrameItemInfoOverlaySettingPriviewMixin = {}
+IIOCharacterFrameItemInfoOverlaySettingPreviewMixin = {}
 
-function IIOCharacterFrameItemInfoOverlaySettingPriviewMixin:OnLoad()
+function IIOCharacterFrameItemInfoOverlaySettingPreviewMixin:OnLoad()
     self.itemButton1:SetItemButtonTexture(6035288)
     self.itemButton1:SetItemButtonQuality(Enum.ItemQuality.Epic)
     local overlay = Module:CreateItemInfoOverlay(self.itemButton1, 1)

@@ -694,6 +694,10 @@ function IIOEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec(itemLevel, pvpIte
     end
 end
 
+IIOEquipmentSummarySettingPreviewMixin = {}
+
+
+
 local function UpdateSummaryPoints()
     local characterRelative = CharacterFrame
     if CCS_TOAST then

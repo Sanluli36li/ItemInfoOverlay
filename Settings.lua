@@ -33,7 +33,7 @@ local settings = {
             -- 预览
             controlType = CONTROL_TYPE.CUSTOM_FRAME,
             name = PREVIEW,
-            template = "IIOItemInfoOverlaySettingPriviewTemplate"
+            template = "IIOItemInfoOverlaySettingPreviewTemplate"
         },
         {
             -- 编辑按钮
@@ -47,7 +47,7 @@ local settings = {
             -- 预览
             controlType = CONTROL_TYPE.CUSTOM_FRAME,
             name = PREVIEW,
-            template = "IIOCharacterFrameItemInfoOverlaySettingPriviewTemplate"
+            template = "IIOCharacterFrameItemInfoOverlaySettingPreviewTemplate"
         },
         {
             -- 编辑角色面板按钮
@@ -162,7 +162,7 @@ local settings = {
                     -- 预览
                     controlType = CONTROL_TYPE.CUSTOM_FRAME,
                     name = PREVIEW,
-                    template = "IIOItemInfoOverlaySettingPriviewTemplate"
+                    template = "IIOItemInfoOverlaySettingPreviewTemplate"
                 },
                 {
                     controlType = CONTROL_TYPE.DROPDOWN,
@@ -507,7 +507,7 @@ local settings = {
                     -- 预览
                     controlType = CONTROL_TYPE.CUSTOM_FRAME,
                     name = PREVIEW,
-                    template = "IIOCharacterFrameItemInfoOverlaySettingPriviewTemplate"
+                    template = "IIOCharacterFrameItemInfoOverlaySettingPreviewTemplate"
                 },
                 {
                     controlType = CONTROL_TYPE.DROPDOWN,

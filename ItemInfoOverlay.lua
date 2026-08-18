@@ -388,9 +388,9 @@ function IIOItemInfoOverlayMixin:Refresh()
     end
 end
 
-IIOItemInfoOverlaySettingPriviewMixin = {}
+IIOItemInfoOverlaySettingPreviewMixin = {}
 
-function IIOItemInfoOverlaySettingPriviewMixin:OnLoad()
+function IIOItemInfoOverlaySettingPreviewMixin:OnLoad()
     self.itemButton1:SetItemButtonTexture(6035288)
     self.itemButton1:SetItemButtonQuality(Enum.ItemQuality.Epic)
     local overlay1 = Module:CreateItemInfoOverlay(self.itemButton1)
