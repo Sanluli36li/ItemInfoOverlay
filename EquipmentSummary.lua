@@ -704,7 +704,12 @@ local function UpdateSummaryPoints()
         characterRelative = CharacterFrameBg
     end
 
-    if Module:GetConfig(CONFIG_INSPECT_ENABLE) and InspectFrame and InspectFrame:IsVisible() then
+    if preview then
+        IIOEquipmentSummaryPlayerFrame:Show()
+        IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
+        IIOEquipmentSummaryPlayerFrame:SetParent(SettingsPanel)
+        IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", SettingsPanel, "TOPRIGHT")
+    elseif Module:GetConfig(CONFIG_INSPECT_ENABLE) and InspectFrame and InspectFrame:IsVisible() then
         IIOEquipmentSummaryInspectFrame:Show()
 
         if Module:GetConfig(CONFIG_PLAYER_ENABLE) then
@@ -735,12 +740,7 @@ local function UpdateSummaryPoints()
         IIOEquipmentSummaryPlayerFrame:Hide()
     end
 
-    if preview then
-        IIOEquipmentSummaryPlayerFrame:Show()
-        IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
-        IIOEquipmentSummaryPlayerFrame:SetParent(SettingsPanel)
-        IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", SettingsPanel, "TOPRIGHT")
-    end
+    
 
 end
 
