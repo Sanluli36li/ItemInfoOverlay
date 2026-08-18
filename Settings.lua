@@ -971,6 +971,12 @@ local settings = {
             name = L["equipmentSummary.title"],
             settings = {
                 {
+                    -- 预览
+                    controlType = CONTROL_TYPE.CUSTOM_FRAME,
+                    name = PREVIEW,
+                    template = "IIOEquipmentSummarySettingPreviewTemplate"
+                },
+                {
                     -- 显示玩家装备总览
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -1135,6 +1141,7 @@ local settings = {
                     key = "equipmentSummary.enchantAndSockets.enable",
                     default = true,
                     onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:Refresh()
                     end,
                 },
                 {
@@ -1146,6 +1153,7 @@ local settings = {
                     key = "equipmentSummary.itemSets.enable",
                     default = true,
                     onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:Refresh()
                     end,
                     subSettings = {
                         {
@@ -1154,7 +1162,10 @@ local settings = {
                             name = L["equipmentSummary.itemSets.unique.title"],
                             tooltip = L["equipmentSummary.itemSets.unique.tooltip"],
                             key = "equipmentSummary.itemSets.unique",
-                            default = true
+                            default = true,
+                            onValueChanged = function(value)
+                                IIOEquipmentSummaryPlayerFrame:Refresh()
+                            end,
                         }
                     }
                 },
@@ -1167,6 +1178,7 @@ local settings = {
                     key = "equipmentSummary.itemStats.enable",
                     default = true,
                     onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:Refresh()
                     end,
                 },
             }

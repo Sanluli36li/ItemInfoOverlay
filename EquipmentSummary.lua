@@ -64,6 +64,8 @@ local EQUIPMENT_SLOTS = {
     {slotId = 17, name = SECONDARYHANDSLOT}
 }
 
+local preview = false
+
 --------------------
 -- Mixin
 --------------------
@@ -694,10 +696,6 @@ function IIOEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec(itemLevel, pvpIte
     end
 end
 
-IIOEquipmentSummarySettingPreviewMixin = {}
-
-
-
 local function UpdateSummaryPoints()
     local characterRelative = CharacterFrame
     if CCS_TOAST then
@@ -734,7 +732,32 @@ local function UpdateSummaryPoints()
         IIOEquipmentSummaryInspectFrame:Hide()
         IIOEquipmentSummaryPlayerFrame:Hide()
     end
+
+    if preview then
+        IIOEquipmentSummaryPlayerFrame:Show()
+        IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
+        IIOEquipmentSummaryPlayerFrame:SetParent(SettingsPanel)
+        IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", SettingsPanel, "TOPRIGHT")
+    end
+
 end
+
+IIOEquipmentSummarySettingPreviewMixin = {}
+
+function IIOEquipmentSummarySettingPreviewMixin:OnLoad()
+end
+
+function IIOEquipmentSummarySettingPreviewMixin:OnShow()
+    preview = true
+    UpdateSummaryPoints()
+end
+
+function IIOEquipmentSummarySettingPreviewMixin:OnHide()
+    preview = false
+    UpdateSummaryPoints()
+end
+
+
 
 PaperDollFrame:HookScript("OnShow", function(self)
     IIOEquipmentSummaryPlayerFrame:Refresh()
