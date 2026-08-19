@@ -45,7 +45,7 @@
 	</Frame>
 
 	<Frame name="IIOEquipmentSummarySettingPreviewTemplate" mixin="IIOEquipmentSummarySettingPreviewMixin" virtual="true">
-		<Size y="0"/>
+		<Size y="1"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
