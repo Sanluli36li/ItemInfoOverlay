@@ -76,7 +76,8 @@ function IIOEquipmentSummaryEntryMixin:OnLoad()
 end
 
 function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
-    local font, size, style = GameTooltipText:GetFont()
+    local _, _, style = GameTooltipText:GetFont()
+     local font = Module:GetConfig("font")
     self.SlotName:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemLevel:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemLink:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
@@ -347,7 +348,8 @@ function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
         entry:UpdateAppearance()
     end
 
-    local font, size, style = GameTooltipText:GetFont()
+    local _, _, style = GameTooltipText:GetFont()
+    local font = Module:GetConfig("font")
     self.SubTitle:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
 
     self.InfoText:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
@@ -355,7 +357,8 @@ function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
     self.ItemStatsText2:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemStatsText3:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
 
-    font, size, style = GameTooltipHeaderText:GetFont()
+    _, _, style = GameTooltipHeaderText:GetFont()
+    font = Module:GetConfig("title.font")
     self.Title:SetFont(font, Module:GetConfig(CONFIG_TITLE_FONT_SIZE), style)
 
     self:SetBackdropColor(0, 0, 0, Module:GetConfig("backdrop.alpha") * 0.01)
