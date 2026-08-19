@@ -1474,8 +1474,7 @@ local settings = {
                     -- NDui
                     controlType = CONTROL_TYPE.CHECKBOX,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
-                    name = L["itemInfoOverlay.frames.addons.ndui.title"],
-                    tooltip = L["itemInfoOverlay.frames.addons.ndui.tooltip"],
+                    name = "NDui",
                     key = "itemInfoOverlay.frames.addons.ndui",
                     default = true,
                     onValueChanged = function(value)
