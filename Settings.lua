@@ -1467,7 +1467,7 @@ local settings = {
                     controlType = CONTROL_TYPE.SECTION_HEADER,
                     name = ADDONS,
                     require = function()
-                        return (NDui or NDui_Bags)
+                        return (NDui or NDui_Bags) or Baganator
                     end
                 },
                 {
@@ -1485,6 +1485,24 @@ local settings = {
                     end,
                     require = function()
                         return NDui or NDui_Bags
+                    end
+                },
+                {
+                    -- Baganator
+                    controlType = CONTROL_TYPE.CHECKBOX,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = "Baganator",
+                    key = "itemInfoOverlay.frames.addons.baganator",
+                    default = true,
+                    onValueChanged = function(value)
+                        if value then
+                            ItemInfoOverlay:Print(L["itemInfoOverlay.frames.addons.baganator.message"])
+                        else
+                            ItemInfoOverlay:GetModule("itemInfoOverlay"):DisableItemInfoOverlayByType("Baganator")
+                        end
+                    end,
+                    require = function()
+                        return Baganator
                     end
                 },
                 {

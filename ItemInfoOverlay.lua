@@ -503,7 +503,7 @@ do
     end
 
     local function UpdateOverlay(button, itemLink)
-        if not Module:GetConfig("frames.other") then
+        if not Module:GetConfig("frames.addons.baganator") then
             Utils.GetItemInfoOverlay(button, false)
             return
         end
