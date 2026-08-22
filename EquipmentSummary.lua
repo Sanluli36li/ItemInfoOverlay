@@ -22,18 +22,24 @@ local ITEM_LEVEL_AND_SPEC_WITH_PVP_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d",
 local ITEM_SET_BONUS_PATTERN = ITEM_SET_BONUS:gsub("%%s", "(.+)")
 local ITEM_SET_BONUS_GRAY_PATTERN = ITEM_SET_BONUS_GRAY:gsub("%(%%d%)", "%%(%%d+%%)"):gsub("%%s", "(.+)")
 
-local STAT_ICONS = {
+local STAT_ICONS_STYLE = {
     ["Armory"] = {
-        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\crit.png",
-        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\haste.png",
-        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\mastery.png",
-        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\versatility.png"
+        { type = "texture", r = 224/255, g =  28/255, b =  28/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\crit.png" },
+        { type = "texture", r =  14/255, g = 213/255, b = 155/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\haste.png" },
+        { type = "texture", r = 146/255, g =  86/255, b = 255/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\mastery.png" },
+        { type = "texture", r = 191/255, g = 191/255, b = 191/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\versatility.png" }
     },
     ["GearStatSummary"] = {
-        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\crit.tga",
-        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\haste.tga",
-        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\mastery.tga",
-        "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\vers.tga"
+        { type = "text", r = 1, g = 0, b = 0, text = "爆" },
+        { type = "text", r = 1, g = 1, b = 0, text = "急" },
+        { type = "text", r = 1, g = 0, b = 1, text = "精" },
+        { type = "text", r = 0, g = 0, b = 1, text = "全" }
+    },
+    ["GearStatSummaryEn"] = {
+        { type = "text", r = 1, g = 0, b = 0, text = "C" },
+        { type = "text", r = 1, g = 1, b = 0, text = "H" },
+        { type = "text", r = 1, g = 0, b = 1, text = "M" },
+        { type = "text", r = 0, g = 0, b = 1, text = "V" }
     },
 }
 
@@ -72,61 +78,115 @@ local preview = false
 IIOEquipmentSummaryEntryMixin = {}
 
 function IIOEquipmentSummaryEntryMixin:OnLoad()
+    self.SlotNameBackdrop:SetBackdrop({
+        bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Buttons\\WHITE8X8",
+        tile     = true,
+        tileSize = 8,
+        edgeSize = 1,
+        insets   = {left = 1, right = 1, top = 1, bottom = 1}
+    })
+
     self:UpdateAppearance()
 end
 
 function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     local _, _, style = GameTooltipText:GetFont()
-     local font = Module:GetConfig("font")
+    local font = Module:GetConfig("font")
+    if not font then return end
+
     self.SlotName:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemLevel:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemLink:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemUpgrade:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE), style)
 
-    self.Crit:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
-    self.Crit:SetTexture(STAT_ICONS[Module:GetConfig(CONFIG_STAT_ICON_STYLE)][1])
+    local iconStyle = STAT_ICONS_STYLE[Module:GetConfig(CONFIG_STAT_ICON_STYLE)]
 
-    self.Haste:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
-    self.Haste:SetTexture(STAT_ICONS[Module:GetConfig(CONFIG_STAT_ICON_STYLE)][2])
+    self.CritIcon:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
+    self.CritIcon.Backdrop:SetVertexColor(iconStyle[1].r, iconStyle[1].g, iconStyle[1].b, 1)
+    if iconStyle[1].type == "texture" then
+        self.CritIcon.Icon:SetTexture(iconStyle[1].texture)
+        self.CritIcon.Icon:Show()
+        self.CritIcon.Text:Hide()
+    elseif iconStyle[1].type == "text" then
+        self.CritIcon.Icon:Hide()
+        self.CritIcon.Text:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE) - 1, style)
+        self.CritIcon.Text:SetText(iconStyle[1].text)
+        self.CritIcon.Text:SetTextColor(iconStyle[1].r, iconStyle[1].g, iconStyle[1].b)
+        self.CritIcon.Text:SetJustifyH("CENTER")
+        self.CritIcon.Text:Show()
+    end
 
-    self.Mastery:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
-    self.Mastery:SetTexture(STAT_ICONS[Module:GetConfig(CONFIG_STAT_ICON_STYLE)][3])
+    self.HasteIcon:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
+    self.HasteIcon.Backdrop:SetVertexColor(iconStyle[2].r, iconStyle[2].g, iconStyle[2].b, 1)
+    if iconStyle[2].type == "texture" then
+        self.HasteIcon.Icon:SetTexture(iconStyle[2].texture)
+        self.HasteIcon.Icon:Show()
+        self.HasteIcon.Text:Hide()
+    elseif iconStyle[2].type == "text" then
+        self.HasteIcon.Icon:Hide()
+        self.HasteIcon.Text:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE) - 1, style)
+        self.HasteIcon.Text:SetText(iconStyle[2].text)
+        self.HasteIcon.Text:SetTextColor(iconStyle[2].r, iconStyle[2].g, iconStyle[2].b)
+        self.HasteIcon.Text:SetJustifyH("CENTER")
+        self.HasteIcon.Text:Show()
+    end
 
-    self.Versatility:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
-    self.Versatility:SetTexture(STAT_ICONS[Module:GetConfig(CONFIG_STAT_ICON_STYLE)][4])
+    self.MasteryIcon:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
+    self.MasteryIcon.Backdrop:SetVertexColor(iconStyle[3].r, iconStyle[3].g, iconStyle[3].b, 1)
+    if iconStyle[3].type == "texture" then
+        self.MasteryIcon.Icon:SetTexture(iconStyle[3].texture)
+        self.MasteryIcon.Icon:Show()
+        self.MasteryIcon.Text:Hide()
+    elseif iconStyle[3].type == "text" then
+        self.MasteryIcon.Icon:Hide()
+        self.MasteryIcon.Text:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE) - 1, style)
+        self.MasteryIcon.Text:SetText(iconStyle[3].text)
+        self.MasteryIcon.Text:SetTextColor(iconStyle[3].r, iconStyle[3].g, iconStyle[3].b)
+        self.MasteryIcon.Text:SetJustifyH("CENTER")
+        self.MasteryIcon.Text:Show()
+    end
+
+    self.VersatilityIcon:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
+    self.VersatilityIcon.Backdrop:SetVertexColor(iconStyle[4].r, iconStyle[4].g, iconStyle[4].b, 1)
+    if iconStyle[4].type == "texture" then
+        self.VersatilityIcon.Icon:SetTexture(iconStyle[4].texture)
+        self.VersatilityIcon.Icon:Show()
+        self.VersatilityIcon.Text:Hide()
+    elseif iconStyle[4].type == "text" then
+        self.VersatilityIcon.Icon:Hide()
+        self.VersatilityIcon.Text:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE) - 1, style)
+        self.VersatilityIcon.Text:SetText(iconStyle[4].text)
+        self.VersatilityIcon.Text:SetTextColor(iconStyle[4].r, iconStyle[4].g, iconStyle[4].b)
+        self.VersatilityIcon.Text:SetJustifyH("CENTER")
+        self.VersatilityIcon.Text:Show()
+    end
 
     self:SetHeight(Module:GetConfig(CONFIG_FONT_SIZE) + 2)
 
     if Module:GetConfig(CONFIG_SLOT_NAME) then
-        self.Crit:ClearAllPoints()
-        self.Crit:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 2, 0)
+
+        self.CritIcon:ClearAllPoints()
+        self.CritIcon:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 2, 0)
 
         self.SlotName:SetTextColor(0, 0.9, 0.9)
         self.SlotName:SetJustifyH("CENTER")
         
-        self.SlotNameBackdrop:SetBackdrop({
-            bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
-            edgeFile = "Interface\\Buttons\\WHITE8X8",
-            tile     = true,
-            tileSize = 8,
-            edgeSize = 1,
-            insets   = {left = 1, right = 1, top = 1, bottom = 1}
-        })
         self.SlotNameBackdrop:SetBackdropBorderColor(0, 0.9, 0.9, 0.2)
         self.SlotNameBackdrop:SetBackdropColor(0, 0.9, 0.9, 0.2)
         self.SlotNameBackdrop:Show()
 
         self.SlotName:Show()
     else
-        self.Crit:ClearAllPoints()
-        self.Crit:SetPoint("TOPLEFT", self)
+        self.CritIcon:ClearAllPoints()
+        self.CritIcon:SetPoint("TOPLEFT", self)
         self.SlotName:Hide()
         self.SlotNameBackdrop:Hide()
     end
 
     if Module:GetConfig(CONFIG_STAT_ICON) then
         self.ItemLevel:ClearAllPoints()
-        self.ItemLevel:SetPoint("TOPLEFT", self.Versatility, "TOPRIGHT", 4, 0)
+        self.ItemLevel:SetPoint("TOPLEFT", self.VersatilityIcon, "TOPRIGHT", 4, 0)
     else
         self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint(
@@ -223,27 +283,27 @@ end
 
 function IIOEquipmentSummaryEntryMixin:ToggleStats(crit, haste, mastery, versatility)
     if crit then
-        self.Crit:Show()
+        self.CritIcon:Show()
     else
-        self.Crit:Hide()
+        self.CritIcon:Hide()
     end
 
     if haste then
-        self.Haste:Show()
+        self.HasteIcon:Show()
     else
-        self.Haste:Hide()
+        self.HasteIcon:Hide()
     end
 
     if mastery then
-        self.Mastery:Show()
+        self.MasteryIcon:Show()
     else
-        self.Mastery:Hide()
+        self.MasteryIcon:Hide()
     end
 
     if versatility then
-        self.Versatility:Show()
+        self.VersatilityIcon:Show()
     else
-        self.Versatility:Hide()
+        self.VersatilityIcon:Hide()
     end
 end
 

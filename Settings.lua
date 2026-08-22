@@ -1102,10 +1102,13 @@ local settings = {
                             {
                                 "GearStatSummary",
                                 L["equipmentSummary.statIcon.style.gearStatSummary.title"]..
-                                " |TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\crit.tga:12|t"..
-                                "|TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\haste.tga:12|t"..
-                                "|TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\mastery.tga:12|t"..
-                                "|TInterface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_GearStatSummary\\vers.tga:12|t",
+                                " |cffff0000爆|cffffff00急|cffff00ff精|cff0000ff全|r",
+                                ""
+                            },
+                            {
+                                "GearStatSummaryEn",
+                                L["equipmentSummary.statIcon.style.gearStatSummary.title"]..
+                                " |cffff0000C|cffffff00H|cffff00ffM|cff0000ffV|r",
                                 ""
                             }
                         },

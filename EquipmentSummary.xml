@@ -2,34 +2,42 @@
 ..\FrameXML\UI.xsd">
     <Script file="EquipmentSummary.lua"/>
 
+    <Frame name="IIOEquipmentSummaryEntryStatIconTemplate" virtual="true">
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Icon" file="Interface\AddOns\ItemInfoOverlay\Media\icon\stats_Armory\crit.png" alphaMode="BLEND">
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="0"/>
+                        <Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0"/>
+                        <Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" y="0"/>
+                        <Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" y="0"/>
+                    </Anchors>
+                </Texture>
+                <FontString parentKey="Text" inherits="GameTooltipText">
+                    <Size x="24"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="0"/>
+                        <Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0"/>
+                        <Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" y="0"/>
+                        <Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" y="0"/>
+                    </Anchors>
+                </FontString>
+                <Texture parentKey="Backdrop" file="Interface\AddOns\ItemInfoOverlay\Media\icon\edge.png" alphaMode="BLEND">
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="0"/>
+                        <Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0"/>
+                        <Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" y="0"/>
+                        <Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+    </Frame>
+
     <Frame name="IIOEquipmentSummaryEntryTemplate" mixin="IIOEquipmentSummaryEntryMixin" virtual="true">
         <Size y="14"/>
         <Layers>
             <Layer level="ARTWORK">
-                <Texture parentKey="Crit" file="Interface\AddOns\ItemInfoOverlay\Media\crit.png" alphaMode="BLEND">
-                    <Size x="12" y="12"/>
-                    <Anchors>
-                        <Anchor point="LEFT"/>
-                    </Anchors>
-                </Texture>
-                <Texture parentKey="Haste" file="Interface\AddOns\ItemInfoOverlay\Media\haste.png" alphaMode="BLEND">
-                    <Size x="12" y="12"/>
-                    <Anchors>
-                        <Anchor point="LEFT" relativeKey="$parent.Crit" relativePoint="RIGHT" x="2"/>
-                    </Anchors>
-                </Texture>
-                <Texture parentKey="Mastery" file="Interface\AddOns\ItemInfoOverlay\Media\mastery.png" alphaMode="BLEND">
-                    <Size x="12" y="12"/>
-                    <Anchors>
-                        <Anchor point="LEFT" relativeKey="$parent.Haste" relativePoint="RIGHT" x="2"/>
-                    </Anchors>
-                </Texture>
-                <Texture parentKey="Versatility" file="Interface\AddOns\ItemInfoOverlay\Media\versatility.png" alphaMode="BLEND">
-                    <Size x="12" y="12"/>
-                    <Anchors>
-                        <Anchor point="LEFT" relativeKey="$parent.Mastery" relativePoint="RIGHT" x="2"/>
-                    </Anchors>
-                </Texture>
                 <FontString parentKey="SlotName" inherits="GameTooltipText">
                     <Size x="40"/>
                     <Anchors>
@@ -39,7 +47,7 @@
                 <FontString parentKey="ItemLevel" inherits="GameTooltipText">
                     <Size x="24"/>
                     <Anchors>
-                        <Anchor point="LEFT" relativeKey="$parent.Versatility" relativePoint="RIGHT" x="2"/>
+                        <Anchor point="LEFT" relativeKey="$parent.VersatilityIcon" relativePoint="RIGHT" x="2"/>
                     </Anchors>
                 </FontString>
                 <FontString parentKey="ItemLink" inherits="GameTooltipText" wordwrap="false" nonspacewrap="false">
@@ -57,6 +65,26 @@
 			</Layer>
         </Layers>
         <Frames>
+            <Frame parentKey="CritIcon" inherits="IIOEquipmentSummaryEntryStatIconTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="1" y="-1"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="HasteIcon" inherits="IIOEquipmentSummaryEntryStatIconTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.CritIcon" relativePoint="RIGHT" x="1"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="MasteryIcon" inherits="IIOEquipmentSummaryEntryStatIconTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.HasteIcon" relativePoint="RIGHT" x="1"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="VersatilityIcon" inherits="IIOEquipmentSummaryEntryStatIconTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.MasteryIcon" relativePoint="RIGHT" x="1"/>
+                </Anchors>
+            </Frame>
             <Frame parentKey="SlotNameBackdrop" inherits="BackdropTemplate">
                 <Anchors>
                     <Anchor point="LEFT" relativeKey="$parent.SlotName" relativePoint="LEFT" x="0"/>
@@ -67,6 +95,7 @@
             </Frame>
         </Frames>
         <Scripts>
+            <OnLoad method="OnLoad"/>
             <OnEnter method="OnEnter"/>
             <OnLeave method="OnLeave"/>
         </Scripts>
