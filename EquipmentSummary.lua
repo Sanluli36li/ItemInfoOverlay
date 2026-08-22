@@ -169,6 +169,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.CritIcon:ClearAllPoints()
         self.CritIcon:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 2, 0)
 
+        self.SlotName:SetWidth(Module:GetConfig(CONFIG_FONT_SIZE) * 3)
         self.SlotName:SetTextColor(0, 0.9, 0.9)
         self.SlotName:SetJustifyH("CENTER")
         
