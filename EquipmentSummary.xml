@@ -35,8 +35,9 @@
         <Size y="14"/>
         <Layers>
             <Layer level="ARTWORK">
-                <FontString parentKey="SlotName" inherits="GameTooltipText">
+                <FontString parentKey="SlotName" inherits="GameTooltipText" justifyH="CENTER" justifyV="CENTER">
                     <Size x="40"/>
+                    <Color r="0" g="0.9" b="0.9"/>
                     <Anchors>
                         <Anchor point="LEFT"/>
                     </Anchors>
