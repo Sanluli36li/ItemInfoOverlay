@@ -13,13 +13,10 @@
                         <Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" y="0"/>
                     </Anchors>
                 </Texture>
-                <FontString parentKey="Text" inherits="GameTooltipText">
+                <FontString parentKey="Text" inherits="GameTooltipText" justifyH="CENTER" justifyV="CENTER">
                     <Size x="24"/>
                     <Anchors>
-                        <Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="0"/>
-                        <Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0"/>
-                        <Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" y="0"/>
-                        <Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" y="0"/>
+                        <Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/>
                     </Anchors>
                 </FontString>
                 <Texture parentKey="Backdrop" file="Interface\AddOns\ItemInfoOverlay\Media\icon\edge.png" alphaMode="BLEND">

@@ -113,7 +113,6 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.CritIcon.Text:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE) - 1, style)
         self.CritIcon.Text:SetText(iconStyle[1].text)
         self.CritIcon.Text:SetTextColor(iconStyle[1].r, iconStyle[1].g, iconStyle[1].b)
-        self.CritIcon.Text:SetJustifyH("CENTER")
         self.CritIcon.Text:Show()
     end
 
@@ -128,7 +127,6 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.HasteIcon.Text:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE) - 1, style)
         self.HasteIcon.Text:SetText(iconStyle[2].text)
         self.HasteIcon.Text:SetTextColor(iconStyle[2].r, iconStyle[2].g, iconStyle[2].b)
-        self.HasteIcon.Text:SetJustifyH("CENTER")
         self.HasteIcon.Text:Show()
     end
 
@@ -143,7 +141,6 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.MasteryIcon.Text:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE) - 1, style)
         self.MasteryIcon.Text:SetText(iconStyle[3].text)
         self.MasteryIcon.Text:SetTextColor(iconStyle[3].r, iconStyle[3].g, iconStyle[3].b)
-        self.MasteryIcon.Text:SetJustifyH("CENTER")
         self.MasteryIcon.Text:Show()
     end
 
@@ -158,7 +155,6 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.VersatilityIcon.Text:SetFont(font, Module:GetConfig(CONFIG_FONT_SIZE) - 1, style)
         self.VersatilityIcon.Text:SetText(iconStyle[4].text)
         self.VersatilityIcon.Text:SetTextColor(iconStyle[4].r, iconStyle[4].g, iconStyle[4].b)
-        self.VersatilityIcon.Text:SetJustifyH("CENTER")
         self.VersatilityIcon.Text:Show()
     end
 
