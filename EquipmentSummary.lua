@@ -43,6 +43,31 @@ local STAT_ICONS_STYLE = {
     },
 }
 
+local STYLE = {
+    ["Blizzard"] = {
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        tileEdge = true,
+        tileSize = 16,
+        edgeSize = 16,
+        insets = { left = 3, right = 3, top = 3, bottom = 3 }
+    },
+    ["NoBorder"] = {
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        insets = { left = 0, right = 0, top = 0, bottom = 0 }
+    },
+    ["Transparent"] = {
+        bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
+        edgeFile = "Interface\\Buttons\\WHITE8X8",
+        tile = true,
+        tileEdge = true,
+        tileSize = 16,
+        edgeSize = 1,
+        insets = { left = 0, right = 0, top = 0, bottom = 0 }
+    }
+}
+
 local WIDTH_BY_LOCALE = {
     enUS = {20, 16, 9, 6.5, 3},
     zhCN = {14, 12, 6.5, 4.5, 3},
@@ -318,19 +343,6 @@ IIOEquipmentSummaryFrameMixin = {}
 
 function IIOEquipmentSummaryFrameMixin:OnLoad()
     BackdropTemplateMixin.OnBackdropLoaded(self)
-    self:SetBackdrop({
-        bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true,
-        tileEdge = true,
-        tileSize = 0,
-        edgeSize = 16,
-        insets = { left = 3, right = 3, top = 3, bottom = 3 },
-    })
-
-    if ElvUI then
-        self:SetTemplate("Transparent")
-    end
 
     self.slots = {}
     self.slotNum = 0
@@ -398,6 +410,17 @@ function IIOEquipmentSummaryFrameMixin:OnShow()
 end
 
 function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
+    if Module:GetConfig("style") == "Auto" then
+        if ElvUI or NDui then
+            self:SetBackdrop(STYLE["Transparent"])
+        else
+            self:SetBackdrop(STYLE["Blizzard"])
+        end
+    else
+        self:SetBackdrop(STYLE[Module:GetConfig("style")]) 
+    end
+    
+
     for i, entry in pairs(self.slots) do
         entry:UpdateAppearance()
     end
@@ -765,7 +788,7 @@ local function UpdateSummaryPoints()
         IIOEquipmentSummaryPlayerFrame:Show()
         IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
         IIOEquipmentSummaryPlayerFrame:SetParent(SettingsPanel)
-        IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", SettingsPanel, "TOPRIGHT")
+        IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", SettingsPanel, "TOPRIGHT", 2, 0)
     elseif Module:GetConfig(CONFIG_INSPECT_ENABLE) and InspectFrame and InspectFrame:IsVisible() then
         IIOEquipmentSummaryInspectFrame:Show()
 
@@ -779,11 +802,11 @@ local function UpdateSummaryPoints()
         if PaperDollFrame:IsVisible() then
             IIOEquipmentSummaryInspectFrame:ClearAllPoints()
             IIOEquipmentSummaryInspectFrame:SetParent(PaperDollFrame)
-            IIOEquipmentSummaryInspectFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
+            IIOEquipmentSummaryInspectFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT", 2, 0)
         else
             IIOEquipmentSummaryInspectFrame:ClearAllPoints()
             IIOEquipmentSummaryInspectFrame:SetParent(InspectFrame)
-            IIOEquipmentSummaryInspectFrame:SetPoint("TOPLEFT", InspectFrame, "TOPRIGHT")
+            IIOEquipmentSummaryInspectFrame:SetPoint("TOPLEFT", InspectFrame, "TOPRIGHT", 2, 0)
         end
     elseif Module:GetConfig(CONFIG_PLAYER_ENABLE) and PaperDollFrame:IsVisible() then
         IIOEquipmentSummaryInspectFrame:Hide()
@@ -791,7 +814,7 @@ local function UpdateSummaryPoints()
 
         IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
         IIOEquipmentSummaryPlayerFrame:SetParent(PaperDollFrame)
-        IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT")
+        IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT", 2, 0)
     else
         IIOEquipmentSummaryInspectFrame:Hide()
         IIOEquipmentSummaryPlayerFrame:Hide()

@@ -989,6 +989,41 @@ local settings = {
                     default = true
                 },
                 {
+                    -- 风格
+                    controlType = CONTROL_TYPE.DROPDOWN,
+                    settingType = SETTING_TYPE.ADDON_VARIABLE,
+                    name = L["equipmentSummary.style.title"],
+                    tooltip = L["equipmentSummary.style.tooltip"],
+                    key = "equipmentSummary.style",
+                    default = "Auto",
+                    options = {
+                        {
+                            "Auto",
+                            L["equipmentSummary.style.auto"],
+                            ""
+                        },
+                        {
+                            "Blizzard",
+                            L["equipmentSummary.style.blizzard"],
+                            ""
+                        },
+                        {
+                            "NoBorder",
+                            L["equipmentSummary.style.noBorder"],
+                            ""
+                        },
+                        {
+                            "Transparent",
+                            L["equipmentSummary.style.transparent"],
+                            ""
+                        }
+                    },
+                    onValueChanged = function(value)
+                        IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
+                        IIOEquipmentSummaryInspectFrame:UpdateAppearance()
+                    end
+                },
+                {
                     -- 背景透明度
                     controlType = CONTROL_TYPE.SLIDER,
                     settingType = SETTING_TYPE.ADDON_VARIABLE,
@@ -997,7 +1032,7 @@ local settings = {
                     minValue = 1,
                     maxValue = 100,
                     step = 1,
-                    default = 80,
+                    default = 60,
                     onValueChanged = function(value)
                         IIOEquipmentSummaryPlayerFrame:UpdateAppearance()
                         IIOEquipmentSummaryInspectFrame:UpdateAppearance()
