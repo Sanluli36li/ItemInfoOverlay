@@ -31,15 +31,15 @@ local STAT_ICONS_STYLE = {
     },
     ["GearStatSummary"] = {
         { type = "text", r = 1, g = 0, b = 0, text = "爆" },
-        { type = "text", r = 1, g = 1, b = 0, text = "急" },
-        { type = "text", r = 1, g = 0, b = 1, text = "精" },
-        { type = "text", r = 0, g = 0, b = 1, text = "全" }
+        { type = "text", r = 255/255, g = 104/255, b =  63/255, text = "急" },
+        { type = "text", r = 198/255, g =  23/255, b = 255/255, text = "精" },
+        { type = "text", r =  23/255, g =  83/255, b = 191/255, text = "全" }
     },
     ["GearStatSummaryEn"] = {
-        { type = "text", r = 1, g = 0, b = 0, text = "C" },
-        { type = "text", r = 1, g = 1, b = 0, text = "H" },
-        { type = "text", r = 1, g = 0, b = 1, text = "M" },
-        { type = "text", r = 0, g = 0, b = 1, text = "V" }
+        { type = "text", r = 255/255, g = 104/255, b =  63/255, text = "C" },
+        { type = "text", r = 252/255, g = 255/255, b =  23/255, text = "H" },
+        { type = "text", r = 198/255, g =  23/255, b = 255/255, text = "M" },
+        { type = "text", r =  23/255, g =  83/255, b = 191/255, text = "V" }
     },
 }
 
