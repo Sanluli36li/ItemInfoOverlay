@@ -57,12 +57,20 @@
                 <FontString parentKey="ItemUpgrade" inherits="GameTooltipText" wordwrap="false" nonspacewrap="false">
                     <Size x="100"/>
                     <Anchors>
-                        <Anchor point="LEFT" relativeKey="$parent.ItemLink" relativePoint="RIGHT" x="2"/>
+                        <Anchor point="LEFT" relativeKey="$parent.ItemLink" relativePoint="RIGHT" x="8"/>
                     </Anchors>
                 </FontString>
 			</Layer>
         </Layers>
         <Frames>
+            <Frame parentKey="SlotNameBackdrop" inherits="BackdropTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.SlotName" relativePoint="LEFT" x="0"/>
+                    <Anchor point="RIGHT" relativeKey="$parent.SlotName" relativePoint="RIGHT" x="0"/>
+                    <Anchor point="TOP" relativeKey="$parent.SlotName" relativePoint="TOP" y="0"/>
+                    <Anchor point="BOTTOM" relativeKey="$parent.SlotName" relativePoint="BOTTOM" y="0"/>
+                </Anchors>
+            </Frame>
             <Frame parentKey="CritIcon" inherits="IIOEquipmentSummaryEntryStatIconTemplate">
                 <Anchors>
                     <Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="1" y="-1"/>
@@ -81,14 +89,6 @@
             <Frame parentKey="VersatilityIcon" inherits="IIOEquipmentSummaryEntryStatIconTemplate">
                 <Anchors>
                     <Anchor point="LEFT" relativeKey="$parent.MasteryIcon" relativePoint="RIGHT" x="1"/>
-                </Anchors>
-            </Frame>
-            <Frame parentKey="SlotNameBackdrop" inherits="BackdropTemplate">
-                <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.SlotName" relativePoint="LEFT" x="0"/>
-                    <Anchor point="RIGHT" relativeKey="$parent.SlotName" relativePoint="RIGHT" x="0"/>
-                    <Anchor point="TOP" relativeKey="$parent.SlotName" relativePoint="TOP" y="0"/>
-                    <Anchor point="BOTTOM" relativeKey="$parent.SlotName" relativePoint="BOTTOM" y="0"/>
                 </Anchors>
             </Frame>
         </Frames>
