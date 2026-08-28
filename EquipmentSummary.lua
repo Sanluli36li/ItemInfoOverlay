@@ -3,19 +3,28 @@ local ADDON_NAME, ItemInfoOverlay = ...
 local Module = ItemInfoOverlay:NewModule("equipmentSummary")
 local Utils = ItemInfoOverlay:GetModule("utils")
 local L = ItemInfoOverlay.Locale
-local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 local CONFIG_PLAYER_ENABLE = "player.enable"
 local CONFIG_INSPECT_ENABLE = "inspect.enable"
 local CONFIG_SLOT_NAME = "slotName.enable"
 local CONFIG_STAT_ICON = "statIcon.enable"
 local CONFIG_STAT_ICON_STYLE = "statIcon.style"
+local CONFIG_STAT_ICON_TEXT_OFFSET_X = "statIcon.text.offsetX"
+local CONFIG_STAT_ICON_TEXT_OFFSET_Y = "statIcon.text.offsetY"
+local CONFIG_STYLE = "style"
+local CONFIG_FONT = "font"
 local CONFIG_FONT_SIZE = "fontSize"
+local CONFIG_TITLE_FONT = "title.font"
 local CONFIG_TITLE_FONT_SIZE = "title.fontSize"
 local CONFIG_ITEM_SETS = "itemSets.enable"
 local CONFIG_ITEM_SETS_UNIQUE = "itemSets.unique"
 local CONFIG_ITEM_STATS = "itemStats.enable"
 local CONFIG_ITEM_LEVEL_COLOR = "itemLevel.color"
+local CONFIG_ITEM_LEVEL_STYLE = "itemLevel.style"
+local CONFIG_ITEM_UPGRADE_TRACK = "itemUpgradeTrack.enable"
+local CONFIG_ITEM_UPGRADE_TRACK_STYLE = "itemUpgradeTrack.style"
+local CONFIG_BACKDROP_ALPHA = "backdrop.alpha"
+local CONFIG_ENCHANT_AND_SOCKETS = "enchantAndSockets.enable"
 
 local ITEM_LEVEL_AND_SPEC_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d", "%%.1f").."|r %s%s%s|r\n "
 local ITEM_LEVEL_AND_SPEC_WITH_PVP_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d", "%%.1f").."|r %s%s%s|r\n|cffffd200"..ITEM_UPGRADE_PVP_ITEM_LEVEL_STAT_FORMAT:gsub("%%d", "%%.1f").."|r\n "
@@ -118,10 +127,10 @@ end
 function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     local _, _, style = GameTooltipText:GetFont()
 
-    self.SlotName:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE), style)
-    self.ItemLevel:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE), style)
-    self.ItemLink:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE), style)
-    self.ItemUpgrade:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.SlotName:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemLevel:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemLink:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemUpgrade:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
 
     local iconStyle = STAT_ICONS_STYLE[Module:GetConfig(CONFIG_STAT_ICON_STYLE)]
 
@@ -133,8 +142,8 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.CritIcon.Text:Hide()
     elseif iconStyle[1].type == "text" then
         self.CritIcon.Icon:Hide()
-        self.CritIcon.Text:SetPoint("CENTER", self.CritIcon, "CENTER", Module:GetConfig("statIcon.text.offsetX"), Module:GetConfig("statIcon.text.offsetY"))
-        self.CritIcon.Text:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
+        self.CritIcon.Text:SetPoint("CENTER", self.CritIcon, "CENTER", Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_X), Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_Y))
+        self.CritIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
         self.CritIcon.Text:SetText(iconStyle[1].text)
         self.CritIcon.Text:SetTextColor(iconStyle[1].r, iconStyle[1].g, iconStyle[1].b)
         self.CritIcon.Text:Show()
@@ -148,8 +157,8 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.HasteIcon.Text:Hide()
     elseif iconStyle[2].type == "text" then
         self.HasteIcon.Icon:Hide()
-        self.HasteIcon.Text:SetPoint("CENTER", self.HasteIcon, "CENTER", Module:GetConfig("statIcon.text.offsetX"), Module:GetConfig("statIcon.text.offsetY"))
-        self.HasteIcon.Text:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
+        self.HasteIcon.Text:SetPoint("CENTER", self.HasteIcon, "CENTER", Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_X), Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_Y))
+        self.HasteIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
         self.HasteIcon.Text:SetText(iconStyle[2].text)
         self.HasteIcon.Text:SetTextColor(iconStyle[2].r, iconStyle[2].g, iconStyle[2].b)
         self.HasteIcon.Text:Show()
@@ -163,8 +172,8 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.MasteryIcon.Text:Hide()
     elseif iconStyle[3].type == "text" then
         self.MasteryIcon.Icon:Hide()
-        self.MasteryIcon.Text:SetPoint("CENTER", self.MasteryIcon, "CENTER", Module:GetConfig("statIcon.text.offsetX"), Module:GetConfig("statIcon.text.offsetY"))
-        self.MasteryIcon.Text:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
+        self.MasteryIcon.Text:SetPoint("CENTER", self.MasteryIcon, "CENTER", Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_X), Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_Y))
+        self.MasteryIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
         self.MasteryIcon.Text:SetText(iconStyle[3].text)
         self.MasteryIcon.Text:SetTextColor(iconStyle[3].r, iconStyle[3].g, iconStyle[3].b)
         self.MasteryIcon.Text:Show()
@@ -178,8 +187,8 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.VersatilityIcon.Text:Hide()
     elseif iconStyle[4].type == "text" then
         self.VersatilityIcon.Icon:Hide()
-        self.VersatilityIcon.Text:SetPoint("CENTER", self.VersatilityIcon, "CENTER", Module:GetConfig("statIcon.text.offsetX"), Module:GetConfig("statIcon.text.offsetY"))
-        self.VersatilityIcon.Text:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
+        self.VersatilityIcon.Text:SetPoint("CENTER", self.VersatilityIcon, "CENTER", Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_X), Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_Y))
+        self.VersatilityIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
         self.VersatilityIcon.Text:SetText(iconStyle[4].text)
         self.VersatilityIcon.Text:SetTextColor(iconStyle[4].r, iconStyle[4].g, iconStyle[4].b)
         self.VersatilityIcon.Text:Show()
@@ -227,8 +236,8 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     self.ItemLevel:SetWidth(itemLevelWidth)
     self.ItemLevel:SetText(temp)
 
-    self.ItemLink:SetWidth((Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig("itemUpgradeTrack.enable") and WIDTH_RATE[2] or WIDTH_RATE[1])) - itemLevelWidth)
-    self.ItemUpgrade:SetWidth(Module:GetConfig("itemUpgradeTrack.enable") and (WIDTH_RATE[Module:GetConfig("itemUpgradeTrack.style") + 2] * Module:GetConfig(CONFIG_FONT_SIZE)) or 0)
+    self.ItemLink:SetWidth((Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1])) - itemLevelWidth)
+    self.ItemUpgrade:SetWidth(Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and (WIDTH_RATE[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) + 2] * Module:GetConfig(CONFIG_FONT_SIZE)) or 0)
 end
 
 function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, itemLink, itemLevel)
@@ -236,13 +245,13 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
     self.slot = slot
     itemLink = itemLink or GetInventoryItemLink(unit, slot)
     if itemLink then
-        
+
         itemLevel = itemLevel or Utils.GetItemLevelFromTooltipInfo(C_TooltipInfo.GetInventoryItem(unit, slot))
 
         if itemLevel and Module:GetConfig(CONFIG_ITEM_LEVEL_COLOR) then
             itemLevel = Utils.GetColoredItemLevelText(itemLevel, itemLink)
         end
-        
+
         -- 从API获取属性, 而非鼠标提示, 避免绿字分布被附魔/宝石污染
         local stats = C_Item.GetItemStats(itemLink)
         if Module:GetConfig(CONFIG_STAT_ICON) and stats then
@@ -258,7 +267,7 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
 
         self.ItemLevel:SetText(itemLevel)
 
-        if Module:GetConfig("itemUpgradeTrack.enable") then
+        if Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) then
             local itemUpgradeInfo = C_Item.GetItemUpgradeInfo(itemLink)
             if itemUpgradeInfo and itemUpgradeInfo.trackString then
                 local level = itemUpgradeInfo.currentLevel.."/"..itemUpgradeInfo.maxLevel
@@ -268,11 +277,11 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
                     level = "-/-"
                 end
 
-                if Module:GetConfig("itemUpgradeTrack.style") == 1 then
+                if Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) == 1 then
                     self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..itemUpgradeInfo.trackString.." "..level.."]", itemLink))
-                elseif Module:GetConfig("itemUpgradeTrack.style") == 2 then
+                elseif Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) == 2 then
                     self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..itemUpgradeInfo.trackString.."]", itemLink))
-                elseif Module:GetConfig("itemUpgradeTrack.style") == 3 then
+                elseif Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) == 3 then
                     self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..level.."]", itemLink))
                 end
             elseif string.find(itemLink, "|A:") then
@@ -409,14 +418,14 @@ function IIOEquipmentSummaryFrameMixin:OnShow()
 end
 
 function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
-    if Module:GetConfig("style") == "Auto" then
+    if Module:GetConfig(CONFIG_STYLE) == "Auto" then
         if ElvUI or NDui then
             self:SetBackdrop(STYLE["Transparent"])
         else
             self:SetBackdrop(STYLE["Blizzard"])
         end
     else
-        self:SetBackdrop(STYLE[Module:GetConfig("style")])
+        self:SetBackdrop(STYLE[Module:GetConfig(CONFIG_STYLE)])
     end
 
     for i, entry in pairs(self.slots) do
@@ -424,23 +433,23 @@ function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
     end
 
     local _, _, style = GameTooltipText:GetFont()
-    self.SubTitle:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.SubTitle:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
 
-    self.InfoText:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE), style)
-    self.ItemStatsText1:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE), style)
-    self.ItemStatsText2:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE), style)
-    self.ItemStatsText3:SetFont(Module:GetConfig("font"), Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.InfoText:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemStatsText1:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemStatsText2:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.ItemStatsText3:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
 
     _, _, style = GameTooltipHeaderText:GetFont()
-    self.Title:SetFont(Module:GetConfig("title.font"), Module:GetConfig(CONFIG_TITLE_FONT_SIZE), style)
+    self.Title:SetFont(Module:GetConfig(CONFIG_TITLE_FONT), Module:GetConfig(CONFIG_TITLE_FONT_SIZE), style)
 
-    self:SetBackdropColor(0, 0, 0, Module:GetConfig("backdrop.alpha") * 0.01)
-    
+    self:SetBackdropColor(0, 0, 0, Module:GetConfig(CONFIG_BACKDROP_ALPHA) * 0.01)
+
     local width = 12
             + (Module:GetConfig(CONFIG_SLOT_NAME) and (Module:GetConfig(CONFIG_FONT_SIZE) * 3 + 2) or 0)
             + (Module:GetConfig(CONFIG_STAT_ICON) and (Module:GetConfig(CONFIG_FONT_SIZE) * 4 + 5) or 0)
-            + (Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig("itemUpgradeTrack.enable") and WIDTH_RATE[2] or WIDTH_RATE[1]))
-            + (Module:GetConfig("itemUpgradeTrack.enable") and (Module:GetConfig(CONFIG_FONT_SIZE) * WIDTH_RATE[Module:GetConfig("itemUpgradeTrack.style") + 2]) + 6 or 0)
+            + (Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1]))
+            + (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and (Module:GetConfig(CONFIG_FONT_SIZE) * WIDTH_RATE[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) + 2]) + 6 or 0)
             + 12
 
     self:SetWidth(width)
@@ -571,7 +580,6 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                     -- 装备唯一物品
                     local isUnique, limitCategoryName, limitCategoryCount, limitCategoryID = Utils.GetItemUniquenessByID(link)
                     if Module:GetConfig(CONFIG_ITEM_SETS_UNIQUE) and isUnique and limitCategoryID then
-                        
                         if limitCategoryCount > 1 then  -- 忽略仅能装备一件的装备唯一分类
                             if itemUnique[limitCategoryID] then
                                 itemUnique[limitCategoryID][1] = itemUnique[limitCategoryID][1] + 1
@@ -583,10 +591,10 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                     end
                 end
 
-                if Module:GetConfig("itemLevel.style") == 2 then
+                if Module:GetConfig(CONFIG_ITEM_LEVEL_STYLE) == 2 then
                     -- 使用PvP物品等级
                     entry:SetItemFromUnitInventory(self.unit, i, link, pvpItemLevel)
-                elseif Module:GetConfig("itemLevel.style") == 1 and currentItemLevel == pvpItemLevel then
+                elseif Module:GetConfig(CONFIG_ITEM_LEVEL_STYLE) == 1 and currentItemLevel == pvpItemLevel then
                     -- 随PvP状态动态调整
                     entry:SetItemFromUnitInventory(self.unit, i, link, pvpItemLevel)
                 else
@@ -606,11 +614,8 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                                 totalPvpItemLevel = totalPvpItemLevel + (pvpItemLevel or itemLevel)
                             end
                         end
-                        
                     end
-                    
                 end
-
                 entry:Clear()
             end
         end
@@ -619,7 +624,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
         local text = ""
 
-        if Module:GetConfig("enchantAndSockets.enable") then
+        if Module:GetConfig(CONFIG_ENCHANT_AND_SOCKETS) then
             text = text..format("|cffffd200%s: |r|c%s%d|r / %d    |cffffd200%s: |r|c%s%d|r / %d\n",
             GetItemClassInfo(8), hasEnchantNum == maxEnchantNum and "ff00ff00" or "ffff0000", hasEnchantNum, maxEnchantNum,
             GetItemClassInfo(3), gemNum == socketNum and "ff00ff00" or "ffff0000", gemNum, socketNum)
@@ -735,7 +740,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             + self.InfoText:GetStringHeight()
             + self.ItemStatsText1:GetStringHeight()
             + 12
-        
+
         self:SetHeight(height)
     else
 
@@ -746,7 +751,7 @@ function IIOEquipmentSummaryFrameMixin:RefreshItemLevelAndSpec(itemLevel, pvpIte
     local className, classFilename = UnitClass(self.unit)
     local classColor = C_ClassColor.GetClassColor(classFilename)
     local hexColorMarkup = "|cfffffff"
-    
+
     if classColor then
         hexColorMarkup = classColor:GenerateHexColorMarkup()
     end
@@ -819,8 +824,6 @@ local function UpdateSummaryPoints()
         IIOEquipmentSummaryInspectFrame:Hide()
         IIOEquipmentSummaryPlayerFrame:Hide()
     end
-
-    
 
 end
 
