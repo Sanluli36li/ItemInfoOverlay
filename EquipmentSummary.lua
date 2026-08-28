@@ -70,8 +70,8 @@ local STYLE = {
 
 local WIDTH_BY_LOCALE = {
     enUS = {20, 16, 9, 6.5, 3},
-    zhCN = {14, 12, 6.5, 4.5, 3},
-    zhTW = {14, 12, 6.5, 4.5, 3},
+    zhCN = {14, 12, 5.5, 3.5, 3},
+    zhTW = {14, 12, 5.5, 3.5, 3},
 }
 
 local WIDTH_RATE = WIDTH_BY_LOCALE[GetLocale()] or WIDTH_BY_LOCALE.enUS
@@ -735,7 +735,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             + self.ItemStatsText1:GetStringHeight()
             + 12
         local width = 12
-            + (Module:GetConfig(CONFIG_SLOT_NAME) and 42 or 0)
+            + (Module:GetConfig(CONFIG_SLOT_NAME) and Module:GetConfig(CONFIG_FONT_SIZE) * 3 or 0)
             + (Module:GetConfig(CONFIG_STAT_ICON) and (Module:GetConfig(CONFIG_FONT_SIZE) * 4 + 8) or 0)
             + (Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig("itemUpgradeTrack.enable") and WIDTH_RATE[2] or WIDTH_RATE[1]))
             + 12
