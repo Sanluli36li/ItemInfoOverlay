@@ -282,7 +282,7 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
                 -- 分离制造物品的品质图标
                 local level = string.match(itemLink, "|A:.+|a")
                 itemLink = itemLink:gsub("|A:.+|a", "")
-                self.ItemUpgrade:SetText(level)
+                self.ItemUpgrade:SetText(" "..level)
             else
                 self.ItemUpgrade:SetText()
             end
