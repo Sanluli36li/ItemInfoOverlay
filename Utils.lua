@@ -378,7 +378,7 @@ function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
         if itemQuality and itemQuality < 5 and itemLevel < select(1, GetAverageItemLevel()) - ItemInfoOverlay:GetConfig("color.itemLevel.lowLevel.threshold") then
             -- 传说品质以下 / 物品等级 < 最高平均物品等级 - 设置的等级差
             r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.lowLevel.color"))
-        end 
+        end
     end
 
     return format("|cff%02x%02x%02x%s|r", r * 255, g * 255, b * 255, itemLevel)
@@ -510,7 +510,7 @@ local function isPvpItem(itemLink, pvpItemLevel)
     end
 
     local itemEquipLoc, _, _, _, _, _, _, setID= select(9, C_Item.GetItemInfo(itemLink))
-    
+
     if setID and itemEquipLoc == "INVTYPE_HEAD"
     or itemEquipLoc == "INVTYPE_SHOULDER"
     or itemEquipLoc == "INVTYPE_CHEST" or itemEquipLoc == "INVTYPE_ROBE"

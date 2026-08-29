@@ -282,7 +282,7 @@ function IIOCharacterFrameItemInfoOverlayMixin:UpdateLines()
 end
 
 function IIOCharacterFrameItemInfoOverlayMixin:SetItemData(itemLevel, itemLink, tooltipInfo, pvpItemLevel)
-    local itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType, 
+    local itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType,
     itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
     expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
 

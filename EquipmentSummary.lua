@@ -494,7 +494,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
             local link = GetInventoryItemLink(self.unit, i)
 
             if link then
-                local itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType, 
+                local itemName, _, itemQuality, _, itemMinLevel, itemType, itemSubType,
                 itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
                 expacID, setID, isCraftingReagent = C_Item.GetItemInfo(link)
 

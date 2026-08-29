@@ -1170,7 +1170,7 @@ local settings = {
                                 IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.equipmentSummary.statIcon.enable"):GetValue() 
+                                return Settings.GetSetting("ItemInfoOverlay.equipmentSummary.statIcon.enable"):GetValue()
                                 and (Settings.GetSetting("ItemInfoOverlay.equipmentSummary.statIcon.style"):GetValue() == "GearStatSummary"
                                 or Settings.GetSetting("ItemInfoOverlay.equipmentSummary.statIcon.style"):GetValue() == "GearStatSummaryEn")
                             end
@@ -1191,7 +1191,7 @@ local settings = {
                                 IIOEquipmentSummaryInspectFrame:UpdateAppearance()
                             end,
                             isVisible = function ()
-                                return Settings.GetSetting("ItemInfoOverlay.equipmentSummary.statIcon.enable"):GetValue() 
+                                return Settings.GetSetting("ItemInfoOverlay.equipmentSummary.statIcon.enable"):GetValue()
                                 and (Settings.GetSetting("ItemInfoOverlay.equipmentSummary.statIcon.style"):GetValue() == "GearStatSummary"
                                 or Settings.GetSetting("ItemInfoOverlay.equipmentSummary.statIcon.style"):GetValue() == "GearStatSummaryEn")
                             end

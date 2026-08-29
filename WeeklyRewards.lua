@@ -52,7 +52,7 @@ local function CreateObstruction(frame)
                 else
                     local itemLevel = C_Item.GetDetailedItemLevelInfo(hyperlink)
                     local progressText = string.format(ITEM_LEVEL, itemLevel)
-                    
+
                     frame.obstruction.text:SetText(Utils.GetColoredItemLevelText(progressText, hyperlink))
                 end
             end
