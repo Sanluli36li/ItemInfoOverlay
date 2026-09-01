@@ -801,7 +801,7 @@ local function UpdateSummaryPoints()
             IIOEquipmentSummaryPlayerFrame:Show()
             IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
             IIOEquipmentSummaryPlayerFrame:SetParent(IIOEquipmentSummaryInspectFrame)
-            IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", IIOEquipmentSummaryInspectFrame, "TOPRIGHT")
+            IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", IIOEquipmentSummaryInspectFrame, "TOPRIGHT", 2, 0)
         end
 
         if PaperDollFrame:IsVisible() then
