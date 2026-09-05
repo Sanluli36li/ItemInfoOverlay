@@ -32,9 +32,9 @@ local ITEM_SET_BONUS_PATTERN = ITEM_SET_BONUS:gsub("%%s", "(.+)")
 local ITEM_SET_BONUS_GRAY_PATTERN = ITEM_SET_BONUS_GRAY:gsub("%(%%d%)", "%%(%%d+%%)"):gsub("%%s", "(.+)")
 
 local ITEM_UPGRADE_WIDTH_TEXT = {
-    [1] = L["color.itemLevel.itemUpgrade.myth"].." 1/6",
+    [1] = L["color.itemLevel.itemUpgrade.myth"].." 6/6",
     [2] = L["color.itemLevel.itemUpgrade.myth"],
-    [3] = "1/6",
+    [3] = "6/6",
 }
 
 local STAT_ICONS_STYLE = {
@@ -275,7 +275,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     self.ItemLevel:SetText(temp)
 
     temp = self.ItemUpgrade:GetText()
-    self.ItemUpgrade:SetText("["..ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)].."] ") -- 避免不同数字宽度不同导致超出，补一个空格
+    self.ItemUpgrade:SetText("["..ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)].."]")
     local itemUpgradeWidth = self.ItemUpgrade:GetUnboundedStringWidth()
     -- self.ItemUpgrade:SetWidth(itemUpgradeWidth)
     self.ItemUpgrade:SetText(temp)
