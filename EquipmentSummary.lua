@@ -277,7 +277,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     temp = self.ItemUpgrade:GetText()
     self.ItemUpgrade:SetText("["..ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)].."] ") -- 避免不同数字宽度不同导致超出，补一个空格
     local itemUpgradeWidth = self.ItemUpgrade:GetUnboundedStringWidth()
-    self.ItemUpgrade:SetWidth(itemUpgradeWidth)
+    -- self.ItemUpgrade:SetWidth(itemUpgradeWidth)
     self.ItemUpgrade:SetText(temp)
 
     self.ItemLink:SetWidth(Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1])
