@@ -31,6 +31,12 @@ local ITEM_LEVEL_AND_SPEC_WITH_PVP_FORMAT = "|cffffd200"..ITEM_LEVEL:gsub("%%d",
 local ITEM_SET_BONUS_PATTERN = ITEM_SET_BONUS:gsub("%%s", "(.+)")
 local ITEM_SET_BONUS_GRAY_PATTERN = ITEM_SET_BONUS_GRAY:gsub("%(%%d%)", "%%(%%d+%%)"):gsub("%%s", "(.+)")
 
+local ITEM_UPGRADE_WIDTH_TEXT = {
+    [1] = L["color.itemLevel.itemUpgrade.myth"].." 1/6",
+    [2] = L["color.itemLevel.itemUpgrade.myth"],
+    [3] = "1/6",
+}
+
 local STAT_ICONS_STYLE = {
     ["Armory"] = {
         { type = "texture", r = 224/255, g =  28/255, b =  28/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\crit.png", border = true },
@@ -247,14 +253,14 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
 
     if Module:GetConfig(CONFIG_STAT_ICON) then
         self.ItemLevel:ClearAllPoints()
-        self.ItemLevel:SetPoint("TOPLEFT", self.VersatilityIcon, "TOPRIGHT", 4, 0)
+        self.ItemLevel:SetPoint("TOPLEFT", self.VersatilityIcon, "TOPRIGHT", 8, 0)
     else
         self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint(
             "TOPLEFT",
             (Module:GetConfig(CONFIG_SLOT_NAME) and self.SlotName) or self,
             (Module:GetConfig(CONFIG_SLOT_NAME) and "TOPRIGHT") or "TOPLEFT",
-            (Module:GetConfig(CONFIG_SLOT_NAME) and 2) or 0,
+            (Module:GetConfig(CONFIG_SLOT_NAME) and 8) or 0,
             0
         )
         self:ToggleStats()
@@ -268,8 +274,16 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     self.ItemLevel:SetWidth(itemLevelWidth)
     self.ItemLevel:SetText(temp)
 
-    self.ItemLink:SetWidth((Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1])) - itemLevelWidth)
-    self.ItemUpgrade:SetWidth(Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and (WIDTH_RATE[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) + 2] * Module:GetConfig(CONFIG_FONT_SIZE)) or 0)
+    temp = self.ItemUpgrade:GetText()
+    self.ItemUpgrade:SetText("["..ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)].."] ") -- 避免不同数字宽度不同导致超出，补一个空格
+    local itemUpgradeWidth = self.ItemUpgrade:GetUnboundedStringWidth()
+    self.ItemUpgrade:SetWidth(itemUpgradeWidth)
+    self.ItemUpgrade:SetText(temp)
+
+    self.ItemLink:SetWidth(Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1])
+        - itemLevelWidth
+        + (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and (WIDTH_RATE[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) + 2] * Module:GetConfig(CONFIG_FONT_SIZE) + 8 - itemUpgradeWidth) or 0)
+    )
 end
 
 function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, itemLink, itemLevel)
@@ -479,9 +493,10 @@ function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
 
     local width = 12
             + (Module:GetConfig(CONFIG_SLOT_NAME) and (Module:GetConfig(CONFIG_FONT_SIZE) * 3 + 2) or 0)
-            + (Module:GetConfig(CONFIG_STAT_ICON) and (Module:GetConfig(CONFIG_FONT_SIZE) * 4 + 5) or 0)
-            + (Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1]))
-            + (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and (Module:GetConfig(CONFIG_FONT_SIZE) * WIDTH_RATE[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) + 2]) + 6 or 0)
+            + (Module:GetConfig(CONFIG_STAT_ICON) and (Module:GetConfig(CONFIG_FONT_SIZE) * 4 + 3) or 0)
+            + ((Module:GetConfig(CONFIG_SLOT_NAME) or Module:GetConfig(CONFIG_STAT_ICON)) and 8 or 0)
+            + (Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1])) + 2
+            + (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and (Module:GetConfig(CONFIG_FONT_SIZE) * WIDTH_RATE[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) + 2]) + 8 or 0)
             + 12
 
     self:SetWidth(width)
