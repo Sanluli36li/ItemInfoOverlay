@@ -33,22 +33,34 @@ local ITEM_SET_BONUS_GRAY_PATTERN = ITEM_SET_BONUS_GRAY:gsub("%(%%d%)", "%%(%%d+
 
 local STAT_ICONS_STYLE = {
     ["Armory"] = {
-        { type = "texture", r = 224/255, g =  28/255, b =  28/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\crit.png" },
-        { type = "texture", r =  14/255, g = 213/255, b = 155/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\haste.png" },
-        { type = "texture", r = 146/255, g =  86/255, b = 255/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\mastery.png" },
-        { type = "texture", r = 191/255, g = 191/255, b = 191/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\versatility.png" }
+        { type = "texture", r = 224/255, g =  28/255, b =  28/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\crit.png", border = true },
+        { type = "texture", r =  14/255, g = 213/255, b = 155/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\haste.png", border = true },
+        { type = "texture", r = 146/255, g =  86/255, b = 255/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\mastery.png", border = true },
+        { type = "texture", r = 191/255, g = 191/255, b = 191/255, texture = "Interface\\AddOns\\ItemInfoOverlay\\Media\\icon\\stats_Armory\\versatility.png", border = true }
     },
     ["GearStatSummary"] = {
-        { type = "text", r = 255/255, g = 104/255, b =  63/255, text = "爆" },
-        { type = "text", r = 252/255, g = 255/255, b =  23/255, text = "急" },
-        { type = "text", r = 198/255, g =  23/255, b = 255/255, text = "精" },
-        { type = "text", r =  23/255, g =  83/255, b = 191/255, text = "全" }
+        { type = "text", r = 255/255, g = 104/255, b =  63/255, text = "爆", style = "", border = true },
+        { type = "text", r = 252/255, g = 255/255, b =  23/255, text = "急", style = "", border = true },
+        { type = "text", r = 198/255, g =  23/255, b = 255/255, text = "精", style = "", border = true },
+        { type = "text", r =  23/255, g =  83/255, b = 191/255, text = "全", style = "", border = true }
+    },
+    ["GearStatSummaryNoBorder"] = {
+        { type = "text", r = 255/255, g = 104/255, b =  63/255, text = "爆", style = "OUTLINE", border = false },
+        { type = "text", r = 252/255, g = 255/255, b =  23/255, text = "急", style = "OUTLINE", border = false },
+        { type = "text", r = 198/255, g =  23/255, b = 255/255, text = "精", style = "OUTLINE", border = false },
+        { type = "text", r =  23/255, g =  83/255, b = 191/255, text = "全", style = "OUTLINE", border = false }
     },
     ["GearStatSummaryEn"] = {
-        { type = "text", r = 255/255, g = 104/255, b =  63/255, text = "C" },
-        { type = "text", r = 252/255, g = 255/255, b =  23/255, text = "H" },
-        { type = "text", r = 198/255, g =  23/255, b = 255/255, text = "M" },
-        { type = "text", r =  23/255, g =  83/255, b = 191/255, text = "V" }
+        { type = "text", r = 255/255, g = 104/255, b =  63/255, text = "C", style = "", border = true },
+        { type = "text", r = 252/255, g = 255/255, b =  23/255, text = "H", style = "", border = true },
+        { type = "text", r = 198/255, g =  23/255, b = 255/255, text = "M", style = "", border = true },
+        { type = "text", r =  23/255, g =  83/255, b = 191/255, text = "V", style = "", border = true }
+    },
+    ["GearStatSummaryEnNoBorder"] = {
+        { type = "text", r = 255/255, g = 104/255, b =  63/255, text = "C", style = "OUTLINE", border = false },
+        { type = "text", r = 252/255, g = 255/255, b =  23/255, text = "H", style = "OUTLINE", border = false },
+        { type = "text", r = 198/255, g =  23/255, b = 255/255, text = "M", style = "OUTLINE", border = false },
+        { type = "text", r =  23/255, g =  83/255, b = 191/255, text = "V", style = "OUTLINE", border = false }
     },
 }
 
@@ -136,6 +148,11 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
 
     self.CritIcon:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
     self.CritIcon.Backdrop:SetVertexColor(iconStyle[1].r, iconStyle[1].g, iconStyle[1].b, 1)
+    if iconStyle[1].border then
+        self.CritIcon.Backdrop:Show()
+    else
+        self.CritIcon.Backdrop:Hide()
+    end
     if iconStyle[1].type == "texture" then
         self.CritIcon.Icon:SetTexture(iconStyle[1].texture)
         self.CritIcon.Icon:Show()
@@ -143,7 +160,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     elseif iconStyle[1].type == "text" then
         self.CritIcon.Icon:Hide()
         self.CritIcon.Text:SetPoint("CENTER", self.CritIcon, "CENTER", Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_X), Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_Y))
-        self.CritIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
+        self.CritIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, iconStyle[1].style)
         self.CritIcon.Text:SetText(iconStyle[1].text)
         self.CritIcon.Text:SetTextColor(iconStyle[1].r, iconStyle[1].g, iconStyle[1].b)
         self.CritIcon.Text:Show()
@@ -151,6 +168,11 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
 
     self.HasteIcon:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
     self.HasteIcon.Backdrop:SetVertexColor(iconStyle[2].r, iconStyle[2].g, iconStyle[2].b, 1)
+    if iconStyle[2].border then
+        self.HasteIcon.Backdrop:Show()
+    else
+        self.HasteIcon.Backdrop:Hide()
+    end
     if iconStyle[2].type == "texture" then
         self.HasteIcon.Icon:SetTexture(iconStyle[2].texture)
         self.HasteIcon.Icon:Show()
@@ -158,7 +180,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     elseif iconStyle[2].type == "text" then
         self.HasteIcon.Icon:Hide()
         self.HasteIcon.Text:SetPoint("CENTER", self.HasteIcon, "CENTER", Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_X), Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_Y))
-        self.HasteIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
+        self.HasteIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, iconStyle[2].style)
         self.HasteIcon.Text:SetText(iconStyle[2].text)
         self.HasteIcon.Text:SetTextColor(iconStyle[2].r, iconStyle[2].g, iconStyle[2].b)
         self.HasteIcon.Text:Show()
@@ -166,6 +188,11 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
 
     self.MasteryIcon:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
     self.MasteryIcon.Backdrop:SetVertexColor(iconStyle[3].r, iconStyle[3].g, iconStyle[3].b, 1)
+    if iconStyle[3].border then
+        self.MasteryIcon.Backdrop:Show()
+    else
+        self.MasteryIcon.Backdrop:Hide()
+    end
     if iconStyle[3].type == "texture" then
         self.MasteryIcon.Icon:SetTexture(iconStyle[3].texture)
         self.MasteryIcon.Icon:Show()
@@ -173,7 +200,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     elseif iconStyle[3].type == "text" then
         self.MasteryIcon.Icon:Hide()
         self.MasteryIcon.Text:SetPoint("CENTER", self.MasteryIcon, "CENTER", Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_X), Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_Y))
-        self.MasteryIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
+        self.MasteryIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, iconStyle[3].style)
         self.MasteryIcon.Text:SetText(iconStyle[3].text)
         self.MasteryIcon.Text:SetTextColor(iconStyle[3].r, iconStyle[3].g, iconStyle[3].b)
         self.MasteryIcon.Text:Show()
@@ -181,6 +208,11 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
 
     self.VersatilityIcon:SetSize(Module:GetConfig(CONFIG_FONT_SIZE), Module:GetConfig(CONFIG_FONT_SIZE))
     self.VersatilityIcon.Backdrop:SetVertexColor(iconStyle[4].r, iconStyle[4].g, iconStyle[4].b, 1)
+    if iconStyle[4].border then
+        self.VersatilityIcon.Backdrop:Show()
+    else
+        self.VersatilityIcon.Backdrop:Hide()
+    end
     if iconStyle[4].type == "texture" then
         self.VersatilityIcon.Icon:SetTexture(iconStyle[4].texture)
         self.VersatilityIcon.Icon:Show()
@@ -188,7 +220,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     elseif iconStyle[4].type == "text" then
         self.VersatilityIcon.Icon:Hide()
         self.VersatilityIcon.Text:SetPoint("CENTER", self.VersatilityIcon, "CENTER", Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_X), Module:GetConfig(CONFIG_STAT_ICON_TEXT_OFFSET_Y))
-        self.VersatilityIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, "")
+        self.VersatilityIcon.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE) - 1, iconStyle[4].style)
         self.VersatilityIcon.Text:SetText(iconStyle[4].text)
         self.VersatilityIcon.Text:SetTextColor(iconStyle[4].r, iconStyle[4].g, iconStyle[4].b)
         self.VersatilityIcon.Text:Show()

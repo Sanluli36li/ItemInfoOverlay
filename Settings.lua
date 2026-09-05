@@ -1143,8 +1143,18 @@ local settings = {
                                 "\n|cffff683f爆|r击 / |cfffcff17急|r速 / |cffc617ff精|r通 / |cff1753bf全|r能"
                             },
                             {
+                                "GearStatSummaryNoBorder",
+                                L["equipmentSummary.statIcon.style.gearStatSummary.title"].." ("..L["equipmentSummary.style.noBorder"]..") ".."  |cffff683f爆|cfffcff17急|cffc617ff精|cff1753bf全|r",
+                                "\n|cffff683f爆|r击 / |cfffcff17急|r速 / |cffc617ff精|r通 / |cff1753bf全|r能"
+                            },
+                            {
                                 "GearStatSummaryEn",
                                 L["equipmentSummary.statIcon.style.gearStatSummary.title"].."  |cffff683fC|cfffcff17H|cffc617ffM|cff1753bfV|r",
+                                "\n|cffff683fC|rrit / |cfffcff17H|raste / |cffc617ffM|rastery / |cff1753bfV|rersatility"
+                            },
+                            {
+                                "GearStatSummaryEnNoBorder",
+                                L["equipmentSummary.statIcon.style.gearStatSummary.title"].." ("..L["equipmentSummary.style.noBorder"]..") ".."  |cffff683fC|cfffcff17H|cffc617ffM|cff1753bfV|r",
                                 "\n|cffff683fC|rrit / |cfffcff17H|raste / |cffc617ffM|rastery / |cff1753bfV|rersatility"
                             }
                         },
