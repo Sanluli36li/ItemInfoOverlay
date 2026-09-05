@@ -323,10 +323,12 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
                     level = "-/-"
                 end
 
+                local itemUpgradeString = L["alias.itemUpgrade"][itemUpgradeInfo.trackString] or itemUpgradeInfo.trackString
+
                 if Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) == 1 then
-                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..itemUpgradeInfo.trackString.." "..level.."]", itemLink))
+                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..itemUpgradeString.." "..level.."]", itemLink))
                 elseif Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) == 2 then
-                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..itemUpgradeInfo.trackString.."]", itemLink))
+                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..itemUpgradeString.."]", itemLink))
                 elseif Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) == 3 then
                     self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..level.."]", itemLink))
                 end

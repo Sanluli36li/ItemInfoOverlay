@@ -4,6 +4,12 @@ local L = ItemInfoOverlay.Locale
 
 L["addon.name"] = ADDON_NAME
 L["addon.sanluliUtils.tooltip"] = "\n\n|cffff0000This feature comes from \"SanluliUtils\". If you have this addon loaded, this feature will not work|r"
+L["alias.itemUpgrade"] = {
+    ["Explorer"] = "Exp",
+    ["Adventurer"] = "Adv",
+    ["Veteran"] = "Vet",
+    ["Champion"] = "Cham",
+}
 L["characterFrame.durability.title"] = "Show Durability"
 L["characterFrame.durability.tooltip"] = "Display equipment durability percentage on character frame"
 L["characterFrame.durability.font"] = "Durability Font"

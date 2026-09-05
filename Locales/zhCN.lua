@@ -8,6 +8,10 @@ local L = ItemInfoOverlay.Locale
 
 L["addon.name"] = ADDON_NAME
 L["addon.sanluliUtils.tooltip"] = "\n\n|cffff0000此功能来自\"SanluliUtils\", 若你已载入该插件, 此功能不会生效|r"
+L["alias.itemUpgrade"] = {
+    ["探索者"] = "探索",
+    ["冒险者"] = "冒险",
+}
 L["characterFrame.durability.title"] = "显示耐久度"
 L["characterFrame.durability.tooltip"] = "在角色面板显示装备的耐久度百分比"
 L["characterFrame.durability.font"] = "耐久度字体"
