@@ -243,9 +243,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self.CritIcon:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 2, 0)
 
         self.SlotName:SetWidth(Module:GetConfig(CONFIG_FONT_SIZE) * 3)
-
         self.SlotNameBackdrop:Show()
-
         self.SlotName:Show()
     else
         self.CritIcon:ClearAllPoints()
@@ -257,15 +255,13 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     if Module:GetConfig(CONFIG_STAT_ICON) then
         self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint("TOPLEFT", self.VersatilityIcon, "TOPRIGHT", 8, 0)
+    elseif Module:GetConfig(CONFIG_SLOT_NAME) then
+        self.ItemLevel:ClearAllPoints()
+        self.ItemLevel:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 8, 0)
+        self:ToggleStats()
     else
         self.ItemLevel:ClearAllPoints()
-        self.ItemLevel:SetPoint(
-            "TOPLEFT",
-            (Module:GetConfig(CONFIG_SLOT_NAME) and self.SlotName) or self,
-            (Module:GetConfig(CONFIG_SLOT_NAME) and "TOPRIGHT") or "TOPLEFT",
-            (Module:GetConfig(CONFIG_SLOT_NAME) and 8) or 0,
-            0
-        )
+        self.ItemLevel:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)
         self:ToggleStats()
     end
 
