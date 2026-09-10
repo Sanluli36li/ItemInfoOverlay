@@ -493,7 +493,8 @@ function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
     self:SetBackdropColor(0, 0, 0, Module:GetConfig(CONFIG_BACKDROP_ALPHA) * 0.01)
 
     local width = 12
-            + (Module:GetConfig(CONFIG_SLOT_NAME) and (Module:GetConfig(CONFIG_FONT_SIZE) * 3 + 2) or 0)
+            + (Module:GetConfig(CONFIG_SLOT_NAME) and (Module:GetConfig(CONFIG_FONT_SIZE) * 3) or 0)
+            + ((Module:GetConfig(CONFIG_SLOT_NAME) and Module:GetConfig(CONFIG_STAT_ICON)) and 2 or 0)
             + (Module:GetConfig(CONFIG_STAT_ICON) and (Module:GetConfig(CONFIG_FONT_SIZE) * 4 + 3) or 0)
             + ((Module:GetConfig(CONFIG_SLOT_NAME) or Module:GetConfig(CONFIG_STAT_ICON)) and 8 or 0)
             + (Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1])) + 2
