@@ -285,7 +285,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
 
     self.ItemLink:SetWidth(Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1])
         - itemLevelWidth
-        + (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and (WIDTH_RATE[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) + 2] * Module:GetConfig(CONFIG_FONT_SIZE) + 8 - itemUpgradeWidth) or 0)
+        + (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and (WIDTH_RATE[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) + 2] * Module:GetConfig(CONFIG_FONT_SIZE) - itemUpgradeWidth) or 0)
     )
 end
 
