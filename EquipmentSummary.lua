@@ -251,28 +251,23 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     self:SetHeight(Module:GetConfig(CONFIG_FONT_SIZE))
 
     if Module:GetConfig(CONFIG_SLOT_NAME) then
-        self.CritIcon:ClearAllPoints()
         self.CritIcon:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 2, 0)
 
         self.SlotName:SetWidth(Module:GetConfig(CONFIG_FONT_SIZE) * 3)
         self.SlotNameBackdrop:Show()
         self.SlotName:Show()
     else
-        self.CritIcon:ClearAllPoints()
         self.CritIcon:SetPoint("TOPLEFT", self)
         self.SlotName:Hide()
         self.SlotNameBackdrop:Hide()
     end
 
     if Module:GetConfig(CONFIG_STAT_ICON) then
-        self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint("TOPLEFT", self.VersatilityIcon, "TOPRIGHT", 8, 0)
     elseif Module:GetConfig(CONFIG_SLOT_NAME) then
-        self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 8, 0)
         self:ToggleStats()
     else
-        self.ItemLevel:ClearAllPoints()
         self.ItemLevel:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)
         self:ToggleStats()
     end
@@ -861,7 +856,6 @@ local function UpdateSummaryPoints()
 
     if preview then
         IIOEquipmentSummaryPlayerFrame:Show()
-        IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
         IIOEquipmentSummaryPlayerFrame:SetParent(SettingsPanel)
         IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", SettingsPanel, "TOPRIGHT", 2, 0)
     elseif Module:GetConfig(CONFIG_INSPECT_ENABLE) and InspectFrame and InspectFrame:IsVisible() then
@@ -869,17 +863,14 @@ local function UpdateSummaryPoints()
 
         if Module:GetConfig(CONFIG_PLAYER_ENABLE) then
             IIOEquipmentSummaryPlayerFrame:Show()
-            IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
             IIOEquipmentSummaryPlayerFrame:SetParent(IIOEquipmentSummaryInspectFrame)
             IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", IIOEquipmentSummaryInspectFrame, "TOPRIGHT", 2, 0)
         end
 
         if PaperDollFrame:IsVisible() then
-            IIOEquipmentSummaryInspectFrame:ClearAllPoints()
             IIOEquipmentSummaryInspectFrame:SetParent(PaperDollFrame)
             IIOEquipmentSummaryInspectFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT", 2, 0)
         else
-            IIOEquipmentSummaryInspectFrame:ClearAllPoints()
             IIOEquipmentSummaryInspectFrame:SetParent(InspectFrame)
             IIOEquipmentSummaryInspectFrame:SetPoint("TOPLEFT", InspectFrame, "TOPRIGHT", 2, 0)
         end
@@ -887,7 +878,6 @@ local function UpdateSummaryPoints()
         IIOEquipmentSummaryInspectFrame:Hide()
         IIOEquipmentSummaryPlayerFrame:Show()
 
-        IIOEquipmentSummaryPlayerFrame:ClearAllPoints()
         IIOEquipmentSummaryPlayerFrame:SetParent(PaperDollFrame)
         IIOEquipmentSummaryPlayerFrame:SetPoint("TOPLEFT", characterRelative, "TOPRIGHT", 2, 0)
     else
