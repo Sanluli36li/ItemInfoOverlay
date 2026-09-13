@@ -317,6 +317,8 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
         if Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) then
             local itemUpgradeInfo = C_Item.GetItemUpgradeInfo(itemLink)
             if itemUpgradeInfo and itemUpgradeInfo.trackString then
+                self.ItemLink:SetWidth(itemLinkWidth)
+
                 local level = itemUpgradeInfo.currentLevel.."/"..itemUpgradeInfo.maxLevel
 
                 if itemUpgradeInfo.maxLevel == 0 then
@@ -335,10 +337,12 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
                 end
             elseif string.find(itemLink, "|A:") then
                 -- 分离制造物品的品质图标
+                self.ItemLink:SetWidth(itemLinkWidth)
                 local level = string.match(itemLink, "|A:.+|a")
                 itemLink = itemLink:gsub("|A:.+|a", "")
                 self.ItemUpgrade:SetText(level)
             else
+                self.ItemLink:SetWidth(itemLinkWidth + 8 + itemUpgradeWidth)
                 self.ItemUpgrade:SetText()
             end
         else
