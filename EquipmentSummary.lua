@@ -95,6 +95,18 @@ local STYLE = {
     }
 }
 
+local PRESET_ITEMLINK_WIDTH_TEXT = {
+    enUS = "OOOOOOOOOOOOOOOOOOOO",
+    zhCN = "啊啊啊啊啊啊啊啊啊啊",
+    zhTW = "啊啊啊啊啊啊啊啊啊啊",
+}
+
+local ITEMLINK_WIDTH_TEXT = PRESET_ITEMLINK_WIDTH_TEXT[GetLocale()] or PRESET_ITEMLINK_WIDTH_TEXT.enUS
+
+local itemLevelWidth = 0
+local itemLinkWidth = 0
+local itemUpgradeWidth = 0
+
 local WIDTH_BY_LOCALE = {
     enUS = {20, 16, 8.9, 6.5, 2.9},
     zhCN = {14.5, 12.5, 5.4, 3.5, 2.9},
@@ -265,24 +277,29 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
         self:ToggleStats()
     end
 
-    local temp = self.ItemLevel:GetText()
-
     -- 重新计算宽度
-    self.ItemLevel:SetText("1000")
-    local itemLevelWidth = self.ItemLevel:GetUnboundedStringWidth()
-    self.ItemLevel:SetWidth(itemLevelWidth)
-    self.ItemLevel:SetText(temp)
+    if itemLevelWidth == 0 then
+        local temp = self.ItemLevel:GetText()
+        self.ItemLevel:SetText("999")
+        itemLevelWidth = self.ItemLevel:GetUnboundedStringWidth()
+        self.ItemLevel:SetText(temp)
+    end
+    self.ItemLevel:SetWidth(itemLevelWidth + 8)
 
-    temp = self.ItemUpgrade:GetText()
-    self.ItemUpgrade:SetText("["..ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)].."]")
-    local itemUpgradeWidth = self.ItemUpgrade:GetUnboundedStringWidth()
-    -- self.ItemUpgrade:SetWidth(itemUpgradeWidth)
-    self.ItemUpgrade:SetText(temp)
+    if itemLinkWidth == 0 then
+        local temp = self.ItemLink:GetText()
+        self.ItemLink:SetText(ITEMLINK_WIDTH_TEXT)
+        itemLinkWidth = self.ItemLink:GetUnboundedStringWidth()
+        self.ItemLink:SetText(temp)
+    end
+    self.ItemLink:SetWidth(itemLinkWidth)
 
-    self.ItemLink:SetWidth(Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1])
-        - itemLevelWidth
-        + (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and (WIDTH_RATE[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) + 2] * Module:GetConfig(CONFIG_FONT_SIZE) - itemUpgradeWidth) or 0)
-    )
+    if itemUpgradeWidth == 0 then
+        local temp = self.ItemUpgrade:GetText()
+        self.ItemUpgrade:SetText("["..ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)].."]")
+        itemUpgradeWidth = self.ItemUpgrade:GetUnboundedStringWidth()
+        self.ItemUpgrade:SetText(temp)
+    end
 end
 
 function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, itemLink, itemLevel)
@@ -475,6 +492,10 @@ function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
         self:SetBackdrop(STYLE[Module:GetConfig(CONFIG_STYLE)])
     end
 
+    itemLevelWidth = 0
+    itemLinkWidth = 0
+    itemUpgradeWidth = 0
+
     for i, entry in pairs(self.slots) do
         entry:UpdateAppearance()
     end
@@ -492,14 +513,14 @@ function IIOEquipmentSummaryFrameMixin:UpdateAppearance()
 
     self:SetBackdropColor(0, 0, 0, Module:GetConfig(CONFIG_BACKDROP_ALPHA) * 0.01)
 
-    local width = 12
-            + (Module:GetConfig(CONFIG_SLOT_NAME) and (Module:GetConfig(CONFIG_FONT_SIZE) * 3) or 0)
-            + ((Module:GetConfig(CONFIG_SLOT_NAME) and Module:GetConfig(CONFIG_STAT_ICON)) and 2 or 0)
-            + (Module:GetConfig(CONFIG_STAT_ICON) and (Module:GetConfig(CONFIG_FONT_SIZE) * 4 + 3) or 0)
-            + ((Module:GetConfig(CONFIG_SLOT_NAME) or Module:GetConfig(CONFIG_STAT_ICON)) and 8 or 0)
-            + (Module:GetConfig(CONFIG_FONT_SIZE) * (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and WIDTH_RATE[2] or WIDTH_RATE[1])) + 2
-            + (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and (Module:GetConfig(CONFIG_FONT_SIZE) * WIDTH_RATE[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) + 2]) + 8 or 0)
-            + 12
+    local width = 12                                                                                        -- 左侧边距
+            + (Module:GetConfig(CONFIG_SLOT_NAME) and (Module:GetConfig(CONFIG_FONT_SIZE) * 3) or 0)        -- 槽位名称宽度
+            + ((Module:GetConfig(CONFIG_SLOT_NAME) and Module:GetConfig(CONFIG_STAT_ICON)) and 2 or 0)      -- 槽位名称与属性图标间距
+            + (Module:GetConfig(CONFIG_STAT_ICON) and (Module:GetConfig(CONFIG_FONT_SIZE) * 4 + 3) or 0)    -- 属性图标宽度
+            + ((Module:GetConfig(CONFIG_SLOT_NAME) or Module:GetConfig(CONFIG_STAT_ICON)) and 8 or 0)       -- 槽位名称/属性图标与物品等级间距
+            + itemLevelWidth + 8 + itemLinkWidth                                                            -- 物品等级和物品名称宽度
+            + (Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and itemUpgradeWidth + 8 or 0)                   -- 物品升级宽度
+            + 12                                                                                            -- 右侧边距
 
     self:SetWidth(width)
 

@@ -51,7 +51,7 @@
                 <FontString parentKey="ItemLink" inherits="GameTooltipText" wordwrap="false" nonspacewrap="false">
                     <Size x="150"/>
                     <Anchors>
-                        <Anchor point="LEFT" relativeKey="$parent.ItemLevel" relativePoint="RIGHT" x="2"/>
+                        <Anchor point="LEFT" relativeKey="$parent.ItemLevel" relativePoint="RIGHT" x="0"/>
                     </Anchors>
                 </FontString>
                 <FontString parentKey="ItemUpgrade" inherits="GameTooltipText" wordwrap="false" nonspacewrap="false">
