@@ -560,9 +560,14 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                 local tooltipInfo = C_TooltipInfo.GetInventoryItem(self.unit, i)
                 local itemLevel, currentItemLevel, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
+                if not itemLevel then
+                    itemLevel = GetDetailedItemLevelInfo(link)
+                end
+
                 if itemLevel then
                     totalItemLevel = totalItemLevel + itemLevel
                     totalPvpItemLevel = totalPvpItemLevel + (pvpItemLevel or itemLevel)
+                else
                 end
 
                 -- 从鼠标提示中获取物品属性, 以获得正确的主属性及附魔、宝石提供的属性
@@ -652,10 +657,10 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
 
                 if Module:GetConfig(CONFIG_ITEM_LEVEL_STYLE) == 2 then
                     -- 使用PvP物品等级
-                    entry:SetItemFromUnitInventory(self.unit, i, link, pvpItemLevel)
+                    entry:SetItemFromUnitInventory(self.unit, i, link, pvpItemLevel or itemLevel)
                 elseif Module:GetConfig(CONFIG_ITEM_LEVEL_STYLE) == 1 and currentItemLevel == pvpItemLevel then
                     -- 随PvP状态动态调整
-                    entry:SetItemFromUnitInventory(self.unit, i, link, pvpItemLevel)
+                    entry:SetItemFromUnitInventory(self.unit, i, link, pvpItemLevel or itemLevel)
                 else
                     entry:SetItemFromUnitInventory(self.unit, i, link, itemLevel)
                 end
