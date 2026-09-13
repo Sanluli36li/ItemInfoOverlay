@@ -134,7 +134,7 @@ local preview = false
 IIOEquipmentSummaryEntryMixin = {}
 
 function IIOEquipmentSummaryEntryMixin:OnLoad()
-    self.SlotNameBackdrop:SetBackdrop({
+    self.SlotName:SetBackdrop({
         bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
         edgeFile = "Interface\\Buttons\\WHITE8X8",
         tile     = true,
@@ -142,14 +142,14 @@ function IIOEquipmentSummaryEntryMixin:OnLoad()
         edgeSize = 1,
         insets   = {left = 1, right = 1, top = 1, bottom = 1}
     })
-    self.SlotNameBackdrop:SetBackdropBorderColor(0, 0.9, 0.9, 0.2)
-    self.SlotNameBackdrop:SetBackdropColor(0, 0.9, 0.9, 0.2)
+    self.SlotName:SetBackdropBorderColor(0, 0.9, 0.9, 0.2)
+    self.SlotName:SetBackdropColor(0, 0.9, 0.9, 0.2)
 end
 
 function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     local _, _, style = GameTooltipText:GetFont()
 
-    self.SlotName:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
+    self.SlotName.Text:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemLevel:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemLink:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
     self.ItemUpgrade:SetFont(Module:GetConfig(CONFIG_FONT), Module:GetConfig(CONFIG_FONT_SIZE), style)
@@ -245,13 +245,11 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     if Module:GetConfig(CONFIG_SLOT_NAME) then
         self.CritIcon:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 2, 0)
 
-        self.SlotName:SetWidth(Module:GetConfig(CONFIG_FONT_SIZE) * 3)
-        self.SlotNameBackdrop:Show()
+        self.SlotName:SetSize(Module:GetConfig(CONFIG_FONT_SIZE) * 3, Module:GetConfig(CONFIG_FONT_SIZE))
         self.SlotName:Show()
     else
         self.CritIcon:SetPoint("TOPLEFT", self)
         self.SlotName:Hide()
-        self.SlotNameBackdrop:Hide()
     end
 
     if Module:GetConfig(CONFIG_STAT_ICON) then
@@ -421,7 +419,7 @@ function IIOEquipmentSummaryFrameMixin:OnLoad()
         self.slots[slotId]:Show()
 
         self.slots[slotId].slotName = slot.name
-        self.slots[slotId].SlotName:SetText(slot.name)
+        self.slots[slotId].SlotName.Text:SetText(slot.name)
 
         self.slotNum = self.slotNum + 1
         lastRegion = self.slots[slotId]
