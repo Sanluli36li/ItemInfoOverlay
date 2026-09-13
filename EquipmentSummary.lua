@@ -243,22 +243,22 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     self:SetHeight(Module:GetConfig(CONFIG_FONT_SIZE))
 
     if Module:GetConfig(CONFIG_SLOT_NAME) then
-        self.CritIcon:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 2, 0)
+        self.CritIcon:SetPoint("LEFT", self.SlotName, "RIGHT", 2, 0)
 
         self.SlotName:SetSize(Module:GetConfig(CONFIG_FONT_SIZE) * 3, Module:GetConfig(CONFIG_FONT_SIZE))
         self.SlotName:Show()
     else
-        self.CritIcon:SetPoint("TOPLEFT", self)
+        self.CritIcon:SetPoint("LEFT", self)
         self.SlotName:Hide()
     end
 
     if Module:GetConfig(CONFIG_STAT_ICON) then
-        self.ItemLevel:SetPoint("TOPLEFT", self.VersatilityIcon, "TOPRIGHT", 8, 0)
+        self.ItemLevel:SetPoint("LEFT", self.VersatilityIcon, "RIGHT", 8, 0)
     elseif Module:GetConfig(CONFIG_SLOT_NAME) then
-        self.ItemLevel:SetPoint("TOPLEFT", self.SlotName, "TOPRIGHT", 8, 0)
+        self.ItemLevel:SetPoint("LEFT", self.SlotName, "RIGHT", 8, 0)
         self:ToggleStats()
     else
-        self.ItemLevel:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)
+        self.ItemLevel:SetPoint("LEFT", self, "LEFT", 0, 0)
         self:ToggleStats()
     end
 
