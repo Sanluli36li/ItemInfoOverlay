@@ -96,9 +96,9 @@ local STYLE = {
 }
 
 local PRESET_ITEMLINK_WIDTH_TEXT = {
-    enUS = "OOOOOOOOOOOOOOOOOOOO",
-    zhCN = "啊啊啊啊啊啊啊啊啊啊",
-    zhTW = "啊啊啊啊啊啊啊啊啊啊",
+    enUS = {"OOOOOOOOOOOOOOOOOO", "OOOOOOOOOOOOOOOO"},
+    zhCN = {"啊啊啊啊啊啊啊啊啊啊啊啊", "啊啊啊啊啊啊啊啊啊"},
+    zhTW = {"啊啊啊啊啊啊啊啊啊啊啊啊", "啊啊啊啊啊啊啊啊啊"},
 }
 
 local ITEMLINK_WIDTH_TEXT = PRESET_ITEMLINK_WIDTH_TEXT[GetLocale()] or PRESET_ITEMLINK_WIDTH_TEXT.enUS
@@ -106,14 +106,6 @@ local ITEMLINK_WIDTH_TEXT = PRESET_ITEMLINK_WIDTH_TEXT[GetLocale()] or PRESET_IT
 local itemLevelWidth = 0
 local itemLinkWidth = 0
 local itemUpgradeWidth = 0
-
-local WIDTH_BY_LOCALE = {
-    enUS = {20, 16, 8.9, 6.5, 2.9},
-    zhCN = {14.5, 12.5, 5.4, 3.5, 2.9},
-    zhTW = {14.5, 12.5, 5.4, 3.5, 2.9},
-}
-
-local WIDTH_RATE = WIDTH_BY_LOCALE[GetLocale()] or WIDTH_BY_LOCALE.enUS
 
 local EQUIPMENT_SLOTS = {
     {slotId = 1, name = HEADSLOT},
@@ -283,7 +275,7 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
 
     if itemLinkWidth == 0 then
         local temp = self.ItemLink:GetText()
-        self.ItemLink:SetText(ITEMLINK_WIDTH_TEXT)
+        self.ItemLink:SetText(Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and ITEMLINK_WIDTH_TEXT[2] or ITEMLINK_WIDTH_TEXT[1])
         itemLinkWidth = self.ItemLink:GetUnboundedStringWidth()
         self.ItemLink:SetText(temp)
     end
