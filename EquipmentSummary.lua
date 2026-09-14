@@ -23,6 +23,7 @@ local CONFIG_ITEM_LEVEL_COLOR = "itemLevel.color"
 local CONFIG_ITEM_LEVEL_STYLE = "itemLevel.style"
 local CONFIG_ITEM_UPGRADE_TRACK = "itemUpgradeTrack.enable"
 local CONFIG_ITEM_UPGRADE_TRACK_STYLE = "itemUpgradeTrack.style"
+local CONFIG_ITEM_UPGRADE_TRACK_REMOVE_BRACKETS = "itemUpgradeTrack.removeBrackets"
 local CONFIG_BACKDROP_ALPHA = "backdrop.alpha"
 local CONFIG_ENCHANT_AND_SOCKETS = "enchantAndSockets.enable"
 
@@ -281,7 +282,11 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
 
     if itemUpgradeWidth == 0 then
         local temp = self.ItemUpgrade:GetText()
-        self.ItemUpgrade:SetText("["..ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)].."]")
+        if Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_REMOVE_BRACKETS) then
+            self.ItemUpgrade:SetText(ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)])
+        else
+            self.ItemUpgrade:SetText("["..ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)].."]")
+        end
         itemUpgradeWidth = self.ItemUpgrade:GetUnboundedStringWidth()
         self.ItemUpgrade:SetText(temp)
     end
@@ -328,13 +333,21 @@ function IIOEquipmentSummaryEntryMixin:SetItemFromUnitInventory(unit, slot, item
 
                 local itemUpgradeString = L["alias.itemUpgrade"][itemUpgradeInfo.trackString] or itemUpgradeInfo.trackString
 
+                local itemUpgradeText = ""
+
                 if Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) == 1 then
-                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..itemUpgradeString.." "..level.."]", itemLink))
+                    itemUpgradeText = itemUpgradeString.." "..level
                 elseif Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) == 2 then
-                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..itemUpgradeString.."]", itemLink))
+                    itemUpgradeText = itemUpgradeString
                 elseif Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE) == 3 then
-                    self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText("["..level.."]", itemLink))
+                    itemUpgradeText = level
                 end
+
+                if not Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_REMOVE_BRACKETS) then
+                    itemUpgradeText = "["..itemUpgradeText.."]"
+                end
+
+                self.ItemUpgrade:SetText(Utils.GetColoredItemLevelText(itemUpgradeText, itemLink))
             elseif string.find(itemLink, "|A:") then
                 -- 分离制造物品的品质图标
                 self.ItemLink:SetWidth(itemLinkWidth)
