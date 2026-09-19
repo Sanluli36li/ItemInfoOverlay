@@ -272,23 +272,39 @@ function IIOEquipmentSummaryEntryMixin:UpdateAppearance()
     end
     self.ItemLevel:SetWidth(itemLevelWidth + 8)
 
-    if itemLinkWidth == 0 then
-        local temp = self.ItemLink:GetText()
-        self.ItemLink:SetText(Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) and ITEMLINK_WIDTH_TEXT[2] or ITEMLINK_WIDTH_TEXT[1])
-        itemLinkWidth = self.ItemLink:GetUnboundedStringWidth()
-        self.ItemLink:SetText(temp)
-    end
-    self.ItemLink:SetWidth(itemLinkWidth)
-
-    if itemUpgradeWidth == 0 then
-        local temp = self.ItemUpgrade:GetText()
-        if Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_REMOVE_BRACKETS) then
-            self.ItemUpgrade:SetText(ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)])
-        else
-            self.ItemUpgrade:SetText("["..ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)].."]")
+    if Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK) then
+        if itemUpgradeWidth == 0 then
+            local temp = self.ItemUpgrade:GetText()
+            if Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_REMOVE_BRACKETS) then
+                self.ItemUpgrade:SetText(ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)])
+            else
+                self.ItemUpgrade:SetText("["..ITEM_UPGRADE_WIDTH_TEXT[Module:GetConfig(CONFIG_ITEM_UPGRADE_TRACK_STYLE)].."]")
+            end
+            itemUpgradeWidth = self.ItemUpgrade:GetUnboundedStringWidth()
+            self.ItemUpgrade:SetText(temp)
         end
-        itemUpgradeWidth = self.ItemUpgrade:GetUnboundedStringWidth()
-        self.ItemUpgrade:SetText(temp)
+
+        if itemLinkWidth == 0 then
+            local temp = self.ItemLink:GetText()
+            self.ItemLink:SetText(ITEMLINK_WIDTH_TEXT[1])
+            local itemLinkWidthLong = self.ItemLink:GetUnboundedStringWidth()
+            self.ItemLink:SetText(ITEMLINK_WIDTH_TEXT[2])
+            local itemLinkWidthShort = self.ItemLink:GetUnboundedStringWidth()
+
+            itemLinkWidth = math.max(itemLinkWidthLong, itemLinkWidthShort + 8 + itemUpgradeWidth) - (8 + itemUpgradeWidth)
+
+            self.ItemLink:SetText(temp)
+        end
+        self.ItemLink:SetWidth(itemLinkWidth)
+
+    else
+        if itemLinkWidth == 0 then
+            local temp = self.ItemLink:GetText()
+            self.ItemLink:SetText(ITEMLINK_WIDTH_TEXT[1])
+            itemLinkWidth = self.ItemLink:GetUnboundedStringWidth()
+            self.ItemLink:SetText(temp)
+        end
+        self.ItemLink:SetWidth(itemLinkWidth)
     end
 end
 
