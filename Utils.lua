@@ -89,8 +89,53 @@ local EQUIP_LOC_MAX_SOCKETS = {
 }
 
 --------------------
+--- 计算结果缓存
+--------------------
+-- 装等染色文本缓存 (键为物品链接+装等; 升级/附魔/宝石都会改变链接, 天然不存在脏数据)
+local coloredItemLevelCache = {}
+local itemUpgradeInfoCache = {}
+local averageItemLevelCache = nil
+local toyInfoCache = {}
+local playerToyCache = {}
+
+function Utils.InvalidateItemCaches()
+    wipe(coloredItemLevelCache)
+    wipe(itemUpgradeInfoCache)
+    averageItemLevelCache = nil
+end
+
+local function GetCachedAverageItemLevel()
+    if not averageItemLevelCache then
+        averageItemLevelCache = GetAverageItemLevel()
+    end
+    return averageItemLevelCache
+end
+
+-- 玩具箱查询缓存 (学习到新玩具时由 NEW_TOY_ADDED 事件失效)
+function Utils.GetToyInfoCached(itemID)
+    local cached = toyInfoCache[itemID]
+    if cached ~= nil then
+        return cached or nil
+    end
+    local info = C_ToyBox.GetToyInfo(itemID)
+    toyInfoCache[itemID] = info or false
+    return info
+end
+
+function Utils.PlayerHasToyCached(itemID)
+    local cached = playerToyCache[itemID]
+    if cached ~= nil then
+        return cached
+    end
+    local has = PlayerHasToy(itemID)
+    playerToyCache[itemID] = has
+    return has
+end
+
+--------------------
 --- 框体
 --------------------
+
 local INVAILD_OVERLAY = {
     SetItemFromLocation = function() end,
     SetItemFromLink = function() end
@@ -286,6 +331,12 @@ local TRACK_STRING_ID_EXPLORER = 970
 
 
 function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
+    local cacheKey = itemLink.."|"..tostring(itemLevel)..(isPvP and "|P" or "")
+    local cached = coloredItemLevelCache[cacheKey]
+    if cached then
+        return cached
+    end
+
     local r, g, b = 1, 1, 1
     local itemName, _, itemQuality, _, _, itemType, itemSubType,
         itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
@@ -307,7 +358,12 @@ function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
     if ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade") then
         local trackStringID
         if C_Item.IsEquippableItem(itemLink) then
-            local itemUpgradeInfo = C_Item.GetItemUpgradeInfo(itemLink)
+            -- 升级轨道信息按链接缓存 (该API开销较大)
+            local itemUpgradeInfo = itemUpgradeInfoCache[itemLink]
+            if itemUpgradeInfo == nil then
+                itemUpgradeInfo = C_Item.GetItemUpgradeInfo(itemLink)
+                itemUpgradeInfoCache[itemLink] = itemUpgradeInfo or false
+            end
             if itemUpgradeInfo and itemUpgradeInfo.trackStringID then
                 if not (ItemInfoOverlay:GetConfig("color.itemLevel.itemUpgrade.ignoreLegacy") and itemUpgradeInfo.maxLevel == 0) then
                     trackStringID = itemUpgradeInfo.trackStringID
@@ -372,16 +428,18 @@ function Utils.GetColoredItemLevelText(itemLevel, itemLink, isPvP)
         end
     end
 
-    -- 低等级物品染色
+    -- 低等级物品染色 (平均装等按换装事件缓存, 不再逐物品调用)
     if type(itemLevel) == "number" and ItemInfoOverlay:GetConfig("color.itemLevel.lowLevel") then
         local itemQuality = C_Item.GetItemQualityByID(itemLink)
-        if itemQuality and itemQuality < 5 and itemLevel < select(1, GetAverageItemLevel()) - ItemInfoOverlay:GetConfig("color.itemLevel.lowLevel.threshold") then
+        if itemQuality and itemQuality < 5 and itemLevel < select(1, GetCachedAverageItemLevel()) - ItemInfoOverlay:GetConfig("color.itemLevel.lowLevel.threshold") then
             -- 传说品质以下 / 物品等级 < 最高平均物品等级 - 设置的等级差
             r, g, b = Utils.GetRGBAFromHexColor(ItemInfoOverlay:GetConfig("color.itemLevel.lowLevel.color"))
         end
     end
 
-    return format("|cff%02x%02x%02x%s|r", r * 255, g * 255, b * 255, itemLevel)
+    local result = format("|cff%02x%02x%02x%s|r", r * 255, g * 255, b * 255, itemLevel)
+    coloredItemLevelCache[cacheKey] = result
+    return result
 end
 
 --------------------
@@ -595,6 +653,20 @@ function Utils:AfterLogin()
             UNIQUENESS_NAMES[limitCategoryID] = limitCategoryName
         end
     end
+
+    -- 换装/学习玩具时使对应缓存失效
+    self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+    self:RegisterEvent("NEW_TOY_ADDED")
+end
+
+function Utils:PLAYER_EQUIPMENT_CHANGED()
+    -- 换装会影响平均装等(低装等染色基准)与升级信息
+    Utils.InvalidateItemCaches()
+end
+
+function Utils:NEW_TOY_ADDED()
+    wipe(toyInfoCache)
+    wipe(playerToyCache)
 end
 
 function Utils:PLAYER_LEVEL_CHANGED()

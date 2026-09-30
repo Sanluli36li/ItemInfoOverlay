@@ -29,6 +29,9 @@ local CONFIG_EXTRA_INFO_OFFSET_Y = "extraInfo.offsetY"
 
 local pool = CreateFramePool("Frame", UIParent, "IIOItemInfoOverlayTemplate")
 
+-- 渲染版本号: 外观/颜色/学会配方等变化时递增, 使各浮层的"同链接跳过"失效
+local renderVersion = 0
+
 local POINTS = {
     "TOPLEFT",
     "TOP",
@@ -124,6 +127,8 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, p
     local itemLevelText
     local itemTypeText
     local itemBondingText
+    local dataReady = false   -- 物品数据是否已完整载入
+    local isCosmetic
 
     local type, metaData, id, name = Utils.GetLinkTypeAndID(itemLink)
 
@@ -131,6 +136,9 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, p
         local itemName, _, itemQuality, _, _, itemType, itemSubType,
         itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
         expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
+
+        dataReady = itemName ~= nil
+        isCosmetic = IsCosmeticItem(itemLink)
 
         local bonding, spellKnown
         if tooltipInfo and tooltipInfo.type == Enum.TooltipDataType.Item and tooltipInfo.lines then
@@ -176,9 +184,9 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, p
             if itemStackCount == 1 then
                 itemTypeText = itemSubType
             end
-        elseif C_ToyBox.GetToyInfo(id) then
-            -- 玩具
-            if PlayerHasToy(id) then
+        elseif Utils.GetToyInfoCached(id) then
+            -- 玩具 (走缓存, 避免对每个物品都调用玩具箱API)
+            if Utils.PlayerHasToyCached(id) then
                 itemTypeText = "|cff00ff00"..TOY.."|r"
             else
                 itemTypeText = TOY
@@ -220,7 +228,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, p
             if spellKnown then
                 -- 已经学会
                 itemTypeText = "|cff00ff00"..itemTypeText.."|r"
-            elseif IsCosmeticItem(itemLink) then
+            elseif isCosmetic then
                 -- 装饰品
                 itemTypeText = "|cffff80ff"..itemTypeText.."|r"
             end
@@ -228,6 +236,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, p
 
     elseif type == "keystone" then
         -- 史诗钥石
+        dataReady = true
         local itemID, mapID, level, affix1, affix2, affix3, affix4 = strsplit(":", metaData)
         local r, g, b = 1, 1, 1
 
@@ -239,6 +248,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, p
 
         itemLevelText = format("|cff%02x%02x%02x+%d|r", r * 255, g * 255, b * 255, level)
     elseif type == "battlepet" then
+        dataReady = true
         itemTypeText = PET
 
         local speciesID, level, breedQuality, maxHealth, power, speed, battlePetID = strsplit(":", metaData)
@@ -285,7 +295,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, p
             itemTypeText = L["itemInfoOverlay.itemType.alias"][itemTypeText]
         end
 
-        if IsCosmeticItem(itemLink) then
+        if isCosmetic then
             itemTypeText = "|cffff80ff"..itemTypeText.."|r"
         end
 
@@ -314,6 +324,13 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, p
     end
 
     self:Show()
+
+    -- 仅在物品数据完整载入时记录渲染状态:
+    -- 数据未载入时的渲染不完整, 不能记录, 否则 RefreshOnItemLoad 触发后的刷新会被跳过
+    if dataReady then
+        self.renderedLink = itemLink
+        self.renderedVersion = renderVersion
+    end
 end
 
 function IIOItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
@@ -322,6 +339,13 @@ function IIOItemInfoOverlayMixin:SetItemFromLocation(itemLocation)
 
     if itemLocation and itemLocation:IsValid() then
         local itemLink = C_Item.GetItemLink(itemLocation)
+
+        -- 性能优化: 同一链接的显示结果不会变化, 跳过重复的提示生成与计算
+        -- (读条后背包/银行批量重绘、BAG_UPDATE批量触发等场景下,
+        --  每个按钮会被携带相同链接反复调用, 此处直接跳过)
+        if itemLink and self.renderedLink == itemLink and self.renderedVersion == renderVersion then
+            return
+        end
 
         local tooltipInfo
         if itemLocation:IsBagAndSlot() then
@@ -354,6 +378,11 @@ function IIOItemInfoOverlayMixin:SetItemFromLink(itemLink)
         self.itemLocation = nil
         self.itemLink = itemLink
 
+        -- 性能优化: 同链接且渲染版本未变时跳过 (见 SetItemFromLocation)
+        if self.renderedLink == itemLink and self.renderedVersion == renderVersion then
+            return
+        end
+
         local tooltipInfo = C_TooltipInfo.GetHyperlink(itemLink)
 
         local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
@@ -375,6 +404,7 @@ end
 function IIOItemInfoOverlayMixin:Clear()
     self.itemLocation = nil
     self.itemLink = nil
+    self.renderedLink = nil
     self:Hide()
 end
 
@@ -431,6 +461,9 @@ function Module:CreateItemInfoOverlay(frame)
 
     local overlay = frame.ItemInfoOverlay
     overlay.frame = frame
+    -- 池化的浮层可能被其他按钮复用, 重置渲染记录
+    overlay.renderedLink = nil
+    overlay.renderedVersion = nil
 
     if frame.IconOverlay then
         overlay:SetAllPoints(frame.IconOverlay)
@@ -467,6 +500,8 @@ function Module:DisableItemInfoOverlayByType(type)
 end
 
 function Module:UpdateAllAppearance()
+    renderVersion = renderVersion + 1
+    Utils.InvalidateItemCaches()    -- 颜色设置变化后装等文本缓存一并失效
     for overlay in pool:EnumerateActive() do
         overlay:UpdateAppearance()
     end
@@ -832,3 +867,9 @@ function Module:AfterLogin()
     end
 end
 
+
+-- 学会新配方后, 配方物品的"已学会"染色需要重新计算
+function Module:NEW_RECIPE_LEARNED()
+    renderVersion = renderVersion + 1
+end
+Module:RegisterEvent("NEW_RECIPE_LEARNED")

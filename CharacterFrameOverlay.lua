@@ -670,6 +670,7 @@ local function GetItemInfoOverlayFromSlotID(slotID, isInspect)
 end
 
 function Module:UpdateAllAppearance()
+    Utils.InvalidateItemCaches()    -- 颜色设置变化后, 使装等文本缓存失效
     for _, overlay in ipairs(itemInfoOverlayPool) do
         overlay:UpdateAppearance()
     end
@@ -752,17 +753,30 @@ function Module:ADDON_LOADED(AddOnName)
 end
 Module:RegisterEvent("ADDON_LOADED")
 
+-- 短时间内连续触发的事件(换装/物品栏/插槽)合并为一次延迟刷新,
+-- 避免每次事件都同步全量计算18个栏位造成卡顿
+local characterUpdateTimer
+local function ScheduleCharacterSlotUpdate()
+    if characterUpdateTimer then
+        return
+    end
+    characterUpdateTimer = C_Timer.NewTimer(0.05, function()
+        characterUpdateTimer = nil
+        if isLoaded and CharacterFrame:IsShown() then
+            Module:UpdateAllCharacterSlot()
+        end
+    end)
+end
+
 -- 插槽更新: 更新所有栏位
 function Module:SOCKET_INFO_UPDATE()
-    if isLoaded then
-        self:UpdateAllCharacterSlot()
-    end
+    ScheduleCharacterSlotUpdate()
 end
 Module:RegisterEvent("SOCKET_INFO_UPDATE")
 
 -- 耐久度更新
 function Module:UPDATE_INVENTORY_DURABILITY()
-    if isLoaded then
+    if isLoaded and CharacterFrame:IsShown() then
         self:UpdateAllCharacterSlotDurability()
     end
 end
@@ -770,19 +784,14 @@ Module:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
 
 -- 装备变更: 更新所有栏位
 function Module:PLAYER_EQUIPMENT_CHANGED()
-    if isLoaded then
-        self:UpdateAllCharacterSlot()
-    end
-    self:UpdateAllCharacterSlot()
+    ScheduleCharacterSlotUpdate()
 end
 Module:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 
 -- 玩家物品栏更新: 更新所有栏位
 function Module:UNIT_INVENTORY_CHANGED(unit)
     if unit == "player" then
-        if isLoaded then
-            self:UpdateAllCharacterSlot()
-        end
+        ScheduleCharacterSlotUpdate()
     end
 end
 Module:RegisterEvent("UNIT_INVENTORY_CHANGED")

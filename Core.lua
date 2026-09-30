@@ -53,10 +53,22 @@ function AddOn:UnregisterEvent(event, callback)
 end
 
 -- 获取配置项
+-- 配置键缓存, 避免每次读取配置都进行字符串拼接 (批量刷新物品时配置读取会发生数千次)
+local configKeyCache = {}
 function AddOn:GetConfig(module, key)
 	if self.Database then
 		if key then
-			return self.Database[module..'.'..key]
+			local cache = configKeyCache[module]
+			if not cache then
+				cache = {}
+				configKeyCache[module] = cache
+			end
+			local fullKey = cache[key]
+			if not fullKey then
+				fullKey = module.."."..key
+				cache[key] = fullKey
+			end
+			return self.Database[fullKey]
 		else
 			return self.Database[module]
 		end
