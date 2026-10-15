@@ -718,9 +718,9 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
         local text = ""
 
         if Module:GetConfig(CONFIG_ENCHANT_AND_SOCKETS) then
-            text = text..format("|cffffd200%s: |r|c%s%d|r / %d    |cffffd200%s: |r|c%s%d|r / %d\n",
-            GetItemClassInfo(8), hasEnchantNum == maxEnchantNum and "ff00ff00" or "ffff0000", hasEnchantNum, maxEnchantNum,
-            GetItemClassInfo(3), gemNum == socketNum and "ff00ff00" or "ffff0000", gemNum, socketNum)
+            text = text..string.format("|cffffd200%s: |r|c%s%d|r / %d    |cffffd200%s: |r|c%s%d|r / %d\n",
+            C_Item.GetItemClassInfo(8), hasEnchantNum == maxEnchantNum and "ff00ff00" or "ffff0000", hasEnchantNum, maxEnchantNum,
+            C_Item.GetItemClassInfo(3), gemNum == socketNum and "ff00ff00" or "ffff0000", gemNum, socketNum)
             text = text.."\n"
         end
 
