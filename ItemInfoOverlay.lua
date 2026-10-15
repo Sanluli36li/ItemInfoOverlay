@@ -138,7 +138,7 @@ function IIOItemInfoOverlayMixin:SetItemData(itemLink, tooltipInfo, itemLevel, p
         expacID, setID, isCraftingReagent = C_Item.GetItemInfo(itemLink)
 
         dataReady = itemName ~= nil
-        isCosmetic = IsCosmeticItem(itemLink)
+        isCosmetic = C_Item.IsCosmeticItem(itemLink)
 
         local bonding, spellKnown
         if tooltipInfo and tooltipInfo.type == Enum.TooltipDataType.Item and tooltipInfo.lines then
