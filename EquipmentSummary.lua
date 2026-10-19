@@ -590,7 +590,7 @@ function IIOEquipmentSummaryFrameMixin:Refresh()
                 local itemLevel, currentItemLevel, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
 
                 if not itemLevel then
-                    itemLevel = GetDetailedItemLevelInfo(link)
+                    itemLevel = C_Item.GetDetailedItemLevelInfo(link)
                 end
 
                 if itemLevel then

@@ -388,7 +388,7 @@ function IIOItemInfoOverlayMixin:SetItemFromLink(itemLink)
         local itemLevel, _, pvpItemLevel = Utils.GetItemLevelFromTooltipInfo(tooltipInfo)
         --[[
         if not itemLevel then
-            itemLevel = GetDetailedItemLevelInfo(itemLink)
+            itemLevel = C_Item.GetDetailedItemLevelInfo(itemLink)
         end
         ]]
         self:SetItemData(itemLink, tooltipInfo, itemLevel, pvpItemLevel)
